@@ -8,7 +8,7 @@
     },
     "content": {
         "publisher": "Nordjyske Media",
-        "published_date": "",
+        "published_at": "",
         "articles": [
             {
                 "page_num": "",
