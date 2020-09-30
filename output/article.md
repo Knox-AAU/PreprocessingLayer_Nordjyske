@@ -11,7 +11,7 @@
         "published_at": "",
         "articles": [
             {
-                "page_num": "",
+                "page": "",
                 "title": "",
                 "byline": "",
                 "paragraphs": [
