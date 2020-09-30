@@ -2,7 +2,7 @@
 {
     "type": "manual",
     "generator": {
-        "application": "",
+        "app": "",
         "version": "",
         "generated_at": ""
     },
