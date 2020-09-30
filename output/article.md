@@ -2,7 +2,7 @@
 {
     "type": "article",
     "generator": {
-        "application": "",
+        "app": "",
         "version": "",
         "generated_at": ""
     },
