@@ -1,0 +1,34 @@
+{
+    "type": "newspaper",
+    "schemaLocation": "http://iptc.org/std/NITF/2006-10-18/",
+    "schemaVersion": 1.0,
+    "generator": {
+        "app": "The app",
+        "version": "1.0.0",
+        "generatedAt": "2020-10-01T09:28:39.394Z"
+    },
+    "content": {
+        "publisher": "Nordjyske Media",
+        "publication": "Thisted Dagblad",
+        "publishedAt": "2020-10-01T09:28:39.394Z",
+        "articles": [
+            {
+                "confidence": 1.0,
+                "extractedFrom": "/path/to/file",
+                "nmId": 1014654821,
+                "page": 1,
+                "title": "",
+                "trompet": "",
+                "byline": {
+                    "name": "",
+                    "email": ""
+                },
+                "paragraphs": [
+                    "Paragraph 1",
+                    "Paragraph 2",
+                    "Paragraph n"
+                ]
+            }
+        ]
+    }
+}

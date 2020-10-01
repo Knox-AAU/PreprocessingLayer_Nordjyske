@@ -52,7 +52,7 @@
                     "type": "integer"
                 },
                 "page": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "title": {
                     "type": "string"
@@ -71,36 +71,38 @@
                         }
                     },
                     "required": [
-                        "name",
-                        "email"
+                        "name"
                     ]
                 },
                 "paragraphs": {
                     "type": "array",
                     "items": [
                         {
-                            "type": "string"
+                            "type": "object",
+                            "properties": {
+                                "kind": {
+                                    "type": "string"
+                                },
+                                "value": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "kind",
+                                "value"
+                            ]
                         },
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "type": "string"
-                        }
+                        
                     ]
                 }
             },
             "required": [
                 "extractedFrom",
-                "confidence",
                 "publisher",
                 "publishedAt",
                 "publication",
-                "nmId",
                 "page",
                 "title",
-                "trompet",
-                "byline",
                 "paragraphs"
             ]
         }
