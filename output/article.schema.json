@@ -34,7 +34,12 @@
             "type": "object",
             "properties": {
                 "extractedFrom": {
-                    "type": "string"
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "string"
+                        }
+                    ]
                 },
                 "confidence": {
                     "type": "number"
@@ -91,13 +96,13 @@
                                 "kind",
                                 "value"
                             ]
-                        },
-                        
+                        }
                     ]
                 }
             },
             "required": [
                 "extractedFrom",
+                "confidence",
                 "publisher",
                 "publishedAt",
                 "publication",

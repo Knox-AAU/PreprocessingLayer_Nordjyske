@@ -8,7 +8,9 @@
         "generatedAt": "2020-10-01T09:28:39.200Z"
     },
     "content": {
-        "extractedFrom": "newsarchive/2020-08-20/01_02_thisted_dagblad_tor_s002_12_lokal____2008_202008200000_1014466314.xml",
+        "extractedFrom": [
+            "newsarchive/2020-08-20/01_02_thisted_dagblad_tor_s002_12_lokal____2008_202008200000_1014466314.xml"
+        ],
         "confidence": 0.82,
         "publisher": "Nordjyske Medier",
         "publishedAt": "2020-08-19T07:57:35.200Z",
