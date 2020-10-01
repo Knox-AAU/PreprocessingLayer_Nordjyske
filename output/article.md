@@ -9,22 +9,23 @@
         "generatedAt": ""
     },
     "content": {
+        "extractedFrom": "/path_to_file",
+        "confidence": "99%",
         "publisher": "Nordjyske Media",
         "publishedAt": "",
-        "articles": [
-            {
-	        "njmId": 1014654821,
-                "page": "",
-                "title": "",
-		"trompet": "",
-                "byline": {
-		    "name": "",
-		    "email": ""
-		},
-                "paragraphs": [
-		
-                ]
-            }
+        "publication": "Thisted Dagblad",
+        "nmId": 1014654821,
+        "page": "",
+        "title": "",
+        "trompet": "",
+        "byline": {
+            "name": "",
+            "email": ""
+        },
+        "paragraphs": [
+            "Paragraph 1",
+            "Paragraph 2",
+            "Paragraph 3"
         ]
     }
 }
