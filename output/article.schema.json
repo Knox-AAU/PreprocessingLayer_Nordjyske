@@ -37,7 +37,7 @@
                     "type": "string"
                 },
                 "confidence": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "publisher": {
                     "type": "string"
