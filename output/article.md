@@ -15,7 +15,11 @@
             {
                 "page": "",
                 "title": "",
-                "byline": "",
+		"trompet": "",
+                "byline": {
+		    "name": "",
+		    "email": ""
+		},
                 "paragraphs": [
 		
                 ]
