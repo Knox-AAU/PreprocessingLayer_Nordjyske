@@ -1,6 +1,7 @@
 ```
 {
     "type": "article",
+    "scheme_version": 1.0,
     "generator": {
         "app": "",
         "version": "",
