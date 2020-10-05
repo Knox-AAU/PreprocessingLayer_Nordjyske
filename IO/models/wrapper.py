@@ -1,6 +1,7 @@
 from enum import Enum
 from datetime import datetime
 import json
+import IOHandler
 
 
 class Type(Enum):
@@ -36,4 +37,4 @@ class Wrapper:
         #    raise Exception("Content type not allowed")
 
     def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=False, indent=4, ensure_ascii=True)
+        return json.dumps(self, default=IOHandler.IOHandler.convert_to_dict, sort_keys=False, indent=4)
