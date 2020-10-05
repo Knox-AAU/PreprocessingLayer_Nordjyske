@@ -8,7 +8,7 @@ pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tessera
 
 def load_file(path):
     """ Loads a .jp2 file from a given path
-    :param path:
+    :param path: The path of the file
     :return: The file in RGB format
     """
     if path is None:
@@ -19,14 +19,41 @@ def load_file(path):
 
 def run_tesseract_on_image(img, language='dan'):
     """ Runs tesseract and returns todo:beskrivelse
-    :param img:
-    :return:
+    :param img: The image to be OCR'ed
+    :param language: The language of the image text
+    :return:todo:beskrivelse
     """
     if img is None:
         return None
     arr_all_data = pytesseract.image_to_data(img, lang=language)
-    print(type(arr_all_data))
-    print(arr_all_data)
+    list = conf_str_to_matrix(arr_all_data)
+    print(list[5][11] + ' | ' + list[5][10])
+"""
+    lines = arr_all_data.split('\n')
+    list = []
+
+    for item in lines:
+        subl = []
+        for num in item.split('\t'):
+            subl.append(num)
+        list.append(subl)
+
+    print(list[5][11] + ' | ' + list[5][10])
+    """
+
+
+def conf_str_to_matrix(arr):
+    lines = arr.split('\n')
+    list = []
+
+    for item in lines:
+        subl = []
+        for num in item.split('\t'):
+            subl.append(num)
+        list.append(subl)
+
+    print(list[5][11] + ' | ' + list[5][10])
+    return list
 
 
 # img5 = Image.open("1988.jp2", "RGB")
