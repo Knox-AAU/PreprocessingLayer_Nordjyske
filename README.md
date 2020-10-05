@@ -25,3 +25,9 @@ The ficture is used to avoid duplicate set up code for the tests in the file, as
 ### (Mocking)
 
 ### (Test suite)
+It is also possible to set up test suites as well, allowing us to set the execution order for the tests and add conditions for what test to be executed.
+
+## Requirements
+```
+pip freeze > requirements.txt
+```
