@@ -5,7 +5,6 @@ import codecs
 import sys
 import configparser
 
-
 def merge(a, b, path=None):
     """ Used to merge objects together recursively
      :param path: Used to call the function recursively, do not specify at caller.
