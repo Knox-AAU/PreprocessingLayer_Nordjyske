@@ -1,14 +1,13 @@
-#from typing import List
 from xml.dom import minidom
 from datetime import datetime
 import json
 import codecs
 import sys
+import configparser
 
 
 def merge(a, b, path=None):
     """ Used to merge objects together recursively
-
      :param path: Used to call the function recursively, do not specify at caller.
      :param a: Dictionary input #1
      :param b: Dictionary input #2
@@ -32,7 +31,6 @@ def merge(a, b, path=None):
 
 def parse_header(header_element):
     """ Parses the header, and gathers the needed information from it.
-
     :param header_element: The XML-dom element for the header element in the NITF file.
     :return: A dictionary of the newly gathered information.
     """
@@ -57,28 +55,29 @@ def parse_header(header_element):
 
 def parse_metadata(metadatas):
     """ Returns needed information from metadata including by-line, page-number and id
-
     :param metadatas:
     :return:
     """
+    config = configparser.ConfigParser()
+    config.read('metadata-mapper.ini')
+
     _object = {'content': {}}
 
-    _object['type'] = [metadata for metadata in metadatas if metadata.getAttribute("name") == "SAXo-ArticleType"][0].getAttribute("content")
+    _object['type'] = [metadata for metadata in metadatas if metadata.getAttribute("name") == config['metadata']['type']][0].getAttribute("content")
 
     _object['content']['byline'] = {}
-    _object['content']['byline']['name'] = [metadata for metadata in metadatas if metadata.getAttribute("name") == "SAXo-Author"][0].getAttribute("content")
-    _object['content']['byline']['email'] = [metadata for metadata in metadatas if metadata.getAttribute("name") == "SAXo-AuthorEmail"][0].getAttribute("content")
+    _object['content']['byline']['name'] = [metadata for metadata in metadatas if metadata.getAttribute("name") == config['metadata']['name']][0].getAttribute("content")
+    _object['content']['byline']['email'] = [metadata for metadata in metadatas if metadata.getAttribute("name") == config['metadata']['email']][0].getAttribute("content")
 
-    _object['content']['page'] = int([metadata for metadata in metadatas if metadata.getAttribute("name") == "SAXo-SectionPageNumber"][0].getAttribute("content"))
+    _object['content']['page'] = int([metadata for metadata in metadatas if metadata.getAttribute("name") == config['metadata']['page']][0].getAttribute("content"))
 
-    _object['content']['nmId'] = [metadata for metadata in metadatas if metadata.getAttribute("name") == "SAXo-InternalId"][0].getAttribute("content")
+    _object['content']['nmId'] = [metadata for metadata in metadatas if metadata.getAttribute("name") == config['metadata']['nmid']][0].getAttribute("content")
 
     return _object
 
 
 def parse_docdata(docdata):
     """ Returns needed information from docdata including release date
-
     :param docdata:
     :return:
     """
@@ -91,7 +90,6 @@ def parse_docdata(docdata):
 
 def parse_pubdata(pubdata):
     """ Returns needed information from pubdata including publisher
-
     :param pubdata:
     :return:
     """
@@ -105,7 +103,6 @@ def parse_pubdata(pubdata):
 
 def parse_body_content(content):
     """ Returns needed information from body including all paragraphs, and subheaders
-
     :param content:
     :return:
     """
@@ -128,7 +125,6 @@ def parse_body_content(content):
 
 def parse_body_head(head):
     """ Returns needed information from head including title and trompet
-
     :param head:
     :return:
     """
@@ -142,10 +138,8 @@ def parse_body_head(head):
 
     return _object
 
-
 def parse_body(body_element):
     """Calls the needed methods to extract information from the body, and merges it into one object
-
     :param body_element:
     :return:
     """
@@ -193,4 +187,3 @@ if __name__ == '__main__':
     if output_path is not None:
         with codecs.open(output_path, 'w', encoding="utf-8") as outfile:
             json.dump(_object, outfile, indent=4, ensure_ascii=False)
-
