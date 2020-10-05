@@ -22,3 +22,8 @@ The tests for a given file/class is grouped in a file named '_test\_{name\_of\_f
 _setUp_ is executed before every test and _tearDown_ is executed after each test. _setUp_ is used to avoid duplicate set up code for the tests in the file, as they often use similar or identical prerequisite data. _tearDown_ is used to dispose of any objects or structures that otherwise could use up memory.
 
 It is also possible to set up test suites as well, allowing us to set the execution order for the tests and add conditions for what test to be executed.
+
+## Requirements
+```
+pip freeze > requirements.txt
+```
