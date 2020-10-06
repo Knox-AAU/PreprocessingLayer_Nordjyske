@@ -11,7 +11,7 @@ class Byline:
     ----------
     name : str
         the author name (default "")
-    email : str
+    email : str, optional
         the author email (default "")
     """
 
