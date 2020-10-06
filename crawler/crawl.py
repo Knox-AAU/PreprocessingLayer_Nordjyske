@@ -60,7 +60,7 @@ def run_crawler(arg_object):
             # checks if it is a .xml file. if true, the parser for .nitf parser is called
             if ".xml" in file:
                 output_this_folder.append(parse(f"{file}"))
-        name = folder.split("/")[-1]
+        name = folder['path'].split("/")[-1]
         output(output_this_folder, f"{name}.json")
 
 
