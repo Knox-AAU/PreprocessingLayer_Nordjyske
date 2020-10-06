@@ -14,14 +14,17 @@ class TesseractModule:
         :return: A matrix with the word and the corresponding confidence score
         """
         if path is None:
+            raise TypeError
+        try:
+            image = self.__load_file(path)
+            arr_all_data = pytesseract.image_to_data(image, lang=language)
+            data_matrix = self.__conf_str_to_matrix(arr_all_data)
+            data_matrix = self.__save_conf_and_text(data_matrix)
+            data_matrix = self.__remove_hyphens(data_matrix)
+            return data_matrix
+        except FileNotFoundError:
+            print("The image was not found in the path: " + path)
             return None
-        image = self.__load_file(path)
-        arr_all_data = pytesseract.image_to_data(image, lang=language)
-        data_matrix = self.__conf_str_to_matrix(arr_all_data)
-        data_matrix = self.__save_conf_and_text(data_matrix)
-        data_matrix = self.__remove_hyphens(data_matrix)
-
-        return data_matrix
 
     @staticmethod
     def __load_file(path):
@@ -29,8 +32,6 @@ class TesseractModule:
         :param path: The path of the file
         :return: The file in RGB format
         """
-        if path is None:
-            return None
         img = Image.open(path).convert("L")
         return img
 
@@ -151,5 +152,9 @@ path1 = "testImages/1988.jp2"
 path2 = "testImages/2017.jpg"
 path3 = "testImages/udsnit2.png"
 
-matrix = tesseract_module.run_tesseract_on_image(path3, "dan")
-tesseract_module.debug_prints(matrix)
+# todo: indsæt nedenstående i crawler.py
+try:
+    matrix = tesseract_module.run_tesseract_on_image("path3", "dan")
+    # tesseract_module.debug_prints(matrix)
+except TypeError:
+    print("No image path was given")
