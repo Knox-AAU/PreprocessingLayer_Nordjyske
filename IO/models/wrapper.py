@@ -29,10 +29,10 @@ class Wrapper:
         self.generator = values.get("generator", Generator)
         self.content = values.get("content", None)
 
-    def setContent(self, obj):
+    def set_content(self, obj):
         # TODO: Validate type (Maybe interface?)
         self.content = obj
 
-    def toJSON(self):
+    def to_json(self):
         return json.dumps(self, default=IOHandler.IOHandler.convert_to_dict,
                           sort_keys=False, indent=4)
