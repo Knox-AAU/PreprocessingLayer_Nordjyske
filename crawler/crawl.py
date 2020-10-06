@@ -59,9 +59,10 @@ def run_crawler(arg_object):
                 print("Tesseract not implemented yet.")
             # checks if it is a .xml file. if true, the parser for .nitf parser is called
             if ".xml" in file:
+                print(f"Parsing {file}...")
                 output_this_folder.append(parse(f"{file}"))
         name = folder['path'].split("/")[-1]
-        output(output_this_folder, f"{name}.json")
+        output(output_this_folder, f"./output/{name}.json") #todo
 
 
 def date_to_int(a):
