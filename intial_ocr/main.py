@@ -26,10 +26,11 @@ def run_tesseract_on_image(img, language='dan'):
     if img is None:
         return None
     arr_all_data = pytesseract.image_to_data(img, lang=language)
-    matrix = conf_str_to_matrix(arr_all_data)
-    matrix = save_conf_and_text(matrix)
+    data_matrix = conf_str_to_matrix(arr_all_data)
+    data_matrix = save_conf_and_text(data_matrix)
+    data_matrix = remove_hyphens(data_matrix)
 
-    return matrix
+    return data_matrix
 
 
 def conf_str_to_matrix(line):
@@ -97,6 +98,32 @@ def get_average_conf_from_matrix(data_matrix):
     return num / length
 
 
+def remove_hyphens(data_matrix):
+    """ Removes all the hyphens that are between the words
+    :param data_matrix:
+    :return:
+    """
+
+    # Gør så den kun fjerner sidste bindestreg og ikke alle
+    length = len(data_matrix)
+    word_replaced = False
+    remove_index = []
+
+    for index in range(length):
+        word = data_matrix[index][1]
+        if word_replaced:
+            remove_index.append(index)
+            word_replaced = False
+            continue
+        if word.endswith("-"):
+            data_matrix[index][1] = word.replace("-", data_matrix[index + 1][1])
+            word_replaced = True
+
+    for index in range(len(remove_index)):
+        data_matrix.remove(data_matrix[remove_index[index] - index])
+    return data_matrix
+
+
 def debug_prints(data_matrix):
     print_text_from_matrix(data_matrix)
     average_conf = get_average_conf_from_matrix(data_matrix)
@@ -107,8 +134,8 @@ img4 = Image.open("testImages/1988.jp2").convert("RGB")
 img5 = Image.open("testImages/test2.jpg")
 
 # matrix = run_tesseract_on_image(img5, 'eng')
-matrix = run_tesseract_on_image(img4, 'dan')
-debug_prints(matrix)
+ocr_matrix = run_tesseract_on_image(img4, 'dan')
+debug_prints(ocr_matrix)
 
 # text = pytesseract.image_to_string(img5, lang='dan')
 # text = pytesseract.image_to_data(img5, lang='eng')
