@@ -11,7 +11,10 @@ python __init__.py -from 2020-04-10 --clearcache
 import argparse
 import math
 import re
+import sys
+sys.path.append("../")
 from crawler.crawl import run_crawler
+
 
 def perfect_square(string):
      value = int(string)
