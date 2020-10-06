@@ -93,17 +93,17 @@ class Article:
         Prints the animals name and what sound it makes
     """
 
-    id: int = 0
-    title: str = ""
-    trompet: str = ""
-    byline: Byline = Byline
-    paragraphs: list = []
-    confidence: float = 1.0
-    publisher: str = ""
-    publishedAt: str = ""
-    publication: str = ""
-    extractedFrom: list = []
-    page: int = 0
+    id: int
+    title: str
+    trompet: str
+    byline: Byline
+    paragraphs: list
+    confidence: float
+    publisher: str
+    publishedAt: str
+    publication: str
+    extractedFrom: list
+    page: int
 
     def __init__(self, values: dict = None, **kwargs):
         """
@@ -125,7 +125,7 @@ class Article:
         self.id = values.get("id", 0)
         self.title = values.get("title", "")
         self.trompet = values.get("trompet", "")
-        self.byline = values.get("byline", Byline)
+        self.byline = values.get("byline", Byline())
         self.paragraphs = values.get("paragraphs", [])
 
     def add_paragraph(self, paragraph):
