@@ -99,12 +99,10 @@ def get_average_conf_from_matrix(data_matrix):
 
 
 def remove_hyphens(data_matrix):
-    """ Removes all the hyphens that are between the words
-    :param data_matrix:
-    :return:
+    """ Removes all the hyphens that are between two words on different lines
+    :param data_matrix: The matrix containing the words
+    :return: A matrix with the hyphens before new-line removed
     """
-
-    # Gør så den kun fjerner sidste bindestreg og ikke alle
     length = len(data_matrix)
     word_replaced = False
     remove_index = []
@@ -116,12 +114,24 @@ def remove_hyphens(data_matrix):
             word_replaced = False
             continue
         if word.endswith("-"):
-            data_matrix[index][1] = word.replace("-", data_matrix[index + 1][1])
+            data_matrix[index][1] = replace_last(word, "-", data_matrix[index + 1][1])
             word_replaced = True
 
     for index in range(len(remove_index)):
         data_matrix.remove(data_matrix[remove_index[index] - index])
+
     return data_matrix
+
+
+def replace_last(word, old_char, new_char):
+    """ Replaces the last occurrence of old_char with new_char
+    :param word: The word to be changed
+    :param old_char: The character to be removed
+    :param new_char: The character/string to replace old_char
+    :return: A word containing the replaced word
+    """
+    head, _sep, tail = word.rpartition(old_char)
+    return head + new_char + tail
 
 
 def debug_prints(data_matrix):
