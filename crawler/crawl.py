@@ -20,7 +20,7 @@ def run_crawler(arg_object):
         folders = find_folders_recursively(arg_object.path)
         pprint(folders)
         # Sorts the folders after year,month, date
-        folders.sort(key=lambda folder: int(str(folder.year) + str(folder.month).zfill(2) + str(folder.date).zfill(2)))
+        folders.sort(key=lambda folder: int(str(folder['year']) + str(folder['month']).zfill(2) + str(folder['date']).zfill(2)))
         output(folders, config['structure']['cache_file'])
     else:
         # load folders from folders.json
