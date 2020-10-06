@@ -8,19 +8,26 @@ A test is defined as seen below:
 	def test_{method_name}_{expected_answer}:
 		assert method(par)
 
-The tests for a given file/class is grouped in a file named '_test\_{name\_of\_file/class}.py_'. Each of the test files can have a _fixture_ that fucntions as the specialized _setUp_ and _tearDown_ methods in other frameworks. In _pytest_, such a method contains both _setUp_ and _tearDown_. An example can be seen below:
+The tests for a given file/class is grouped in a file named '_test\_{name\_of\_file/class}.py_'. Each of the test files can have specialized _setUp_ and _tearDown_ methods as seen below:
 
-	@pytest.fixture(autouse=True)
-	def transact(self, {optional_parameters}):
-			# Code to be executed before each test
-			...
+	def setup_method(self, method):
+		""" setup any state tied to the execution of the given method in a
+		class.  setup_method is invoked for every test method of a class.
+		"""
 
-			yield
+	...
 
-			# Code to be executed after each test
-			...
+	{tests}
 
-The ficture is used to avoid duplicate set up code for the tests in the file, as they often use similar or identical prerequisite data (set up part). Furthermore, it is used to dispose of any objects or structures that otherwise could use up memory (tear down part).
+	...
+
+
+	def teardown_method(self, method):
+		""" teardown any state that was previously setup with a setup_method
+		call.
+		"""
+
+The _setup\_method_ method is used to avoid duplicate set up code for the tests in the file, as they often use similar or identical prerequisite data, such as initialized objects. Furthermore, the _teardown\_method_ is used to dispose of any objects or structures that otherwise could be left behind as garbage.
 
 ### (Mocking)
 
