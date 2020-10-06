@@ -5,6 +5,19 @@ import importlib
 
 
 class IOHandler:
+    """
+    A class used to handle IO
+
+    ...
+
+    Attributes
+    ----------
+    schema : str
+        path to schema used
+    generator : Generator
+        a object containing information about the generator.
+    """
+
     schema = ""
     generator = None
 
@@ -14,6 +27,21 @@ class IOHandler:
             self.generator = generator
 
     def write_json(self, obj, filepath):
+        """Reads an json file and converts into a object
+
+        Parameters
+        ----------
+        obj : object
+            the object to export
+        filepath : str
+            the path to the json file to write.
+
+        Raises
+        ------
+        OSError
+            If write the json file fails
+        """
+
         # TODO: Validate path?
         # if not path.isdir(filepath):
         #    raise IsADirectoryError("Not a directory...")
@@ -34,24 +62,42 @@ class IOHandler:
 
     @staticmethod
     def read_json(filepath):
+        """Reads an json file and converts into a object
+
+        It converts the input json to the corresponding objects based on the added __class__ and __module__ properties
+        injected into the exported json.
+
+        Parameters
+        ----------
+        filepath : str
+            the path to the json file to read.
+
+        Raises
+        ------
+        FileExistsError
+            If no file is found at the path.
+        """
+
         if not path.exists(filepath):
             raise FileExistsError("File does not exist...")
 
-        with open(filepath, 'r') as json_file:
-            data = json.load(json_file)
-            # TODO validate json against schema.
+        try:
+            with open(filepath, 'r') as json_file:
+                data = json.load(json_file)
+                # TODO validate json against schema.
 
-        obj = json.loads(json.dumps(data), object_hook=IOHandler.dict_to_obj)
+            the_obj = json.loads(json.dumps(data), object_hook=IOHandler.dict_to_obj)
+        except OSError:
+            raise OSError("Failed to read file...")
+        # TODO: Add more except for json loads
 
-        return obj
-
-
-
-    # https://medium.com/python-pandemonium/json-the-python-way-91aac95d4041
+        return the_obj
 
     @staticmethod
     def convert_to_dict(obj):
-        """
+        """Convert an object to dict adding required json properties
+
+        Source: https://medium.com/python-pandemonium/json-the-python-way-91aac95d4041
 
         A function takes in a custom object and returns a dictionary representation of the object.
         This dict representation includes meta data such as the object's module and class names.
@@ -70,7 +116,10 @@ class IOHandler:
 
     @staticmethod
     def dict_to_obj(our_dict):
-        """
+        """Convert dict to json removing the added class properties
+
+        Source: https://medium.com/python-pandemonium/json-the-python-way-91aac95d4041
+
         Function that takes in a dict and returns a custom object associated with the dict.
         This function makes use of the "__module__" and "__class__" metadata in the dictionary
         to know which object type to create.
