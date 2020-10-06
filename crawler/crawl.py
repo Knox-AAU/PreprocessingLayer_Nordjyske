@@ -48,7 +48,7 @@ def run_crawler(arg_object):
 
     # Loops through all the folders in the path and their respective files.
     for folder in folders:
-        files = find_relevant_files_in_directory(folder.path)
+        files = find_relevant_files_in_directory(folder['path'])
         output_this_folder = []
         for file in files:
             # checks if it is a .jp2 file. if true, the ocr is called
@@ -109,7 +109,7 @@ def output(folders, file_name):
 
 
 def load(directory):
-    """
+    """Loads a json file and returns its data
 
     :param directory:
     :return:
@@ -120,6 +120,11 @@ def load(directory):
 
 
 def find_relevant_files_in_directory(directory):
+    """
+
+    :param directory:
+    :return:
+    """
     found_files = []
     files = find_all_files_recursively(directory)
     pprint(files)
