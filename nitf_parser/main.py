@@ -62,15 +62,36 @@ def parse_metadata(metadatas):
 
     _object = {'content': {}}
 
-    _object['type'] = [metadata for metadata in metadatas if metadata.getAttribute("name") == config['metadata']['type']][0].getAttribute("content")
+    # get type attribute
+    metadata = [metadata for metadata in metadatas if metadata.getAttribute("name") == config['metadata']['type']]
+    _object['type'] = ""
+    if len(metadata) != 0:
+        _object['type'] = metadata[0].getAttribute('content')
 
+    # get name attribute
     _object['content']['byline'] = {}
-    _object['content']['byline']['name'] = [metadata for metadata in metadatas if metadata.getAttribute("name") == config['metadata']['name']][0].getAttribute("content")
-    _object['content']['byline']['email'] = [metadata for metadata in metadatas if metadata.getAttribute("name") == config['metadata']['email']][0].getAttribute("content")
+    metadata = [metadata for metadata in metadatas if metadata.getAttribute("name") == config['metadata']['name']]
+    _object['content']['byline']['name'] = ""
+    if len(metadata) != 0:
+        _object['content']['byline']['name'] = metadata[0].getAttribute('content')
 
-    _object['content']['page'] = int([metadata for metadata in metadatas if metadata.getAttribute("name") == config['metadata']['page']][0].getAttribute("content"))
+    # get email attribute
+    metadata = [metadata for metadata in metadatas if metadata.getAttribute("name") == config['metadata']['email']]
+    _object['content']['byline']['email'] = ""
+    if len(metadata) != 0:
+        _object['content']['byline']['email'] = metadata[0].getAttribute('content')
 
-    _object['content']['nmId'] = [metadata for metadata in metadatas if metadata.getAttribute("name") == config['metadata']['nmid']][0].getAttribute("content")
+    # get page attribute
+    metadata = [metadata for metadata in metadatas if metadata.getAttribute("name") == config['metadata']['page']]
+    _object['content']['page'] = ""
+    if len(metadata) != 0:
+        _object['content']['page'] = metadata[0].getAttribute('content')
+
+    # get nmid attribute
+    metadata = [metadata for metadata in metadatas if metadata.getAttribute("name") == config['metadata']['nmid']]
+    _object['content']['nmId'] = ""
+    if len(metadata) != 0:
+        _object['content']['nmId'] = metadata[0].getAttribute('content')
 
     return _object
 
@@ -129,7 +150,10 @@ def parse_body_head(head):
     """
     _object = {'content': {}}
 
-    _object['content']['title'] = head.getElementsByTagName('nitf:hl1')[0].firstChild.nodeValue
+    hl1s = head.getElementsByTagName('nitf:hl1')
+    _object['content']['title'] = ""
+    if len(hl1s) > 0:
+        _object['content']['title'] = hl1s[0].firstChild.nodeValue
 
     hl2s = head.getElementsByTagName('nitf:hl2')
     if len(hl2s) > 0:
@@ -151,6 +175,30 @@ def parse_body(body_element):
 
     return _object
 
+def parse(path,output_path=None):
+    _object = {'schemaLocation': 'http://iptc.org/std/NITF/2006-10-18/', 'schemaVersion': 1.0, 'generator': {
+        "app": "The app",
+        "version": "1.0.0",
+        "generatedAt": datetime.now().isoformat(),
+
+    }, "extractedFrom": [
+        path
+    ]
+               }
+
+    xmldoc = minidom.parse(path)
+    itemlist = xmldoc.getElementsByTagName('nitf:nitf')
+
+    headerElement = itemlist[0].getElementsByTagName('nitf:head')[0]
+    _object = merge(_object, parse_header(headerElement))
+
+    bodyElements = itemlist[0].getElementsByTagName('nitf:body')
+
+    if len(bodyElements) != 0:
+        _object = merge(_object, parse_body(bodyElements[0]))
+
+    return _object
+
 
 if __name__ == '__main__':
     args = sys.argv
@@ -162,27 +210,8 @@ if __name__ == '__main__':
     if len(args) == 3:
         output_path = args[2]
 
+    parsed = parse(path, output_path)
 
-    _object = {'schemaLocation': 'http://iptc.org/std/NITF/2006-10-18/', 'schemaVersion': 1.0, 'generator': {
-        "app": "The app",
-        "version": "1.0.0",
-        "generatedAt": datetime.now().isoformat(),
-
-    }, "extractedFrom": [
-            path
-        ]
-               }
-
-    xmldoc = minidom.parse(path)
-    itemlist = xmldoc.getElementsByTagName('nitf:nitf')
-
-    headerElement = itemlist[0].getElementsByTagName('nitf:head')[0]
-    _object = merge(_object, parse_header(headerElement))
-
-    bodyElement = itemlist[0].getElementsByTagName('nitf:body')[0]
-    _object = merge(_object, parse_body(bodyElement))
-
-    print(_object)
     if output_path is not None:
         with codecs.open(output_path, 'w', encoding="utf-8") as outfile:
-            json.dump(_object, outfile, indent=4, ensure_ascii=False)
+            json.dump(parsed, outfile, indent=4, ensure_ascii=False)
