@@ -1,13 +1,7 @@
-#from pgmagick import Image
-
-#img = Image('CB_TM432.jp2') # Input Image
-#img.write('CB_TM432.jpeg')  # Output Image
 import configparser
 import os
 import re
-import datetime
 import json
-import shutil
 from os import path
 from pprint import pprint
 from xml.dom import minidom
@@ -18,6 +12,9 @@ config.read('config.ini')
 
 
 def run_crawler(arg_object):
+    """ Runs the crawler for all specified file formats and call their respected modules
+    :param arg_object:
+    """
     if arg_object.clearcache or not path.exists(config['structure']['cache_file']):
         # recalculate folders.json
         folders = find_folders_recursively(arg_object.path)
@@ -49,7 +46,7 @@ def run_crawler(arg_object):
 
     output(folders, "test.json")
 
-    folders = [arg_object.path] #todo for testing, remove this
+    #folders = [arg_object.path] #todo for testing, remove this
     for folder in folders:
         files = find_relevant_files_in_directory(folder)
 
@@ -61,14 +58,23 @@ def run_crawler(arg_object):
                 #output_this_folder.append({"implement": "none"})
             if ".xml" in file:
                 output_this_folder.append(parse(f"{file}"))
-        output(output_this_folder, f"hej.json")
+        output(output_this_folder, f"output.json")
 
 
 def string_to_int(a):
+    """ Simply converts string to int
+    :param a:
+    :return:
+    """
     return int(str(a['year']) + str(a['month']).zfill(2) + str(a['date']).zfill(2))
 
 
 def find_folders_recursively(directory):
+    """
+
+    :param directory:
+    :return:
+    """
     print("Searching in "+directory)
     dirs = next(os.walk(directory))[1]
 
@@ -93,6 +99,11 @@ def find_folders_recursively(directory):
 
 
 def output(folders, file_name):
+    """
+    Dumps the
+    :param folders:
+    :param file_name:
+    """
     with open(file_name, 'w') as f:
         json.dump(folders, f, indent=4)
 
