@@ -1,14 +1,29 @@
 # SW517e20
 
+## General
+
+### Naming conventions
+
+The naming of different components follow the Python naming conventions, which can be seen [here](https://www.python.org/dev/peps/pep-0008/), which has been boiled down [here](https://visualgit.readthedocs.io/en/latest/pages/naming_convention.html).
+
 ## Unit testing
 The unit tests for the project are structured according to the _pytest_ documentation found [here](https://docs.pytest.org/en/stable/contents.html#toc).
+
+### Setup
+To set up _pytest_ in you virtual environment, you should add _pytest==6.1.1_ to the _requirements.txt_ for the module, if not already present, and then set the testing framework to _pytest_. In PyCharm, this is done under _settings > Tools > Python Integrated Tools_.
+
+The folder structure of the tests is _{module\_folder} > unitTests > {test\_ClassToBeTested}_.
+
+### Defining tests
 
 A test is defined as seen below:
 
 	def test_{method_name}_{expected_answer}:
 		assert method(par)
 
-The tests for a given file/class is grouped in a file named '_test\_{name\_of\_file/class}.py_'. Each of the test files can have specialized _setUp_ and _tearDown_ methods as seen below:
+To speed up the process of creating tests, some IDE's can generate the tests for an entire class or a specific method.
+
+The tests for a given file/class is grouped in a file named '_test\_{name\_of\_file/class}.py_'. The class within the file should follow _Test{TestedClass}_. Each of the test files can have specialized _setUp_ and _tearDown_ methods as seen below:
 
 	def setup_method(self, method):
 		""" setup any state tied to the execution of the given method in a
@@ -27,7 +42,7 @@ The tests for a given file/class is grouped in a file named '_test\_{name\_of\_f
 		call.
 		"""
 
-The _setup\_method_ method is used to avoid duplicate set up code for the tests in the file, as they often use similar or identical prerequisite data, such as initialized objects. Furthermore, the _teardown\_method_ is used to dispose of any objects or structures that otherwise could be left behind as garbage.
+The _setup\_method_ method is used to avoid duplicate set up code for the tests in the file, as they often use similar or identical prerequisite data, such as initialized objects. The _teardown\_method_ is used to dispose of any objects or structures that otherwise could be left behind as garbage.
 
 ### (Mocking)
 
