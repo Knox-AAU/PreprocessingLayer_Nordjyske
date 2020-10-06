@@ -72,32 +72,6 @@ def save_conf_and_text(data_matrix):
     return new_matrix
 
 
-def print_text_from_matrix(data_matrix):
-    """ Prints the text from the matrix
-    :param data_matrix: The matrix containing the words
-    """
-    length = len(data_matrix)
-
-    for index in range(length):
-        print(data_matrix[index][1], end=' ')
-    print()
-
-
-def get_average_conf_from_matrix(data_matrix):
-    """ Gets the avergae of the confidence score
-    :param data_matrix: The matrix containing the confidence score
-    :return: A float with the average confidence score
-    """
-    length = len(data_matrix)
-    num = 0
-
-    for index in range(length):
-        temp_num = int(data_matrix[index][0])
-        if 0 <= temp_num <= 100:
-            num += temp_num
-    return num / length
-
-
 def remove_hyphens(data_matrix):
     """ Removes all the hyphens that are between two words on different lines
     :param data_matrix: The matrix containing the words
@@ -134,23 +108,44 @@ def replace_last(word, old_char, new_char):
     return head + new_char + tail
 
 
+def print_text_from_matrix(data_matrix):
+    """ Prints the text from the matrix
+    :param data_matrix: The matrix containing the words
+    """
+    length = len(data_matrix)
+
+    for index in range(length):
+        print(data_matrix[index][1], end=' ')
+    print()
+
+
+def get_average_conf_from_matrix(data_matrix):
+    """ Gets the average of the confidence score
+    :param data_matrix: The matrix containing the confidence score
+    :return: A float with the average confidence score
+    """
+    length = len(data_matrix)
+    num = 0
+
+    for index in range(length):
+        temp_num = int(data_matrix[index][0])
+        if 0 <= temp_num <= 100:
+            num += temp_num
+    return num / length
+
+
 def debug_prints(data_matrix):
+    """ Used to debug the output. todo: Delete before release
+    :param data_matrix: The matrix containing confidence score and words
+    """
     print_text_from_matrix(data_matrix)
     average_conf = get_average_conf_from_matrix(data_matrix)
     print(average_conf)
+    cv2.waitKey(0)
 
 
-img4 = Image.open("testImages/1988.jp2").convert("RGB")
-img5 = Image.open("testImages/test2.jpg")
+img4 = Image.open("testImages/1988.jp2").convert("L")
+img5 = Image.open("testImages/2017.jpg").convert("L")
 
-# matrix = run_tesseract_on_image(img5, 'eng')
-ocr_matrix = run_tesseract_on_image(img4, 'dan')
+ocr_matrix = run_tesseract_on_image(img5, 'dan')
 debug_prints(ocr_matrix)
-
-# text = pytesseract.image_to_string(img5, lang='dan')
-# text = pytesseract.image_to_data(img5, lang='eng')
-# text = pytesseract.image_to_data(img, lang='dan')
-# print(text)
-
-# cv2.imshow("Img", img)
-cv2.waitKey(0)
