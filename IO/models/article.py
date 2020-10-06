@@ -94,9 +94,10 @@ class Article:
     """
 
     id: int
-    title: str
-    trompet: str
+    headline: str
+    subhead: str
     byline: Byline
+    lead: str
     paragraphs: list
     confidence: float
     publisher: str
@@ -123,9 +124,10 @@ class Article:
         self.publication = values.get("publication", "")
         self.page = values.get("page", 0)
         self.id = values.get("id", 0)
-        self.title = values.get("title", "")
-        self.trompet = values.get("trompet", "")
+        self.headline = values.get("title", "")
+        self.subhead = values.get("subhead", "")
         self.byline = values.get("byline", Byline())
+        self.lead = values.get("lead", "")
         self.paragraphs = values.get("paragraphs", [])
 
     def add_paragraph(self, paragraph):

@@ -1,7 +1,6 @@
 {
     "type": "article",
-    "schemaLocation": "http://iptc.org/std/NITF/2006-10-18/",
-    "schemaVersion": 1.0,
+    "schema": "http://iptc.org/std/NITF/2006-10-18/",
     "generator": {
         "app": "The app",
         "version": "1.0.0",
@@ -17,8 +16,9 @@
         "publication": "Thisted Dagblad",
         "id": 1014466314,
         "page": 2,
-        "title": "Stigning i underretninger",
-        "trompet": "omsorg: Det skyldes blandt andet, at udsatte børn og unge bedre spottes og et øget samfundspres",
+        "headline": "Stigning i underretninger",
+        "subhead": "omsorg: Det skyldes blandt andet, at udsatte børn og unge bedre spottes og et øget samfundspres",
+        "lead": "Lead text",
         "byline": {
             "name": "Emma Toftelund Poulsen",
             "email": "ep50@nordjyske.dk"
