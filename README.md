@@ -27,7 +27,7 @@ The ficture is used to avoid duplicate set up code for the tests in the file, as
 ### (Test suite)
 It is also possible to set up test suites as well, allowing us to set the execution order for the tests and add conditions for what test to be executed.
 
-### Virtual environment
+# Virtual environment
 
 The virtual environment should just be set up for each module, as it should never be necessary to dublicate in other modules with other dependencies. However, the requirements for the virtual environment should be exported to the _requirements.txt_ file and this file should then be loaded when ever the given module is being set up.
 
