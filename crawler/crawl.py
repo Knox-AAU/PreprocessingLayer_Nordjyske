@@ -48,14 +48,14 @@ def run_crawler(arg_object):
 
     # Loops through all the folders in the path and their respective files.
     for folder in folders:
-        files = find_relevant_files_in_directory(folder)
+        files = find_relevant_files_in_directory(folder.path)
         output_this_folder = []
         for file in files:
+            # checks if it is a .jp2 file. if true, the ocr is called
             if ".jp2" in file:
                 #todo call module for tesseract
                 print("Tesseract not implemented yet.")
-                #output_this_folder.append({"implement": "none"})
-            # checks if it is a xml file. if true, the parser for .nitf parser is called
+            # checks if it is a .xml file. if true, the parser for .nitf parser is called
             if ".xml" in file:
                 output_this_folder.append(parse(f"{file}"))
         output(output_this_folder, f"output.json")
@@ -109,6 +109,11 @@ def output(folders, file_name):
 
 
 def load(directory):
+    """
+
+    :param directory:
+    :return:
+    """
     with open(directory) as json_file:
         data = json.load(json_file)
     return data
