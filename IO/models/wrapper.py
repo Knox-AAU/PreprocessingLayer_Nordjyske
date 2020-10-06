@@ -4,7 +4,7 @@ import IOHandler
 
 class Generator:
     """
-    A class used to represent a Generator
+    A class used to represent the application used to generate the wrapper
 
     ...
 
