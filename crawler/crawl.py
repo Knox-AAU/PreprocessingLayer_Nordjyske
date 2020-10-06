@@ -18,6 +18,7 @@ def run_crawler(arg_object):
     if arg_object.clearcache or not path.exists(config['structure']['cache_file']):
         # recalculate folders.json
         folders = find_folders_recursively(arg_object.path)
+        pprint(folders)
         # Sorts the folders after year,month, date
         folders.sort(key=lambda folder: int(str(folder.year) + str(folder.month).zfill(2) + str(folder.date).zfill(2)))
         output(folders, config['structure']['cache_file'])
@@ -95,6 +96,7 @@ def find_folders_recursively(directory):
             # Add to list to return
             found_folders.append(
                 {
+                    #todo hardcode
                     'path': directory + "/" + cdir,
                     'year': int(cdir[0:4]),
                     'month': int(cdir[5:7]),
@@ -163,10 +165,12 @@ def find_all_files_recursively(directory):
     :return: list of files
     """
     print(f"Searching directory {directory} for files..")
-    #
     walk = next(os.walk(directory))
+    # gets files from specified directory
     files = walk[2]
+    # Goes through all directories from the found directories
     for walking_dir in walk[1]:
+        # calls method recursively to get sub directories
         found_files = find_all_files_recursively(directory + "/" + walking_dir)
         for file in found_files:
             files.append(walking_dir+"/"+file)
