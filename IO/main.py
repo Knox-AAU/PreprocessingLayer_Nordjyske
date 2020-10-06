@@ -1,5 +1,4 @@
 from models.article import *
-from models.wrapper import *
 from IOHandler import *
 import json
 
@@ -28,7 +27,7 @@ def print_hi(name):
         p.value = f'This is paragraph number {x}'
         article.addParagraph(p)
 
-    print(article.paragraphs)
+    # print(article.paragraphs)
 
     wrapper.setContent(article)
 
@@ -38,8 +37,8 @@ def print_hi(name):
 
     handler = IOHandler(Generator(app="This app", version=1.0), "hest")
     handler.Export(wrapper, "/Users/tlorentzen/Documents/GitHub/SW517e20/output.json")
-    hest = handler.Import(Article, "/Users/tlorentzen/Documents/GitHub/SW517e20/output.json")
-
+    hest = handler.Import("/Users/tlorentzen/Documents/GitHub/SW517e20/output.json")
+    print(type(hest))
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
