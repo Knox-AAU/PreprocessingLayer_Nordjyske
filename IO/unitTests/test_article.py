@@ -1,8 +1,7 @@
 import pytest
+import json
 
-from IO.models.article import *
-from jsonschema import validate
-import requests, json
+from models.article import Article, Paragraph
 
 
 class TestArticle:
@@ -14,12 +13,12 @@ class TestArticle:
         """
         self.article = Article()
 
-    def test_add_paragraph_gives_article_with_paragraph_on_paragraph(self):
+    def test_add_paragraph_adds_paragraph_given_paragraph(self):
         paragraph = Paragraph()
         self.article.add_paragraph(paragraph)
         assert self.article.paragraphs.__len__() == 1
 
-    def test_add_paragraph_gives_article_without_paragraph_on_string(self):
+    def test_add_paragraph_does_not_add_paragraph_given_string(self):
         self.article.add_paragraph("string")
         assert self.article.paragraphs.__len__() < 1
 

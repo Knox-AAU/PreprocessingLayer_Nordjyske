@@ -58,10 +58,10 @@ class Wrapper:
         the object being exported
     """
 
-    type: str = ""
-    schemaLocation: str = ""
-    schemaVersion: float = 0.0
-    generator: Generator = Generator
+    type: str
+    schemaLocation: str
+    schemaVersion: float
+    generator: Generator
     content = None
 
     def __init__(self, values: dict = None, **kwargs):
@@ -78,7 +78,7 @@ class Wrapper:
         self.type = values.get("type", "")
         self.schemaLocation = values.get("schemaLocation", "")
         self.schemaVersion = values.get("schemaVersion", 0.0)
-        self.generator = values.get("generator", Generator)
+        self.generator = values.get("generator", Generator())
         self.content = values.get("content", None)
 
     def set_content(self, obj):
