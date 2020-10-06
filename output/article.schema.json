@@ -5,11 +5,8 @@
         "type": {
             "type": "string"
         },
-        "schemaLocation": {
+        "schema": {
             "type": "string"
-        },
-        "schemaVersion": {
-            "type": "number"
         },
         "generator": {
             "type": "object",
@@ -59,10 +56,13 @@
                 "page": {
                     "type": "integer"
                 },
-                "title": {
+                "headline": {
                     "type": "string"
                 },
-                "trompet": {
+                "subhead": {
+                    "type": "string"
+                },
+                "lead": {
                     "type": "string"
                 },
                 "byline": {
@@ -106,16 +106,19 @@
                 "publisher",
                 "publishedAt",
                 "publication",
+                "id",
                 "page",
-                "title",
+                "headline",
+                "subhead",
+                "lead",
+                "byline",
                 "paragraphs"
             ]
         }
     },
     "required": [
         "type",
-        "schemaLocation",
-        "schemaVersion",
+        "schema",
         "generator",
         "content"
     ]
