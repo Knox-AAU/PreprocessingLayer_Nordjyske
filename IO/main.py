@@ -18,7 +18,7 @@ def print_hi(name):
         p = Paragraph()
         p.kind = "paragraph"
         p.value = f'This is paragraph number {x}'
-        article.addParagraph(p)
+        article.add_paragraph(p)
 
     # print(article.paragraphs)
 
@@ -27,8 +27,8 @@ def print_hi(name):
     # print(out)  # Press ⌘F8 to toggle the breakpoint.
 
     handler = IOHandler(Generator(app="This app", version=1.0), "hest")
-    handler.Export(article, "/Users/tlorentzen/Documents/GitHub/SW517e20/output.json")
-    hest: Wrapper = handler.Import("/Users/tlorentzen/Documents/GitHub/SW517e20/output.json")
+    handler.write_json(article, "/Users/tlorentzen/Documents/GitHub/SW517e20/output.json")
+    hest: Wrapper = handler.read_json("/Users/tlorentzen/Documents/GitHub/SW517e20/output.json")
 
     # h = Wrapper(hest)
 
@@ -38,3 +38,4 @@ def print_hi(name):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     print_hi('PyCharm')
+

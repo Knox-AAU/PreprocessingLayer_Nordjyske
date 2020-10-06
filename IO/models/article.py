@@ -128,7 +128,7 @@ class Article:
         self.byline = values.get("byline", Byline)
         self.paragraphs = values.get("paragraphs", [])
 
-    def addParagraph(self, paragraph):
+    def add_paragraph(self, paragraph):
         """Add a paragraph the the article
 
         It simply adds a paragraph to the list of paragraphs on the article.
@@ -142,10 +142,11 @@ class Article:
         if isinstance(paragraph, Paragraph):
             self.paragraphs.append(paragraph)
 
-    def toJSON(self):
+    def to_json(self):
         """Converts the object to json string
 
         Properties are sorted and indented using 4 spaces.
         """
+
         return json.dumps(self, default=lambda o: o.__dict__,
                           sort_keys=True, indent=4)

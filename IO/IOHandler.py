@@ -13,8 +13,27 @@ class IOHandler:
         if isinstance(generator, Generator):
             self.generator = generator
 
-    # @staticmethod
-    def Import(self, filepath):
+    def write_json(self, obj, filepath):
+        # TODO: Validate path?
+        # if not path.isdir(filepath):
+        #    raise IsADirectoryError("Not a directory...")
+
+        wrapper = Wrapper()
+        wrapper.generator = self.generator
+        wrapper.schemaLocation = self.schema
+        wrapper.type = "article"
+        wrapper.set_content(obj)
+        data = wrapper.to_json()
+
+        try:
+            with open(filepath, 'w') as outfile:
+                outfile.write(data)
+            return True
+        except OSError:
+            raise Exception("Error writing json...")
+
+    @staticmethod
+    def read_json(filepath):
         if not path.exists(filepath):
             raise FileExistsError("File does not exist...")
 
@@ -26,31 +45,14 @@ class IOHandler:
 
         return obj
 
-    def Export(self, obj, filepath):
 
-        # TODO: Validate path?
-        # if not path.isdir(filepath):
-        #    raise IsADirectoryError("Not a directory...")
-
-        wrapper = Wrapper()
-        wrapper.generator = self.generator
-        wrapper.schemaLocation = self.schema
-        wrapper.type = "article"
-        wrapper.setContent(obj)
-        data = wrapper.toJSON()
-
-        try:
-            with open(filepath, 'w') as outfile:
-                outfile.write(data)
-            return True
-        except OSError:
-            raise Exception("Error writing json...")
 
     # https://medium.com/python-pandemonium/json-the-python-way-91aac95d4041
 
     @staticmethod
     def convert_to_dict(obj):
         """
+
         A function takes in a custom object and returns a dictionary representation of the object.
         This dict representation includes meta data such as the object's module and class names.
         """
