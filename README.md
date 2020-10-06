@@ -5,13 +5,13 @@ The unit tests for the project are structured according to the _pytest_ document
 
 A test is defined as seen below:
 
-	def test\_{method\_name}\_{expected\_answer}:
+	def test_{method_name}_{expected_answer}:
 		assert method(par)
 
 The tests for a given file/class is grouped in a file named '_test\_{name\_of\_file/class}.py_'. Each of the test files can have a _fixture_ that fucntions as the specialized _setUp_ and _tearDown_ methods in other frameworks. In _pytest_, such a method contains both _setUp_ and _tearDown_. An example can be seen below:
 
 	@pytest.fixture(autouse=True)
-	def transact(self, {_optional_parameters_}):
+	def transact(self, {optional_parameters}):
 			# Code to be executed before each test
 			...
 
@@ -29,7 +29,7 @@ It is also possible to set up test suites as well, allowing us to set the execut
 
 ## Virtual environment
 
-The virtual environment should just be set up for each module, as it should never be necessary to dublicate in other modules with other dependencies. However, the requirements for the virtual environment should be exported to the _requirements.txt_ file and this file should then be loaded when ever the given module is being set up.
+The virtual environment should just be set up for each module, as it should never be necessary to duplicate in other modules with other dependencies. However, the requirements for the virtual environment should be exported to the _requirements.txt_ file and this file should then be loaded when ever the given module is being set up.
 
 ### Handling requirements.txt
 
