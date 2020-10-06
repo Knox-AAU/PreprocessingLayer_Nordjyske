@@ -87,20 +87,23 @@ def find_folders_recursively(directory):
         print(pattern_string)
         regexs.append(re.compile(pattern_string))
     for cdir in dirs:
+        match = False
         for regex in regexs:
             if re.match(regex, cdir):
-                # Add to list to return
-                found_folders.append(
-                    {
-                        'path': directory + "/" + cdir,
-                        'year': int(cdir[0:4]),
-                        'month': int(cdir[5:7]),
-                        'date': int(cdir[8:10])
-                    }
-                )
-            else:
-                # extend recursively
-                found_folders.extend(find_folders_recursively(directory+"/"+cdir))
+                match = True
+        if match:
+            # Add to list to return
+            found_folders.append(
+                {
+                    'path': directory + "/" + cdir,
+                    'year': int(cdir[0:4]),
+                    'month': int(cdir[5:7]),
+                    'date': int(cdir[8:10])
+                }
+            )
+        else:
+            # extend recursively
+            found_folders.extend(find_folders_recursively(directory+"/"+cdir))
     return found_folders
 
 
