@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from xml.dom import minidom
 import configparser
 
