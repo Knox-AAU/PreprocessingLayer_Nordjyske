@@ -10,9 +10,8 @@ class IOHandler:
 
     def __init__(self, generator, schema):
         self.schema = schema
-        # print(type(generator))
-        # if isinstance(generator, Generator):
-        self.generator = generator
+        if isinstance(generator, Generator):
+            self.generator = generator
 
     # @staticmethod
     def Import(self, filepath):
@@ -21,24 +20,22 @@ class IOHandler:
 
         with open(filepath, 'r') as json_file:
             data = json.load(json_file)
-
             # TODO validate json against schema.
 
         obj = json.loads(json.dumps(data), object_hook=IOHandler.dict_to_obj)
-        # x = json.loads(data['content'], object_hook=lambda d: SimpleNamespace(**d))
-
 
         return obj
 
     def Export(self, obj, filepath):
 
+        # TODO: Validate path?
         # if not path.isdir(filepath):
         #    raise IsADirectoryError("Not a directory...")
 
         wrapper = Wrapper()
         wrapper.generator = self.generator
         wrapper.schemaLocation = self.schema
-        wrapper.type = Type.ARTICLE.value
+        wrapper.type = "article"
         wrapper.setContent(obj)
         data = wrapper.toJSON()
 
