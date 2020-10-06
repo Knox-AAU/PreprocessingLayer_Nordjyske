@@ -132,7 +132,6 @@ def find_relevant_files_in_directory(directory):
     :return: all found files that isn't in the blacklist/whitelist
     """
     found_files = []
-    #Fetch
     files = find_all_files_recursively(directory)
     pprint(files)
     blacklist = config['structure']['blacklist'].split(",")
@@ -155,12 +154,13 @@ def find_relevant_files_in_directory(directory):
 
 
 def find_all_files_recursively(directory):
-    """Recursivly finds all files in a directory
+    """Recursively finds all files in a directory
 
-    :param directory:
-    :return:
+    :param directory: path to directory
+    :return: list of files
     """
     print(f"Searching directory {directory} for files..")
+    #
     walk = next(os.walk(directory))
     files = walk[2]
     for walking_dir in walk[1]:
