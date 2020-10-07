@@ -1,21 +1,26 @@
-from models.article import *
+from models.publication import *
 from IOHandler import *
 import os
 
 
 def print_hi(name):
+    # Generate publication
+    publication = Publication()
+    publication.publisher = "Nordjyske Medie"
+    publication.published_at = "Some time"
+    publication.publication = "A newspaper"
+    publication.pages = 0
+
+    # Generate article
     article = Article()
     article.headline = "En god artikel"
-    article.subhead = None
+    article.subhead = ""
     article.lead = ""
     article.byline = Byline(name="Thomas", email="thomas@tlorentzen.net")
     article.extracted_from.append("Some file")
     article.confidence = 1.0
-    article.id = 6752342345
-    article.page = 64
-    article.publication = "Home made stuff"
-    article.publisher = "Me"
-    article.published_at = ""
+    article.id = 0
+    article.page = 0
 
     for x in range(10):
         p = Paragraph()
@@ -23,22 +28,17 @@ def print_hi(name):
         p.value = f'This is paragraph number {x}'
         article.add_paragraph(p)
 
-    # print(article.paragraphs)
+    publication.add_article(article)
 
-    # out = wrapper.toJSON()
-    # Use a breakpoint in the code line below to debug your script.
-    # print(out)  # Press ⌘F8 to toggle the breakpoint.
-
+    # Generate
     handler = IOHandler(Generator(app="This app", version=1.0), "hest")
     dirname = os.path.dirname(__file__)
     filename = os.path.join(dirname, 'output.json')
 
     with open(filename, 'w') as outfile:
-        handler.write_json(article, outfile)
+        handler.write_json(publication, outfile)
     with open(filename, 'r') as json_file:
         hest: Wrapper = handler.read_json(json_file)
-
-    # h = Wrapper(hest)
 
     print(hest.type)
 
@@ -46,4 +46,3 @@ def print_hi(name):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     print_hi('PyCharm')
-
