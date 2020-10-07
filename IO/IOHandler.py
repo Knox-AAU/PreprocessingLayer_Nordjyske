@@ -42,7 +42,7 @@ class IOHandler:
             If write the json file fails
         """
 
-        # TODO: Validate path?
+        # TODO: Validate path? Code below is for writing multiple files to directory
         # if not path.isdir(filepath):
         #    raise IsADirectoryError("Not a directory...")
 
