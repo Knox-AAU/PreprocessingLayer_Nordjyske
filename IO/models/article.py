@@ -142,8 +142,8 @@ class Article(Model):
         paragraph : Paragraph
             an instance of Paragraph containing the required properties.
         """
-
-        self.paragraphs.append(paragraph)
+        if type(paragraph) == Paragraph:
+            self.paragraphs.append(paragraph)
 
     def to_json(self):
         """Converts the object to json string
