@@ -1,4 +1,3 @@
-import json
 from models.article import *
 
 
@@ -144,17 +143,8 @@ class Article:
 
         self.paragraphs.append(paragraph)
 
-    def to_json(self):
-        """Converts the object to json string
 
-        Properties are sorted and indented using 4 spaces.
-        """
-
-        return json.dumps(self, default=lambda o: o.__dict__,
-                          sort_keys=True, indent=4)
-
-
-class Publication:
+class Publication(Model):
     """
     A class used to represent an Publication
 
@@ -210,12 +200,3 @@ class Publication:
         """
 
         self.articles.append(article)
-
-    def to_json(self):
-        """Converts the object to json string
-
-        Properties are sorted and indented using 4 spaces.
-        """
-
-        return json.dumps(self, default=lambda o: o.__dict__,
-                          sort_keys=True, indent=4)

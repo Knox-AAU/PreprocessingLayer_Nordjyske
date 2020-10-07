@@ -25,7 +25,7 @@ class IOHandler:
         self.schema = schema
         self.generator = generator
 
-    def write_json(self, obj, outfile):
+    def write_json(self, obj: Model, outfile):
         """Reads an json file and converts into a object
 
         Parameters

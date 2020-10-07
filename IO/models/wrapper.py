@@ -63,7 +63,7 @@ class Wrapper:
     schema_location: str
     schema_version: float
     generator: Generator
-    content: object
+    content: Model
 
     def __init__(self, values: dict = None, **kwargs):
         """
