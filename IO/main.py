@@ -5,7 +5,7 @@ from IOHandler import *
 def print_hi(name):
     article = Article()
     article.headline = "En god artikel"
-    article.subhead = ""
+    article.subhead = None
     article.lead = ""
     article.byline = Byline(name="Thomas", email="thomas@tlorentzen.net")
     article.extracted_from.append("Some file")

@@ -21,10 +21,9 @@ class IOHandler:
     schema: str
     generator: Generator
 
-    def __init__(self, generator, schema):
+    def __init__(self, generator: Generator, schema: str):
         self.schema = schema
-        if isinstance(generator, Generator):
-            self.generator = generator
+        self.generator = generator
 
     def write_json(self, obj, filepath):
         """Reads an json file and converts into a object
