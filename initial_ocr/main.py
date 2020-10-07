@@ -25,9 +25,6 @@ class TesseractModule:
             data_matrix = self.__save_conf_and_text(data_matrix)
             data_matrix = self.__remove_hyphens(data_matrix)
             data_matrix = self.__merge_matrix_into_paragraphs(data_matrix)
-            data_matrix = self.__remove_empty_words(data_matrix)
-            # data_matrix = self.__dunno_du(data_matrix, ".")
-            # data_matrix = self.__dunno_du(data_matrix, " ")
             return data_matrix
         except FileNotFoundError:
             print("The image was not found in the path: " + path)
@@ -73,7 +70,7 @@ class TesseractModule:
 
         for index in range(length):
             sub_list = []
-            # index == 0 contains the header
+            # 'index == 0' contains the header with the column names
             if index == 0:
                 continue
             sub_list.append(data_matrix[index][10])
@@ -87,55 +84,25 @@ class TesseractModule:
         :return: A matrix with the hyphens before new-line removed
         """
         length = len(data_matrix)
-        word_replaced = False
         remove_index = []
 
         for index in range(length):
             word = data_matrix[index][self.word_index]
-            if word_replaced:
-                remove_index.append(index + 1)
-                word_replaced = False
-                continue
             if word.endswith("-"):
                 try:
+                    # Merges the two words, while removing the hyphen
+                    # 'index + 2' is the index of the word on the next line
                     data_matrix[index][self.word_index] = self.__replace_last(word, "-", data_matrix[index + 2][self.word_index])
-                    data_matrix[index][self.confidence_index] = \
-                        (int(data_matrix[index][self.confidence_index]) + int(data_matrix[index + 2][self.confidence_index])) / 2
-                    word_replaced = True
+                    # Takes the average of the confidence score for the two words
+                    data_matrix[index][self.confidence_index] = (int(data_matrix[index][self.confidence_index]) +
+                                                                 int(data_matrix[index + 2][self.confidence_index])) / 2
+                    remove_index.append(index + 2)
                 except IndexError:
-                    continue
+                    break
         for index in range(len(remove_index)):
             data_matrix.remove(data_matrix[remove_index[index] - index])
 
         return data_matrix
-
-    def __dunno_du(self, data_matrix, compare_str):
-        """ Merges the words into sentences and returns a matrix of sentences
-        :param data_matrix:
-        :param compare_str:
-        :return:
-        """
-        length = len(data_matrix)
-        new_matrix = []
-        temp_list = []
-        sentence = " "
-        conf_num = 0
-
-        for index in range(length):
-            conf_num += int(data_matrix[index][self.confidence_index])
-            word = data_matrix[index][self.word_index]
-            temp_list.append(word)
-            if word.endswith(compare_str) or index == length - 1:
-                # Gets average confidence score
-                conf_num /= len(temp_list)
-                sentence = sentence.join(temp_list)
-                temp_list = [conf_num, sentence]
-                new_matrix.append(temp_list)
-
-                temp_list = []
-                conf_num = 0
-                sentence = " "
-        return new_matrix
 
     def __merge_matrix_into_paragraphs(self, data_matrix):
         """ Merges the words into paragraphs and saves these in a matrix
@@ -150,9 +117,11 @@ class TesseractModule:
 
         for index in range(length):
             word = data_matrix[index][self.word_index]
-            temp_list.append(word)
-            conf_num += self.__get_conf(int(data_matrix[index][self.confidence_index]))
+            conf = int(data_matrix[index][self.confidence_index])
 
+            if 0 <= conf <= 100:
+                temp_list.append(word)
+                conf_num += conf
             # Checks if the next two items are in bound
             # Gets their confidence scores or sets them to '-1' to indicate whitespace
             if index < length - 2:
@@ -162,7 +131,7 @@ class TesseractModule:
                 conf_next_word = -1
                 conf_next_next_word = -1
             # '-1' is the value that is given if there is whitespace
-            if word.endswith(".") and conf_next_word == -1 and conf_next_next_word == -1:
+            if (word.endswith(".") or "Af" in temp_list) and conf_next_word == -1 and conf_next_next_word == -1:
                 conf_num /= len(temp_list)
                 paragraph = paragraph.join(temp_list)
                 temp_list = [conf_num, paragraph]
@@ -172,31 +141,6 @@ class TesseractModule:
                 conf_num = 0
                 paragraph = " "
         return new_matrix
-
-    def __get_conf(self, conf):
-        if conf <= 100 or conf >= 0:
-            return conf
-        else:
-            return 0
-
-    def __remove_empty_words(self, data_matrix):
-        """ Removes empty words and unnecessary whitespace
-        :param data_matrix: A matrix containing words and their confidence scores
-        :return: A cleaned-up matrix
-        """
-        length = len(data_matrix)
-        remove_index = []
-
-        for index in range(length):
-            conf = data_matrix[index][self.confidence_index]
-            word = data_matrix[index][self.word_index]
-            if conf > 100 or conf < 0:
-                remove_index.append(index)
-            elif "  " in word:
-                word.replace("  ", " ")
-        for index in range(len(remove_index)):
-            data_matrix.remove(data_matrix[remove_index[index] - index])
-        return data_matrix
 
     @staticmethod
     def __replace_last(word, old_char, new_char):
@@ -216,7 +160,7 @@ class TesseractModule:
         length = len(data_matrix)
 
         for index in range(length):
-            print(data_matrix[index][self.word_index], end=' ')
+            print(data_matrix[index][self.word_index])
         print()
 
     def __get_average_conf_from_matrix(self, data_matrix):
@@ -250,11 +194,11 @@ path2 = "testImages/2017.jpg"
 path3 = "testImages/udsnit2.png"
 path4 = "testImages/1988_udsnit2.jp2"
 path5 = "testImages/test2.jpg"
+path6 = "testImages/2005.jp2"
 
 # todo: indsæt nedenstående i crawler.py
 try:
-    matrix = tesseract_module.run_tesseract_on_image(path4, "dan")
-    print(matrix)
-    # tesseract_module.debug_prints(matrix)
+    matrix = tesseract_module.run_tesseract_on_image(path6, "dan")
+    tesseract_module.debug_prints(matrix)
 except TypeError:
     print("No image path was given")
