@@ -17,20 +17,20 @@
                 "version": {
                     "type": "string"
                 },
-                "generatedAt": {
+                "generated_at": {
                     "type": "string"
                 }
             },
             "required": [
                 "app",
                 "version",
-                "generatedAt"
+                "generated_at"
             ]
         },
         "content": {
             "type": "object",
             "properties": {
-                "extractedFrom": {
+                "extracted_from": {
                     "type": "array",
                     "items": [
                         {
@@ -44,7 +44,7 @@
                 "publisher": {
                     "type": "string"
                 },
-                "publishedAt": {
+                "published_at": {
                     "type": "string"
                 },
                 "publication": {
@@ -76,7 +76,7 @@
                         }
                     },
                     "required": [
-                        "name"
+                        "name",
                     ]
                 },
                 "paragraphs": {
@@ -101,17 +101,11 @@
                 }
             },
             "required": [
-                "extractedFrom",
-                "confidence",
+                "extracted_from",
                 "publisher",
-                "publishedAt",
+                "published_at",
                 "publication",
-                "id",
-                "page",
                 "headline",
-                "subhead",
-                "lead",
-                "byline",
                 "paragraphs"
             ]
         }

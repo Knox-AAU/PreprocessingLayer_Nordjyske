@@ -18,8 +18,8 @@ class IOHandler:
         a object containing information about the generator.
     """
 
-    schema = ""
-    generator = None
+    schema: str
+    generator: Generator
 
     def __init__(self, generator, schema):
         self.schema = schema
@@ -48,7 +48,7 @@ class IOHandler:
 
         wrapper = Wrapper()
         wrapper.generator = self.generator
-        wrapper.schemaLocation = self.schema
+        wrapper.schema_location = self.schema
         wrapper.type = "article"
         wrapper.set_content(obj)
         data = wrapper.to_json()

@@ -15,8 +15,8 @@ class Byline:
         the author email (default "")
     """
 
-    name: str = ""
-    email: str = ""
+    name: str
+    email: str
 
     def __init__(self, values: dict = None, **kwargs):
         values = values if values is not None else kwargs
@@ -38,8 +38,8 @@ class Paragraph:
         the paragraph
     """
 
-    kind: str = ""
-    value: str = ""
+    kind: str
+    value: str
 
     def __init__(self, values: dict = None, **kwargs):
         """
@@ -101,9 +101,9 @@ class Article:
     paragraphs: list
     confidence: float
     publisher: str
-    publishedAt: str
+    published_at: str
     publication: str
-    extractedFrom: list
+    extracted_from: list
     page: int
 
     def __init__(self, values: dict = None, **kwargs):
@@ -117,10 +117,10 @@ class Article:
         """
 
         values = values if values is not None else kwargs
-        self.extractedFrom = values.get("extractedFrom", [])
+        self.extracted_from = values.get("extracted_from", [])
         self.confidence = values.get("confidence", 1.0)
         self.publisher = values.get("publisher", "")
-        self.publishedAt = values.get("publishedAt", "")
+        self.published_at = values.get("published_at", "")
         self.publication = values.get("publication", "")
         self.page = values.get("page", 0)
         self.id = values.get("id", 0)
