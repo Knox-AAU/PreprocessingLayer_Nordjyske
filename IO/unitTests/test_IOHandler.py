@@ -15,16 +15,23 @@ class TestIOHandler:
     def test_write_json_returns_valid_json(self):
         content_obj = Article()
 
+        # Create StringIO object to store the output of the method
         outfile = StringIO()
+
+        # Call method
         self.handler.write_json(content_obj, outfile)
 
+        # Read the output
         outfile.seek(0)
         output_content = outfile.read()
+
         try:
+            # Check to see if the output can parsed as JSON
             json.loads(output_content)
-            assert True
         except ValueError:
             pytest.fail("Generated string is not valid JSON")
+
+        assert True
 
     def test_read_json_fails_due_to_file_not_existing(self):
         try:

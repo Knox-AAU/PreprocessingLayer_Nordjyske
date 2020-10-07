@@ -25,6 +25,7 @@ class TestArticle:
     def test_to_json_gives_valid_json_on_call(self):
         output = self.article.to_json()
         try:
+            # Check to see if the output can parsed as JSON
             json.loads(output)
             assert True
         except ValueError:
