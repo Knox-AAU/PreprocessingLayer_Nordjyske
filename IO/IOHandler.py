@@ -38,9 +38,14 @@ class IOHandler:
 
         Raises
         ------
+        ValueError
+            If the obj is not a subclass of Model
         OSError
             If write the json file fails
         """
+
+        if not issubclass(type(obj), Model):
+            raise ValueError("Object need to be a subclass of Model...")
 
         # TODO: Validate path? Code below is for writing multiple files to directory
         # if not path.isdir(filepath):

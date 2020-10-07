@@ -141,7 +141,8 @@ class Article:
             an instance of Paragraph containing the required properties.
         """
 
-        self.paragraphs.append(paragraph)
+        if isinstance(paragraph, Paragraph):
+            self.paragraphs.append(paragraph)
 
 
 class Publication(Model):
@@ -199,4 +200,5 @@ class Publication(Model):
             an instance of Paragraph containing the required properties.
         """
 
-        self.articles.append(article)
+        if isinstance(article, Article):
+            self.articles.append(article)
