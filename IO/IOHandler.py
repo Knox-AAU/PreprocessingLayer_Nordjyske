@@ -26,11 +26,12 @@ class IOHandler:
         if isinstance(generator, Generator):
             self.generator = generator
 
-    def write_json(self, obj, filepath):
+    def write_json(self, obj, outfile):
         """Reads an json file and converts into a object
 
         Parameters
         ----------
+        outfile
         obj : object
             the object to export
         filepath : str
@@ -54,14 +55,13 @@ class IOHandler:
         data = wrapper.to_json()
 
         try:
-            with open(filepath, 'w') as outfile:
-                outfile.write(data)
+            outfile.write(data)
             return True
         except OSError:
             raise Exception("Error writing json...")
 
     @staticmethod
-    def read_json(filepath):
+    def read_json(json_file):
         """Reads an json file and converts into a object
 
         It converts the input json to the corresponding objects based on the added __class__ and __module__ properties
@@ -69,7 +69,7 @@ class IOHandler:
 
         Parameters
         ----------
-        filepath : str
+        json_file : file
             the path to the json file to read.
 
         Raises
@@ -78,13 +78,12 @@ class IOHandler:
             If no file is found at the path.
         """
 
-        if not path.exists(filepath):
+        if not path.exists(json_file.name):
             raise FileExistsError("File does not exist...")
 
         try:
-            with open(filepath, 'r') as json_file:
-                data = json.load(json_file)
-                # TODO validate json against schema.
+            data = json.load(json_file)
+            # TODO validate json against schema.
 
             the_obj = json.loads(json.dumps(data), object_hook=IOHandler.dict_to_obj)
         except OSError:

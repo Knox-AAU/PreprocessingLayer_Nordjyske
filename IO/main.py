@@ -1,5 +1,6 @@
 from models.article import *
 from IOHandler import *
+import os
 
 
 def print_hi(name):
@@ -29,8 +30,13 @@ def print_hi(name):
     # print(out)  # Press ⌘F8 to toggle the breakpoint.
 
     handler = IOHandler(Generator(app="This app", version=1.0), "hest")
-    handler.write_json(article, "/Users/tlorentzen/Documents/GitHub/SW517e20/output.json")
-    hest: Wrapper = handler.read_json("/Users/tlorentzen/Documents/GitHub/SW517e20/output.json")
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, 'output.json')
+
+    with open(filename, 'w') as outfile:
+        handler.write_json(article, outfile)
+    with open(filename, 'r') as json_file:
+        hest: Wrapper = handler.read_json(json_file)
 
     # h = Wrapper(hest)
 
