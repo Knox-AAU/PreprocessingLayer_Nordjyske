@@ -5,16 +5,16 @@ from IOHandler import *
 def print_hi(name):
     article = Article()
     article.headline = "En god artikel"
-    article.subhead = ""
+    article.subhead = None
     article.lead = ""
     article.byline = Byline(name="Thomas", email="thomas@tlorentzen.net")
-    article.extractedFrom.append("Some file")
+    article.extracted_from.append("Some file")
     article.confidence = 1.0
     article.id = 6752342345
     article.page = 64
     article.publication = "Home made stuff"
     article.publisher = "Me"
-    article.publishedAt = ""
+    article.published_at = ""
 
     for x in range(10):
         p = Paragraph()

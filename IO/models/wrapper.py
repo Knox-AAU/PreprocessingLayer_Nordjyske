@@ -19,9 +19,9 @@ class Generator:
         the date and time of generation
     """
 
-    app = ""
-    version = 0.0
-    generatedAt = ""
+    app: str
+    version: float
+    generated_at: str
 
     def __init__(self, values: dict = None, **kwargs):
         """
@@ -36,7 +36,7 @@ class Generator:
         values = values if values is not None else kwargs
         self.app = values.get("app")
         self.version = values.get("version")
-        self.generatedAt = values.get("generatedAt", None)
+        self.generated_at = values.get("generated_at", "")
 
 
 class Wrapper:
@@ -60,10 +60,10 @@ class Wrapper:
     """
 
     type: str
-    schemaLocation: str
-    schemaVersion: float
+    schema_location: str
+    schema_version: float
     generator: Generator
-    content = None
+    content: object
 
     def __init__(self, values: dict = None, **kwargs):
         """
@@ -77,8 +77,8 @@ class Wrapper:
 
         values = values if values is not None else kwargs
         self.type = values.get("type", "")
-        self.schemaLocation = values.get("schemaLocation", "")
-        self.schemaVersion = values.get("schemaVersion", 0.0)
+        self.schema_location = values.get("schema_location", "")
+        self.schema_version = values.get("schema_version", 0.0)
         self.generator = values.get("generator", Generator())
         self.content = values.get("content", None)
 
