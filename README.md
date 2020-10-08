@@ -51,7 +51,7 @@ It is also possible to set up test suites as well, allowing us to set the execut
 
 ## Virtual environment
 
-The virtual environment should just be set up for each module, as it should never be necessary to dublicate in other modules with other dependencies. However, the requirements for the virtual environment should be exported to the _requirements.txt_ file and this file should then be loaded when ever the given module is being set up.
+The virtual environment should just be set up for each module, as it should never be necessary to duplicate in other modules with other dependencies. However, the requirements for the virtual environment should be exported to the _requirements.txt_ file and this file should then be loaded when ever the given module is being set up.
 
 ### Handling requirements.txt
 
