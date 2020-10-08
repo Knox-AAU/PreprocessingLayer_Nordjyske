@@ -48,7 +48,7 @@ class TestIOHandler:
 
     def test_read_json_fails_due_to_file_not_existing(self):
         try:
-            with open("/this/path/does/not/exist/and/will/cause/the/test/to/fail", 'r') as json_file:
+            with open("/this/path/does/not/exist/and/will/cause/the/method/to/fail", 'r') as json_file:
                 self.handler.read_json(json_file)
             assert False
         except OSError:
