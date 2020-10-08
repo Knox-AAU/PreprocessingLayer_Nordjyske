@@ -1,9 +1,7 @@
 import argparse
 import json
 import codecs
-import sys
-
-from nitf_parser.parser import parse
+from nitf_parser.parser import NitfParser
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -16,7 +14,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    parsed = parse(args.input_file)
+    nitf_parser = NitfParser()
+    parsed = nitf_parser.parse(args.input_file)
 
     if args.output_dest is not None:
         with codecs.open(args.output_dest, 'w', encoding="utf-8") as outfile:
