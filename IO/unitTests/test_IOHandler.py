@@ -51,7 +51,7 @@ class TestIOHandler:
             with open("/this/path/does/not/exist/and/will/cause/the/test/to/fail", 'r') as json_file:
                 self.handler.read_json(json_file)
             assert False
-        except OSError as e:
+        except OSError:
             assert True
 
     def test_convert_to_dict_adds_all_variables_from_the_obj_to_the_dict(self):
@@ -93,11 +93,11 @@ class TestIOHandler:
         article.id = 0
         article.page = 0
 
-        dict = article.__dict__
-        dict["__class__"] = "Article"
-        dict["__module__"] = "knox_source_data_io.models.article"
+        dictionary = article.__dict__
+        dictionary["__class__"] = "Article"
+        dictionary["__module__"] = "knox_source_data_io.models.article"
 
-        output = IOHandler.convert_dict_to_obj(dict)
+        output = IOHandler.convert_dict_to_obj(dictionary)
         if not isinstance(output, Article):
             pytest.fail("The output is not of the given type")
         assert True
@@ -129,12 +129,12 @@ class TestIOHandler:
         article.id = 0
         article.page = 0
 
-        dict = article.__dict__
-        dict["__class__"] = "Article"
-        dict["__module__"] = "knox_source_data_io.models.article"
+        dictionary = article.__dict__
+        dictionary["__class__"] = "Article"
+        dictionary["__module__"] = "knox_source_data_io.models.article"
 
-        output = IOHandler.convert_dict_to_obj(dict)
-        for var in dict.keys():
+        output = IOHandler.convert_dict_to_obj(dictionary)
+        for var in dictionary.keys():
             if not hasattr(output, var):
                 pytest.fail("The output is not of the given type")
 
