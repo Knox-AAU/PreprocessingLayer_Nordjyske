@@ -1,7 +1,7 @@
 import json
 import pytest
-from knox_source_data_io.models.publication import Publication
-from knox_source_data_io.models.wrapper import Wrapper
+from IO.knox_source_data_io.models.publication import Publication
+from IO.knox_source_data_io.models.wrapper import Wrapper
 
 
 class TestWrapper:

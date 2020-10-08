@@ -1,6 +1,7 @@
-from knox_source_data_io.models.publication import *
-from knox_source_data_io.IOHandler import *
+from IO.knox_source_data_io.models.publication import *
+from IO.knox_source_data_io.IOHandler import *
 import os
+from IO.knox_source_data_io.models.wrapper import *
 
 
 def print_hi(name):

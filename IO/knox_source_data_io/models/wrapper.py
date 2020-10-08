@@ -1,5 +1,5 @@
 import json
-from knox_source_data_io.models.model import Model
+from IO.knox_source_data_io.models.model import Model
 
 
 class Generator:
