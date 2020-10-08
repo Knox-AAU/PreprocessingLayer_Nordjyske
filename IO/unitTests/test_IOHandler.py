@@ -83,6 +83,13 @@ class TestIOHandler:
         assert True
 
     def test_dict_to_obj_receives_dict_with_class_and_returns_obj_of_class(self):
+        publication = Publication()
+        publication.publisher = "Nordjyske Medie"
+        publication.published_at = "Some time"
+        publication.publication = "A newspaper"
+        publication.pages = 0
+
+        # Generate article
         article = Article()
         article.headline = "En god artikel"
         article.subhead = ""
@@ -93,12 +100,20 @@ class TestIOHandler:
         article.id = 0
         article.page = 0
 
-        dictionary = article.__dict__
-        dictionary["__class__"] = "Article"
-        dictionary["__module__"] = "knox_source_data_io.models.article"
+        for x in range(10):
+            p = Paragraph()
+            p.kind = "paragraph"
+            p.value = f'This is paragraph number {x}'
+            article.add_paragraph(p)
+
+        publication.add_article(article)
+
+        dictionary = publication.__dict__
+        dictionary["__class__"] = "Publication"
+        dictionary["__module__"] = "knox_source_data_io.models.publication"
 
         output = IOHandler.convert_dict_to_obj(dictionary)
-        if not isinstance(output, Article):
+        if not isinstance(output, Publication):
             pytest.fail("The output is not of the given type")
         assert True
 
@@ -119,6 +134,13 @@ class TestIOHandler:
         assert output == dictionary
 
     def test_dict_to_obj_receives_dict_with_class_and_returns_obj_with_same_variables(self):
+        publication = Publication()
+        publication.publisher = "Nordjyske Medie"
+        publication.published_at = "Some time"
+        publication.publication = "A newspaper"
+        publication.pages = 0
+
+        # Generate article
         article = Article()
         article.headline = "En god artikel"
         article.subhead = ""
@@ -129,9 +151,17 @@ class TestIOHandler:
         article.id = 0
         article.page = 0
 
-        dictionary = article.__dict__
-        dictionary["__class__"] = "Article"
-        dictionary["__module__"] = "knox_source_data_io.models.article"
+        for x in range(10):
+            p = Paragraph()
+            p.kind = "paragraph"
+            p.value = f'This is paragraph number {x}'
+            article.add_paragraph(p)
+
+        publication.add_article(article)
+
+        dictionary = publication.__dict__
+        dictionary["__class__"] = "Publication"
+        dictionary["__module__"] = "knox_source_data_io.models.publication"
 
         output = IOHandler.convert_dict_to_obj(dictionary)
         for var in dictionary.keys():
