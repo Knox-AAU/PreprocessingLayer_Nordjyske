@@ -3,7 +3,7 @@ from io import StringIO
 import pytest
 
 from knox_source_data_io.IOHandler import *
-from knox_source_data_io.models.article import Article, Byline
+from knox_source_data_io.models.publication import Publication, Article, Byline
 
 
 class TestIOHandler:
@@ -13,7 +13,7 @@ class TestIOHandler:
         self.handler = IOHandler(Generator(app="This app", version=1.0), "Schema")
 
     def test_write_json_returns_valid_json_given_model_subclass(self):
-        content_obj = Article()
+        content_obj = Publication()
 
         # Create StringIO object to store the output of the method
         outfile = StringIO()
@@ -42,11 +42,11 @@ class TestIOHandler:
             assert True
 
     def test_convert_to_dict_adds_all_variables_from_the_obj_to_the_dict(self):
-        article = Article()
-        output = IOHandler.convert_obj_to_dict(article)
+        publication = Publication()
+        output = IOHandler.convert_obj_to_dict(publication)
 
         # Check if all attributes are represented in the dictionary
-        attributes = vars(article)
+        attributes = vars(publication)
         for attribute in attributes:
             if attribute not in output:
                 pytest.fail(f"The dictionary does not contain the attribute: {str(attribute)}")
@@ -54,17 +54,17 @@ class TestIOHandler:
         assert True
 
     def test_convert_to_dict_adds_class_reference_to_dict(self):
-        article = Article()
-        output = IOHandler.convert_obj_to_dict(article)
+        publication = Publication()
+        output = IOHandler.convert_obj_to_dict(publication)
 
-        if output.get("__class__") != article.__class__.__name__:
+        if output.get("__class__") != publication.__class__.__name__:
             pytest.fail(f"The dictionary does not contain reference to originating class")
 
     def test_convert_to_dict_adds_module_reference_to_dict(self):
-        article = Article()
-        output = IOHandler.convert_obj_to_dict(article)
+        publication = Publication()
+        output = IOHandler.convert_obj_to_dict(publication)
 
-        if output.get("__module__") != article.__module__:
+        if output.get("__module__") != publication.__module__:
             pytest.fail(f"The dictionary does not contain reference to originating module")
 
         assert True

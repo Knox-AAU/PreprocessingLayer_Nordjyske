@@ -1,4 +1,4 @@
-from knox_source_data_io.models.article import *
+from knox_source_data_io.models.model import Model
 
 
 class Byline:
