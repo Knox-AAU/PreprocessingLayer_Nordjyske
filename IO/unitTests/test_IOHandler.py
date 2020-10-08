@@ -3,7 +3,7 @@ from io import StringIO
 import pytest
 
 from knox_source_data_io.IOHandler import *
-from knox_source_data_io.models.article import Article, Byline
+from knox_source_data_io.models.article import Article, Byline, Paragraph
 
 
 class TestIOHandler:
@@ -30,6 +30,19 @@ class TestIOHandler:
             json.loads(output_content)
         except ValueError:
             pytest.fail("Generated string is not valid JSON")
+
+        assert True
+
+    def test_write_json_returns_nothing_if_obj_is_not_model_subclass(self):
+        content_obj = Paragraph()
+
+        # Create StringIO object to store the output of the method
+        outfile = StringIO()
+
+        try:
+            self.handler.write_json(content_obj, outfile)
+        except ValueError as e:
+            assert str(e) == "Object need to be a subclass of Model..."
 
         assert True
 
@@ -126,5 +139,3 @@ class TestIOHandler:
                 pytest.fail("The output is not of the given type")
 
         assert True
-#response = requests.get("https://knox.libdom.net/schema/article.schema.json")
-#schema = response.json()

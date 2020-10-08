@@ -88,6 +88,8 @@ class IOHandler:
         try:
             data = json.load(json_file)
             # TODO validate json against schema.
+            # response = requests.get("https://knox.libdom.net/schema/article.schema.json")
+            # schema = response.json()
 
             the_obj = json.loads(json.dumps(data), object_hook=IOHandler.convert_dict_to_obj)
         except OSError:
