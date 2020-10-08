@@ -103,7 +103,7 @@ class Crawler:
 
     def __find_folders_recursively(self, directory):
         """ recursive function that finds all the dire that contains the wanted files
-    
+
         :param directory:
         :return: folder that has been found
         """
@@ -160,7 +160,7 @@ class Crawler:
     @staticmethod
     def __load_from_json(filename):
         """Loads a json file and returns its data
-    
+
         :param filename: json file to be loaded
         :return: data from json file
         """
@@ -171,7 +171,7 @@ class Crawler:
     def __find_relevant_files_in_directory(self, directory):
         """Finds all files in a directory and checks them again the file type
         white and blacklist.
-    
+
         :param directory: path to directory
         :return: all found files that isn't in the blacklist/whitelist
         """
@@ -194,7 +194,7 @@ class Crawler:
 
     def __find_all_files_recursively(self, directory):
         """Recursively finds all files in a directory
-    
+
         :param directory: path to directory
         :return: list of found files
         """
@@ -211,7 +211,7 @@ class Crawler:
     @staticmethod
     def __is_file_valid_nitf(xml_path):
         """Checks if the XML file given has the nitf:nitf tag
-    
+
         :param xml_path: path to the XML file
         :return: true or false, depending on whether it's a nitf file or not
         """
@@ -224,7 +224,7 @@ class Crawler:
     @staticmethod
     def __is_string_in_list(string, checklist):
         """Checks if the string contains any words in the list (useful for black- and whitelisting)
-    
+
         :param string: string to be checked
         :param checklist: white- or blacklist from config file
         :return: true or false, depending on whether the string appears in the list

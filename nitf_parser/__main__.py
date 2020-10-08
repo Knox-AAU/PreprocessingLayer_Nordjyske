@@ -10,7 +10,7 @@ if __name__ == '__main__':
 
     # defines toDate argument
     parser.add_argument('-o', '--output_dest', dest="output_dest", default=None,
-                        help='Save JSON to this locaiton. If not specified, the module will output to stdout.')
+                        help='Save JSON to this location. If not specified, the module will output to stdout.')
 
     args = parser.parse_args()
 
