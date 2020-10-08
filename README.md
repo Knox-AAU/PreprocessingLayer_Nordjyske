@@ -66,3 +66,8 @@ It can then be loaded into the current project by running the command:
 If _conda_ is used, it is necessary to install _pip_ in the virtual environment to use these commands. This is, from our research during the project, the easiest way to handle requirements in _conda_.
 
 > :warning: _pip_ might be switched out for _pip3_ on your system
+
+
+
+python3.8 setup.py sdist bdist_wheel
+pip3.8 install --extra-index-url https://repos.libdom.net/ knox-source-data-io
