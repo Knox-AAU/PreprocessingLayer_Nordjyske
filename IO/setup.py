@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name='knox_source_data_io',
+    name='knox-source-data-io',
     packages=setuptools.find_packages(),
     description='Package for important and exporting JSON files generated based on hte source data for the Knox project',
     long_description=long_description,
