@@ -1,36 +1,44 @@
-from models.article import *
-from IOHandler import *
+from knox_source_data_io.models.publication import *
+from knox_source_data_io.IOHandler import *
+import os
 
 
 def print_hi(name):
+    # Generate publication
+    publication = Publication()
+    publication.publisher = "Nordjyske Medie"
+    publication.published_at = "Some time"
+    publication.publication = "A newspaper"
+    publication.pages = 0
+
+    # Generate article
     article = Article()
-    article.title = "En god artikel"
+    article.headline = "En god artikel"
+    article.subhead = ""
+    article.lead = ""
     article.byline = Byline(name="Thomas", email="thomas@tlorentzen.net")
-    article.extractedFrom.append("Some file")
+    article.extracted_from.append("Some file")
     article.confidence = 1.0
-    article.id = 6752342345
-    article.page = 64
-    article.publication = "Home made stuff"
-    article.publisher = "Me"
-    article.publishedAt = ""
+    article.id = 0
+    article.page = 0
 
     for x in range(10):
         p = Paragraph()
         p.kind = "paragraph"
         p.value = f'This is paragraph number {x}'
-        article.addParagraph(p)
+        article.add_paragraph(p)
 
-    # print(article.paragraphs)
+    publication.add_article(article)
 
-    # out = wrapper.toJSON()
-    # Use a breakpoint in the code line below to debug your script.
-    # print(out)  # Press ⌘F8 to toggle the breakpoint.
-
+    # Generate
     handler = IOHandler(Generator(app="This app", version=1.0), "hest")
-    handler.Export(article, "/Users/tlorentzen/Documents/GitHub/SW517e20/output.json")
-    hest: Wrapper = handler.Import("/Users/tlorentzen/Documents/GitHub/SW517e20/output.json")
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, 'output.json')
 
-    # h = Wrapper(hest)
+    with open(filename, 'w') as outfile:
+        handler.write_json(publication, outfile)
+    with open(filename, 'r') as json_file:
+        hest: Wrapper = handler.read_json(json_file)
 
     print(hest.type)
 

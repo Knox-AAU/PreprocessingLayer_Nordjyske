@@ -1,24 +1,24 @@
 {
     "type": "article",
-    "schemaLocation": "http://iptc.org/std/NITF/2006-10-18/",
-    "schemaVersion": 1.0,
+    "schema": "http://iptc.org/std/NITF/2006-10-18/",
     "generator": {
         "app": "The app",
         "version": "1.0.0",
-        "generatedAt": "2020-10-01T09:28:39.200Z"
+        "generated_at": "2020-10-01T09:28:39.200Z"
     },
     "content": {
-        "extractedFrom": [
+        "extracted_from": [
             "newsarchive/2020-08-20/01_02_thisted_dagblad_tor_s002_12_lokal____2008_202008200000_1014466314.xml"
         ],
         "confidence": 0.82,
         "publisher": "Nordjyske Medier",
-        "publishedAt": "2020-08-19T07:57:35.200Z",
+        "published_at": "2020-08-19T07:57:35.200Z",
         "publication": "Thisted Dagblad",
         "id": 1014466314,
         "page": 2,
-        "title": "Stigning i underretninger",
-        "trompet": "omsorg: Det skyldes blandt andet, at udsatte børn og unge bedre spottes og et øget samfundspres",
+        "headline": "Stigning i underretninger",
+        "subhead": "omsorg: Det skyldes blandt andet, at udsatte børn og unge bedre spottes og et øget samfundspres",
+        "lead": "Lead text",
         "byline": {
             "name": "Emma Toftelund Poulsen",
             "email": "ep50@nordjyske.dk"
