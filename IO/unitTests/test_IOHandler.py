@@ -3,7 +3,7 @@ from io import StringIO
 import pytest
 
 from knox_source_data_io.IOHandler import *
-from knox_source_data_io.models.publication import Publication, Article, Byline
+from knox_source_data_io.models.publication import Publication, Article, Byline, Paragraph
 
 
 class TestIOHandler:
@@ -33,12 +33,25 @@ class TestIOHandler:
 
         assert True
 
+    def test_write_json_returns_nothing_if_obj_is_not_model_subclass(self):
+        content_obj = Paragraph()
+
+        # Create StringIO object to store the output of the method
+        outfile = StringIO()
+
+        try:
+            self.handler.write_json(content_obj, outfile)
+        except ValueError as e:
+            assert str(e) == "Object need to be a subclass of Model..."
+
+        assert True
+
     def test_read_json_fails_due_to_file_not_existing(self):
         try:
             with open("/this/path/does/not/exist/and/will/cause/the/test/to/fail", 'r') as json_file:
                 self.handler.read_json(json_file)
             assert False
-        except OSError as e:
+        except OSError:
             assert True
 
     def test_convert_to_dict_adds_all_variables_from_the_obj_to_the_dict(self):
@@ -80,11 +93,11 @@ class TestIOHandler:
         article.id = 0
         article.page = 0
 
-        dict = article.__dict__
-        dict["__class__"] = "Article"
-        dict["__module__"] = "knox_source_data_io.models.article"
+        dictionary = article.__dict__
+        dictionary["__class__"] = "Article"
+        dictionary["__module__"] = "knox_source_data_io.models.article"
 
-        output = IOHandler.convert_dict_to_obj(dict)
+        output = IOHandler.convert_dict_to_obj(dictionary)
         if not isinstance(output, Article):
             pytest.fail("The output is not of the given type")
         assert True
@@ -116,15 +129,13 @@ class TestIOHandler:
         article.id = 0
         article.page = 0
 
-        dict = article.__dict__
-        dict["__class__"] = "Article"
-        dict["__module__"] = "knox_source_data_io.models.article"
+        dictionary = article.__dict__
+        dictionary["__class__"] = "Article"
+        dictionary["__module__"] = "knox_source_data_io.models.article"
 
-        output = IOHandler.convert_dict_to_obj(dict)
-        for var in dict.keys():
+        output = IOHandler.convert_dict_to_obj(dictionary)
+        for var in dictionary.keys():
             if not hasattr(output, var):
                 pytest.fail("The output is not of the given type")
 
         assert True
-#response = requests.get("https://knox.libdom.net/schema/article.schema.json")
-#schema = response.json()
