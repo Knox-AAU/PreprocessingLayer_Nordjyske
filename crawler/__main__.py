@@ -1,6 +1,6 @@
 import argparse
 import re
-from crawler.crawl import run_crawler
+from crawler.crawl import Crawler
 
 
 def parse_date(date):
@@ -36,5 +36,5 @@ if __name__ == '__main__':
                         help='clear the folders.json cache. Should only be used if dataset has changed. (Default: no)')
 
     args = parser.parse_args()
-
-    run_crawler(args)
+    crawler = Crawler()
+    crawler.run_crawler(args)
