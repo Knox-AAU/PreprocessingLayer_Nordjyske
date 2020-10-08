@@ -1,0 +1,49 @@
+{
+    "type": "publication",
+    "schema": "http://iptc.org/std/NITF/2006-10-18/",
+    "generator": {
+        "app": "The app",
+        "version": "1.0.0",
+        "generated_at": "2020-10-01T09:28:39.200Z"
+    },
+    "content": {
+        "publication": "Thisted Dagblad",
+        "published_at": "2020-08-19T07:57:35.200Z",
+        "publisher": "Nordjyske Medier",
+        "pages": 0,
+        "articles": [
+            {
+                "extracted_from": [
+                    "newsarchive/2020-08-20/01_02_thisted_dagblad_tor_s002_12_lokal____2008_202008200000_1014466314.xml"
+                ],
+                "confidence": 0.82,
+                "id": 1014466314,
+                "page": 2,
+                "headline": "Stigning i underretninger",
+                "subhead": "omsorg: Det skyldes blandt andet, at udsatte børn og unge bedre spottes og et øget samfundspres",
+                "lead": "Lead text",
+                "byline": {
+                    "name": "Emma Toftelund Poulsen",
+                    "email": "ep50@nordjyske.dk"
+                },
+                "paragraphs": [
+                    {"kind": "paragraph", "value": "THY-MORS: - Vi har selvfølgelig gået og holdt vejret den sidste tid med Covid-19-situationen og særligt på det her område, så det er rart at se på statistikken, at det ligget på et normalt niveau."},
+                    {"kind": "paragraph", "value": "Sådan siger Søren Kanne Zohnesen (V), formand for børne- og familieudvalget i Thisted Kommune, om statistikken for antallet af underretninger i børne- og familierådgivningen, der blev præsenteret på seneste udvalgsmøde."},
+                    {"kind": "paragraph", "value": "Fra 1. januar til 30. juni 2020 er der registreret 596 underretninger, og til sammenligning var der i hele 2019 i alt 1078 underretninger. I forhold til gennemsnittet af antal underretninger pr. måned lå tallet i 2019 på 89,83, mens det for første halvår af 2020 ligger på 99,33."},
+                    {"kind": "paragraph", "value": "Søren Kanne Zohnesen fortæller, at lukningen af skoler og daginstitutioner i forbindelse med corona-nedlukningen i foråret har givet anledning til bekymring om, hvorvidt der ville blive underrettet i tilstrækkelig grad."},
+                    {"kind": "subheader", "value": "Hyppigere opfølgning"},
+                    {"kind": "paragraph", "value": "- Selvom skoler og daginstitutioner har haft lukket, har det stadig været vigtigt at opspore de udfordringer, der er hos børn og familier. Det skal ikke lyde som om, at det er super, at tallet er så højt som muligt, og at det er et mål i sig selv, men vi vil hellere have en indberetning for meget end for lidt, siger Søren Kanne Zohnesen."},
+                    {"kind": "paragraph", "value": "Rikke Storgaard Toft, der er chef for børne- og familierådgivningen i Thisted Kommune, fortæller, at kommunen oplevede et lille fald af underretninger under corona-nedlukningen, som også var en tendens på landsplan."},
+                    {"kind": "paragraph", "value": "- Men det betyder ikke, at vi ikke har haft hånd i hanke med børnene, selvom vi ikke havde skolernes og dagtilbudenes øjne på børnene, for vi intensiverede vores indsatser her fra børne- og familierådgivningen, eksempelvis med hyppigere opfølgninger på telefon, flere besøg i hjemmene og en øget stigning i aflastningstilbud, siger Rikke Storgaard Toft og fortæller, at der fortsat kom underretninger fra andre parter end skoler og dagtilbud."},
+                    {"kind": "subheader", "value": "Øget samfundspres"},
+                    {"kind": "paragraph", "value": "Eksempelvis oplevede Thisted Kommune en lille stigning i antallet af underretninger fra politiet."},
+                    {"kind": "paragraph", "value": "Men selvom antallet af underretninger faldt en lille smule under corona-nedlukningen, har der samlet set for det første halvår altså været en stigning."},
+                    {"kind": "paragraph", "value": "- Vi har set en tendens på landsplan, at antallet af underretninger er steget lige så stille i løbet af de seneste tre-fire år i næsten alle kommuner. Det skyldes, at vi er blevet bedre til at spotte udsatte børn. Og så handler det også om, at udsatteområdet har flyttet sig til også at omhandle børn fra ressourcestærke familier, siger Rikke Storgaard Toft og fortsætter:"},
+                    {"kind": "paragraph", "value": "- Der er et øget samfundspres på de unge i forhold til sociale medier, hvordan de skal se ud, hordan de skal begå sig, og hvordan de skal præstere, og det knækker nogen nakken på."},
+                    {"kind": "paragraph", "value": "I Morsø Kommune lå det gennemsnitlige antal af underretninger om måneden i 2019 på 47,6, mens det for de syv første måneder i 2020 ligger på 48,7. Også i Morsø Kommune faldt antallet af underretninger en smule under corona-nedlukningen, men Anne Trine Larsen, chef for center for børn og familier, fortæller, at der har været et 'meget tæt' samarbejde med skoler og dagtilbud."},
+                    {"kind": "paragraph", "value": "- Jeg har følt mig fuldstændig tryg ved, at vi har fået informationer ind, så jeg ved, at der har været voksne sammen med de mest udsatte og sårbare børn og unge. Vi arbejder hårdt på at kunne blive ved med at lykkes med det tætte samarbejde, for det er en gave, vi har fået her, siger Anne Trine Larsen."},
+                ]
+            }
+        ]
+    }
+}

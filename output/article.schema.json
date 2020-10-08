@@ -5,11 +5,8 @@
         "type": {
             "type": "string"
         },
-        "schemaLocation": {
+        "schema": {
             "type": "string"
-        },
-        "schemaVersion": {
-            "type": "number"
         },
         "generator": {
             "type": "object",
@@ -20,20 +17,20 @@
                 "version": {
                     "type": "string"
                 },
-                "generatedAt": {
+                "generated_at": {
                     "type": "string"
                 }
             },
             "required": [
                 "app",
                 "version",
-                "generatedAt"
+                "generated_at"
             ]
         },
         "content": {
             "type": "object",
             "properties": {
-                "extractedFrom": {
+                "extracted_from": {
                     "type": "array",
                     "items": [
                         {
@@ -47,7 +44,7 @@
                 "publisher": {
                     "type": "string"
                 },
-                "publishedAt": {
+                "published_at": {
                     "type": "string"
                 },
                 "publication": {
@@ -59,10 +56,13 @@
                 "page": {
                     "type": "integer"
                 },
-                "title": {
+                "headline": {
                     "type": "string"
                 },
-                "trompet": {
+                "subhead": {
+                    "type": "string"
+                },
+                "lead": {
                     "type": "string"
                 },
                 "byline": {
@@ -76,7 +76,7 @@
                         }
                     },
                     "required": [
-                        "name"
+                        "name",
                     ]
                 },
                 "paragraphs": {
@@ -101,21 +101,18 @@
                 }
             },
             "required": [
-                "extractedFrom",
-                "confidence",
+                "extracted_from",
                 "publisher",
-                "publishedAt",
+                "published_at",
                 "publication",
-                "page",
-                "title",
+                "headline",
                 "paragraphs"
             ]
         }
     },
     "required": [
         "type",
-        "schemaLocation",
-        "schemaVersion",
+        "schema",
         "generator",
         "content"
     ]
