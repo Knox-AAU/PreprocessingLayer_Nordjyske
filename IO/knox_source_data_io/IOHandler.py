@@ -1,3 +1,5 @@
+import codecs
+
 from IO.knox_source_data_io.models.wrapper import *
 from os import path
 import importlib
@@ -25,7 +27,7 @@ class IOHandler:
         self.schema = schema
         self.generator = generator
 
-    def write_json(self, obj: Model, outfile):
+    def write_json(self, obj: Model, outfile, file_name):
         """Reads an json file and converts into a object
 
         Parameters
@@ -59,7 +61,8 @@ class IOHandler:
         data = wrapper.to_json()
 
         try:
-            outfile.write(data)
+            with codecs.open(file_name, 'w', encoding="utf-8") as outfile:
+                outfile.write(data)
             return True
         except OSError:
             raise Exception("Error writing json...")

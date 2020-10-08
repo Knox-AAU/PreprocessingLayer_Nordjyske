@@ -6,6 +6,9 @@ import json
 from os import path
 from xml.dom import minidom
 from nitf_parser.parser import NitfParser
+from IO.knox_source_data_io.models.publication import *
+from IO.knox_source_data_io.IOHandler import *
+from IO.knox_source_data_io.models.wrapper import *
 
 
 class Crawler:
@@ -20,6 +23,11 @@ class Crawler:
         """ Runs the crawler for all specified file formats and call their respected modules
         :param arg_object: object that stores the program arguments
         """
+        publication = Publication()
+        publication.publisher = "Nordjyske Medie"
+        publication.published_at = "Some time"
+        publication.publication = "A newspaper"
+        publication.pages = 0
 
         folders = self.__manage_folder_cache(arg_object)
         folders = self.__check_and_filter_dates(arg_object, folders)
@@ -27,7 +35,6 @@ class Crawler:
         # loops through all the folders in the path and their respective files.
         for folder in folders:
             files = self.__find_relevant_files_in_directory(folder['path'])
-            output_this_folder = []
             for file in files:
                 # checks if it is a .jp2 file. if true, the ocr is called
                 if ".jp2" in file:
@@ -36,9 +43,9 @@ class Crawler:
                 # checks if it is a .xml file. if true, the parser for .nitf parser is called
                 if ".xml" in file:
                     print(f"Parsing {file}...")
-                    output_this_folder.append(self.nitf_parser.parse(f"{file}"))
-            name = folder['path'].split("/")[-1]
-            self.__save_to_json(output_this_folder, f"{arg_object.output_folder}/{name}.json")
+                    publication.add_article(self.nitf_parser.parse(f"{file}"))
+
+        self.__save_to_json(publication)
 
     def __manage_folder_cache(self, arg_object):
         """ If clear cache arg is given, the cache is cleared. If not the folders are loaded
@@ -55,7 +62,7 @@ class Crawler:
 
             # sorts the folders after year,month, date
             folders.sort(key=lambda folder: self.__date_to_int(folder))
-            self.__save_to_json(folders, self.config['structure']['cache_file'])
+            self.__save_cache_file(folders, self.config['structure']['cache_file'])
         else:
             # load folders from folders.json
             folders = self.__load_from_json(self.config['structure']['cache_file'])
@@ -148,14 +155,13 @@ class Crawler:
         return found_folders
 
     @staticmethod
-    def __save_to_json(folders, file_name):
-        """ Dumps all files from a folder
+    def __save_to_json(publication):
+        handler = IOHandler(Generator(app="This app", version=1.0), "http://iptc.org/std/NITF/2006-10-18/")
+        dirname = os.path.dirname(__file__)
+        filename = os.path.join(dirname, 'output.json')
 
-        :param folders: folders with files to dump
-        :param file_name: output filename
-        """
-        with codecs.open(file_name, 'w', encoding="utf-8") as outfile:
-            json.dump(folders, outfile, indent=4, ensure_ascii=False)  # 4 is standard indent
+        with open(filename, 'w') as outfile:
+            handler.write_json(publication, outfile, filename)
 
     @staticmethod
     def __load_from_json(filename):
@@ -233,3 +239,13 @@ class Crawler:
             if listed_item in string:
                 return True
         return False
+
+    @staticmethod
+    def __save_cache_file(folders, file_name):
+        """ Dumps all files from a folder
+        :param folders: folders with files to dump
+        :param file_name: output filename
+        """
+        with codecs.open(file_name, 'w', encoding="utf-8") as outfile:
+            json.dump(folders, outfile, indent=4, ensure_ascii=False)  # 4 is standard indent
+
