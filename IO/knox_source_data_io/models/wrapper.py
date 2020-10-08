@@ -96,5 +96,7 @@ class Wrapper:
         Properties are indented using 4 spaces.
         """
 
-        return json.dumps(self, default=knox_source_data_io.IOHandler.convert_to_dict,
+        # Local import used to avoid circular import between Wrapper and IOHandler
+        from knox_source_data_io.IOHandler import IOHandler
+        return json.dumps(self, default=lambda o: IOHandler.convert_to_dict(obj=o),
                           sort_keys=False, indent=4)
