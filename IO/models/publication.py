@@ -1,4 +1,3 @@
-import json
 from models.article import *
 
 
@@ -142,19 +141,11 @@ class Article:
             an instance of Paragraph containing the required properties.
         """
 
-        self.paragraphs.append(paragraph)
-
-    def to_json(self):
-        """Converts the object to json string
-
-        Properties are sorted and indented using 4 spaces.
-        """
-
-        return json.dumps(self, default=lambda o: o.__dict__,
-                          sort_keys=True, indent=4)
+        if isinstance(paragraph, Paragraph):
+            self.paragraphs.append(paragraph)
 
 
-class Publication:
+class Publication(Model):
     """
     A class used to represent an Publication
 
@@ -209,13 +200,5 @@ class Publication:
             an instance of Paragraph containing the required properties.
         """
 
-        self.articles.append(article)
-
-    def to_json(self):
-        """Converts the object to json string
-
-        Properties are sorted and indented using 4 spaces.
-        """
-
-        return json.dumps(self, default=lambda o: o.__dict__,
-                          sort_keys=True, indent=4)
+        if isinstance(article, Article):
+            self.articles.append(article)

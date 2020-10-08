@@ -1,5 +1,6 @@
 import json
 import IOHandler
+from models.model import Model
 
 
 class Generator:
@@ -62,7 +63,7 @@ class Wrapper:
     schema_location: str
     schema_version: float
     generator: Generator
-    content: object
+    content: Model
 
     def __init__(self, values: dict = None, **kwargs):
         """
@@ -87,8 +88,8 @@ class Wrapper:
            sets the object being exported, this should be a valid object... Therefore the todo...
         """
 
-        # TODO: Validate type (Maybe interface?)
-        self.content = obj
+        if issubclass(type(obj), Model):
+            self.content = obj
 
     def to_json(self):
         """Converts the object to json string

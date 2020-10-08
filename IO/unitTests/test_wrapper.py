@@ -17,7 +17,7 @@ class TestWrapper:
         self.wrapper.set_content(article)
         assert self.wrapper.content == article
 
-    def test_does_not_set_content_given_string(self):
+    def test_set_content_does_not_set_content_given_string(self):
         self.wrapper.set_content("string")
         assert self.wrapper.content is None
 

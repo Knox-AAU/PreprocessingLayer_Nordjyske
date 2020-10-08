@@ -1,5 +1,7 @@
 import json
 
+from models.model import Model
+
 
 class Byline:
     """
@@ -56,7 +58,7 @@ class Paragraph:
         self.value = values.get("value", "")
 
 
-class Article:
+class Article(Model):
     """
     A class used to represent an Article
 
@@ -140,8 +142,8 @@ class Article:
         paragraph : Paragraph
             an instance of Paragraph containing the required properties.
         """
-
-        self.paragraphs.append(paragraph)
+        if type(paragraph) == Paragraph:
+            self.paragraphs.append(paragraph)
 
     def to_json(self):
         """Converts the object to json string
@@ -151,3 +153,4 @@ class Article:
 
         return json.dumps(self, default=lambda o: o.__dict__,
                           sort_keys=True, indent=4)
+
