@@ -3,6 +3,7 @@ import configparser
 import os
 import re
 import json
+from datetime import datetime
 from os import path
 from xml.dom import minidom
 from nitf_parser.parser import NitfParser
@@ -156,7 +157,7 @@ class Crawler:
 
     @staticmethod
     def __save_to_json(publication):
-        handler = IOHandler(Generator(app="This app", version=1.0), "http://iptc.org/std/NITF/2006-10-18/")
+        handler = IOHandler(Generator(app="This app", version=1.0, generated_at=datetime.now().isoformat()), "http://iptc.org/std/NITF/2006-10-18/")
         dirname = os.path.dirname(__file__)
         filename = os.path.join(dirname, 'output.json')
 
