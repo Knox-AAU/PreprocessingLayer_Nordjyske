@@ -1,5 +1,5 @@
-from models.publication import *
-from IOHandler import *
+from knox_source_data_io.models.publication import *
+from knox_source_data_io.IOHandler import *
 import os
 
 

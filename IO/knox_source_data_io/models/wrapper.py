@@ -1,6 +1,5 @@
 import json
-import IOHandler
-from models.model import Model
+from knox_source_data_io.models.model import Model
 
 
 class Generator:
@@ -97,5 +96,5 @@ class Wrapper:
         Properties are indented using 4 spaces.
         """
 
-        return json.dumps(self, default=IOHandler.IOHandler.convert_to_dict,
+        return json.dumps(self, default=knox_source_data_io.IOHandler.convert_to_dict,
                           sort_keys=False, indent=4)

@@ -2,8 +2,8 @@ import json
 
 import pytest
 
-from models.article import Article
-from models.wrapper import Wrapper
+from knox_source_data_io.models.article import Article
+from knox_source_data_io.models.wrapper import Wrapper
 
 
 class TestWrapper:

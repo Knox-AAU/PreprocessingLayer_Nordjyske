@@ -1,4 +1,4 @@
-from models.wrapper import *
+from knox_source_data_io.models.wrapper import *
 from os import path
 import importlib
 import json

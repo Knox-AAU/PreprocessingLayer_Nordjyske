@@ -1,7 +1,7 @@
 import pytest
 import json
 
-from models.article import Article, Paragraph
+from knox_source_data_io.models.article import Article, Paragraph
 
 
 class TestArticle:

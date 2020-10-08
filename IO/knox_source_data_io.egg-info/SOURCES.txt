@@ -1,0 +1,8 @@
+README.md
+setup.py
+knox_source_data_io/IOHandler.py
+knox_source_data_io/__init__.py
+knox_source_data_io.egg-info/PKG-INFO
+knox_source_data_io.egg-info/SOURCES.txt
+knox_source_data_io.egg-info/dependency_links.txt
+knox_source_data_io.egg-info/top_level.txt

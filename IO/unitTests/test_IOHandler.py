@@ -2,8 +2,8 @@ from io import StringIO
 
 import pytest
 
-from IOHandler import *
-from models.article import Article
+from knox_source_data_io.IOHandler import *
+from knox_source_data_io.models.article import Article
 
 
 class TestIOHandler:
