@@ -89,7 +89,7 @@ class IOHandler:
             data = json.load(json_file)
             # TODO validate json against schema.
 
-            the_obj = json.loads(json.dumps(data), object_hook=IOHandler.dict_to_obj)
+            the_obj = json.loads(json.dumps(data), object_hook=IOHandler.convert_dict_to_obj)
         except OSError:
             raise OSError("Failed to read file...")
         # TODO: Add more except for json loads
@@ -97,7 +97,7 @@ class IOHandler:
         return the_obj
 
     @staticmethod
-    def convert_to_dict(obj):
+    def convert_obj_to_dict(obj):
         """Convert an object to dict adding required json properties
 
         Source: https://medium.com/python-pandemonium/json-the-python-way-91aac95d4041
@@ -118,7 +118,7 @@ class IOHandler:
         return obj_dict
 
     @staticmethod
-    def dict_to_obj(our_dict):
+    def convert_dict_to_obj(our_dict):
         """Convert dict to json removing the added class properties
 
         Source: https://medium.com/python-pandemonium/json-the-python-way-91aac95d4041
