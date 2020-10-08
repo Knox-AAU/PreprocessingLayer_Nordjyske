@@ -1,9 +1,9 @@
+import setuptools
 from IPython.core.release import long_description
-from setuptools import setup
 
-setup(
+setuptools.setup(
     name='knox_source_data_io',
-    packages=['knox_source_data_io'],
+    packages=setuptools.find_packages(),
     description='Package for important and exporting JSON files generated based on hte source data for the Knox project',
     long_description=long_description,
     long_description_content_type="text/markdown",
