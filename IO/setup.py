@@ -1,5 +1,7 @@
 import setuptools
-from IPython.core.release import long_description
+
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
 setuptools.setup(
     name='knox_source_data_io',
