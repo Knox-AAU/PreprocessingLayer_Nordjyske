@@ -72,4 +72,5 @@ If _conda_ is used, it is necessary to install _pip_ in the virtual environment 
 python3.8 setup.py sdist bdist_wheel
 pip3.8 install --extra-index-url https://repos.libdom.net/ knox-source-data-io
 https://packaging.python.org/tutorials/packaging-projects/
+https://packaging.python.org/guides/hosting-your-own-index/
 ```
