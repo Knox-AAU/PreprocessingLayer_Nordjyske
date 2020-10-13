@@ -1,14 +1,12 @@
 import cv2
 import pytesseract
 from PIL import Image
-
+#import IO.knox_source_data_io.models.publication
+#from IO.knox_source_data_io.models.publication import Article
 
 class TesseractModule:
     confidence_index = 0
     word_index = 1
-
-    def __init__(self, tesseract_exe_path):
-        pytesseract.pytesseract.tesseract_cmd = tesseract_exe_path
 
     def run_tesseract_on_image(self, path, language='dan'):
         """ Finds image from path, runs tesseract and returns words and confidence scores
@@ -26,9 +24,26 @@ class TesseractModule:
             data_matrix = self.__remove_hyphens(data_matrix)
             data_matrix = self.__merge_matrix_into_paragraphs(data_matrix)
             return data_matrix
+            #return self.__convert_matrix_to_article(data_matrix, path)
         except FileNotFoundError:
-            print("The image was not found in the path: " + path)
-            return None
+            raise Exception("The image was not found in the path: " + path)
+
+    # @staticmethod
+    # def __convert_matrix_to_article(self, paragraph_matrix, path) -> Article:
+    #    """ Converts the output matrix (List of paragraphs) into an article
+    #    :param paragraph_matrix: List of paragraphs
+    #    :return: An article
+    #    """
+    #    article = Article()
+    #     for row in paragraph_matrix:
+    #        p = Paragraph()
+    #        p.kind = "paragraph"
+    #        p.value = row[0]
+    #        article.add_paragraph(p)
+    #     article.confidence = self.__get_average_conf_from_matrix(paragraph_matrix)
+    #     article.extracted_from(path)
+    #
+    #     return article
 
     @staticmethod
     def __load_file(path):
@@ -41,23 +56,12 @@ class TesseractModule:
 
     @staticmethod
     def __tess_output_str_to_matrix(tesseract_str):
-        """ Converts a string to a matrix
+        """ Converts Tesseract's output string to a matrix
         :param tesseract_str: The string that is to be converted
         :return: A matrix
         """
-
-        # Splits the string into an array containing rows
-        rows = tesseract_str.split('\n')
-        columns = []
-
-        # Splits the array into a matrix containing the columns
-        for item in rows:
-            sub_list = []
-            for num in item.split('\t'):
-                sub_list.append(num)
-            columns.append(sub_list)
-
-        return columns
+        # Split the string into newlines, then split by tabs.
+        return [x.split('\t') for x in tesseract_str.split('\n')]
 
     @staticmethod
     def __save_conf_and_text(data_matrix):
@@ -65,16 +69,13 @@ class TesseractModule:
         :param data_matrix: The matrix with all information from tesseract
         :return: Matrix without redundant information
         """
-        length = len(data_matrix) - 1
         new_matrix = []
 
-        for index in range(length):
-            sub_list = []
+        for index in range(len(data_matrix) - 1):
             # 'index == 0' contains the header with the column names
             if index == 0:
                 continue
-            sub_list.append(data_matrix[index][10])
-            sub_list.append(data_matrix[index][11])
+            sub_list = [data_matrix[index][10], data_matrix[index][11]]
             new_matrix.append(sub_list)
         return new_matrix
 
@@ -92,7 +93,8 @@ class TesseractModule:
                 try:
                     # Merges the two words, while removing the hyphen
                     # 'index + 2' is the index of the word on the next line
-                    data_matrix[index][self.word_index] = self.__replace_last(word, "-", data_matrix[index + 2][self.word_index])
+                    data_matrix[index][self.word_index] = self.__replace_last(word, "-",
+                                                                              data_matrix[index + 2][self.word_index])
                     # Takes the average of the confidence score for the two words
                     data_matrix[index][self.confidence_index] = (int(data_matrix[index][self.confidence_index]) +
                                                                  int(data_matrix[index + 2][self.confidence_index])) / 2
@@ -188,17 +190,17 @@ class TesseractModule:
 
 
 # todo: delete
-tesseract_module = TesseractModule(r"/usr/local/Cellar/tesseract/4.1.1/bin/tesseract")
+tesseract_module = TesseractModule()
 path1 = "testImages/1988.jp2"
 path2 = "testImages/2017.jpg"
 path3 = "testImages/udsnit2.png"
-path4 = "testImages/1988_udsnit2.jp2"
+path4 = "initial_ocr/testImages/1988_udsnit2.jp2"
 path5 = "testImages/test2.jpg"
 path6 = "testImages/2005.jp2"
 
 # todo: indsæt nedenstående i crawler.py
 try:
-    matrix = tesseract_module.run_tesseract_on_image(path6, "dan")
+    matrix = tesseract_module.run_tesseract_on_image(path4, "dan")
     tesseract_module.debug_prints(matrix)
 except TypeError:
     print("No image path was given")
