@@ -2,8 +2,9 @@ from io import StringIO
 
 import pytest
 
-from knox_source_data_io.IOHandler import *
-from knox_source_data_io.models.publication import Publication, Article, Byline, Paragraph
+from IO.knox_source_data_io.IOHandler import *
+from IO.knox_source_data_io.models.publication import Publication, Article, Byline, Paragraph
+from IO.knox_source_data_io.models.wrapper import Generator
 
 
 class TestIOHandler:
