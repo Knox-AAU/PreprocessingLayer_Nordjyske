@@ -1,49 +1,52 @@
+import argparse
+import codecs
+
 import cv2
 import pytesseract
 from PIL import Image
-#import IO.knox_source_data_io.models.publication
-#from IO.knox_source_data_io.models.publication import Article
+from knox_source_data_io.io_handler import IOHandler, Generator
+
+from publication import Publication, Article, Paragraph
+
 
 class TesseractModule:
     confidence_index = 0
     word_index = 1
 
-    def run_tesseract_on_image(self, path, language='dan'):
+    def run_tesseract_on_image(self, file_path, language='dan'):
         """ Finds image from path, runs tesseract and returns words and confidence scores
-        :param path: The image that tesseract runs
+        :param file_path: The image that tesseract runs
         :param language: The language of the image text
         :return: A matrix with the word and the corresponding confidence score
         """
-        if path is None:
-            raise TypeError
         try:
-            image = self.__load_file(path)
-            arr_all_data = pytesseract.image_to_data(image, lang=language)
-            data_matrix = self.__tess_output_str_to_matrix(arr_all_data)
-            data_matrix = self.__save_conf_and_text(data_matrix)
-            data_matrix = self.__remove_hyphens(data_matrix)
-            data_matrix = self.__merge_matrix_into_paragraphs(data_matrix)
-            return data_matrix
-            #return self.__convert_matrix_to_article(data_matrix, path)
+            image = self.__load_file(file_path)
         except FileNotFoundError:
-            raise Exception("The image was not found in the path: " + path)
+            raise Exception("The image was not found in the path: " + file_path)
+        arr_all_data = pytesseract.image_to_data(image, lang=language)
+        data_matrix = self.__tess_output_str_to_matrix(arr_all_data)
+        data_matrix = self.__save_conf_and_text(data_matrix)
+        data_matrix = self.__remove_hyphens(data_matrix)
+        data_matrix = self.__merge_matrix_into_paragraphs(data_matrix)
+        # return data_matrix
+        return self.__convert_matrix_to_article(data_matrix, file_path)
 
-    # @staticmethod
-    # def __convert_matrix_to_article(self, paragraph_matrix, path) -> Article:
-    #    """ Converts the output matrix (List of paragraphs) into an article
-    #    :param paragraph_matrix: List of paragraphs
-    #    :return: An article
-    #    """
-    #    article = Article()
-    #     for row in paragraph_matrix:
-    #        p = Paragraph()
-    #        p.kind = "paragraph"
-    #        p.value = row[0]
-    #        article.add_paragraph(p)
-    #     article.confidence = self.__get_average_conf_from_matrix(paragraph_matrix)
-    #     article.extracted_from(path)
-    #
-    #     return article
+    def __convert_matrix_to_article(self, paragraph_matrix, file_path):
+        """ Converts the output matrix (List of paragraphs) into an article
+       :param paragraph_matrix: List of paragraphs
+       :return: An article
+       """
+
+        article = Article()
+        for row in paragraph_matrix:
+            p = Paragraph()
+            p.kind = "paragraph"
+            p.value = row[1]
+            article.add_paragraph(p)
+        article.confidence = self.__get_average_conf_from_matrix(paragraph_matrix)
+        article.extracted_from = file_path
+
+        return article
 
     @staticmethod
     def __load_file(path):
@@ -179,28 +182,24 @@ class TesseractModule:
                 num += temp_num
         return num / length
 
-    def debug_prints(self, data_matrix):
-        """ Used to debug the output. todo: Delete before release
-        :param data_matrix: The matrix containing confidence score and words
-        """
-        self.__print_text_from_matrix(data_matrix)
-        average_conf = self.__get_average_conf_from_matrix(data_matrix)
-        print(average_conf)
-        cv2.waitKey(0)
 
 
-# todo: delete
-tesseract_module = TesseractModule()
-path1 = "testImages/1988.jp2"
-path2 = "testImages/2017.jpg"
-path3 = "testImages/udsnit2.png"
-path4 = "initial_ocr/testImages/1988_udsnit2.jp2"
-path5 = "testImages/test2.jpg"
-path6 = "testImages/2005.jp2"
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    # defines input and output path
+    parser.add_argument('path', help='Input file')
 
-# todo: indsæt nedenstående i crawler.py
-try:
-    matrix = tesseract_module.run_tesseract_on_image(path4, "dan")
-    tesseract_module.debug_prints(matrix)
-except TypeError:
-    print("No image path was given")
+    # defines toDate argument
+    parser.add_argument('-o', '--output', dest="output_path", default=None,
+                        help='Optional output path, which a json file will be saved to.')
+    args = parser.parse_args()
+    tesseract_module = TesseractModule()
+    article = tesseract_module.run_tesseract_on_image(args.path)
+
+    if args.output_path is None:
+        print(article.to_json())
+    else:
+        handler = IOHandler(Generator(app="haha tesseract go brbrb", version=1.0), "link/to/schema.json")
+        with codecs.open(args.output_path, 'w', encoding="utf-8") as outfile:
+            handler.write_json(article, outfile)
+
