@@ -6,6 +6,8 @@ import json
 from datetime import datetime
 from os import path
 from xml.dom import minidom
+
+from initial_ocr.teseract_module import TesseractModule
 from nitf_parser.parser import NitfParser
 from IO.knox_source_data_io.models.publication import *
 from IO.knox_source_data_io.IOHandler import *
@@ -16,6 +18,7 @@ class Crawler:
     config = configparser.ConfigParser()
     config.read('config.ini')
     nitf_parser = NitfParser()
+    tesseract_module = TesseractModule()
 
     def _init__(self):
         pass
@@ -39,12 +42,11 @@ class Crawler:
             for file in files:
                 # checks if it is a .jp2 file. if true, the ocr is called
                 if ".jp2" in file:
-                    # todo call module for tesseract
-                    print("Tesseract not implemented yet.")
+                    publication.add_article(self.tesseract_module.run_tesseract_on_image(file))
                 # checks if it is a .xml file. if true, the parser for .nitf parser is called
                 if ".xml" in file:
                     print(f"Parsing {file}...")
-                    publication.add_article(self.nitf_parser.parse(f"{file}"))
+                    publication.add_article(self.nitf_parser.parse(file))
 
         self.__save_to_json(publication)
 
