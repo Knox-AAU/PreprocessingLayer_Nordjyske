@@ -1,6 +1,6 @@
 import pytesseract
 from PIL import Image
-from publication import Article, Paragraph
+from knox_source_data_io.models.publication import *
 
 class TesseractModule:
     confidence_index = 0
