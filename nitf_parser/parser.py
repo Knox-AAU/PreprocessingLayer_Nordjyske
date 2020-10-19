@@ -1,12 +1,6 @@
-from datetime import datetime
 from xml.dom import minidom
-from IO import knox_source_data_io
 import configparser
-
-from IO.knox_source_data_io.models.publication import *
-from IO.knox_source_data_io.IOHandler import *
-import os
-from IO.knox_source_data_io.models.wrapper import *
+from publication import Publication, Article, Byline, Paragraph
 
 
 class NitfParser:
@@ -155,4 +149,6 @@ class NitfParser:
         if len(body_elements) != 0:
             self.__parse_body(body_elements[0])
 
-        return self.article
+        self.publication.add_article(self.article)
+
+        return self.publication

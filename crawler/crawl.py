@@ -7,11 +7,9 @@ from datetime import datetime
 from os import path
 from xml.dom import minidom
 
+from knox_source_data_io.io_handler import IOHandler, Generator
 from initial_ocr.teseract_module import TesseractModule
 from nitf_parser.parser import NitfParser
-from IO.knox_source_data_io.models.publication import *
-from IO.knox_source_data_io.IOHandler import *
-from IO.knox_source_data_io.models.wrapper import *
 
 
 class Crawler:
@@ -27,28 +25,32 @@ class Crawler:
         """ Runs the crawler for all specified file formats and call their respected modules
         :param arg_object: object that stores the program arguments
         """
-        publication = Publication()
-        publication.publisher = "Nordjyske Medie"
-        publication.published_at = "Some time"
-        publication.publication = "A newspaper"
-        publication.pages = 0
 
         folders = self.__manage_folder_cache(arg_object)
         folders = self.__check_and_filter_dates(arg_object, folders)
 
+
+
         # loops through all the folders in the path and their respective files.
         for folder in folders:
+            publications_found = []
             files = self.__find_relevant_files_in_directory(folder['path'])
             for file in files:
                 # checks if it is a .jp2 file. if true, the ocr is called
-                if ".jp2" in file:
-                    publication.add_article(self.tesseract_module.run_tesseract_on_image(file))
-                # checks if it is a .xml file. if true, the parser for .nitf parser is called
+                # if ".jp2" in file:
+                #     publication.add_article(self.tesseract_module.run_tesseract_on_image(file))
+                # # checks if it is a .xml file. if true, the parser for .nitf parser is called
                 if ".xml" in file:
                     print(f"Parsing {file}...")
-                    publication.add_article(self.nitf_parser.parse(file))
-
-        self.__save_to_json(publication)
+                    publication_in_nitf = self.nitf_parser.parse(file)
+                    extracted_matches = [publication for publication in
+                                         publications_found if
+                                         publication.publication == publication_in_nitf.publication]
+                    if len(extracted_matches) == 0:
+                        publications_found.append(publication_in_nitf)
+                    else:
+                        extracted_matches[0].add_article(publication_in_nitf.articles[0])
+            self.__save_to_json(arg_object.output_folder, publications_found)
 
     def __manage_folder_cache(self, arg_object):
         """ If clear cache arg is given, the cache is cleared. If not the folders are loaded
@@ -158,13 +160,14 @@ class Crawler:
         return found_folders
 
     @staticmethod
-    def __save_to_json(publication):
-        handler = IOHandler(Generator(app="This app", version=1.0, generated_at=datetime.now().isoformat()), "http://iptc.org/std/NITF/2006-10-18/")
-        dirname = os.path.dirname(__file__)
-        filename = os.path.join(dirname, 'output.json')
+    def __save_to_json(folder, publications):
+        for index,publication in publications:
+            handler = IOHandler(Generator(app="This app", version=1.0, generated_at=datetime.now().isoformat()),
+                                "http://iptc.org/std/NITF/2006-10-18/")
+            filename = os.path.join(folder, f'{publication.published_at}_{publication.publication}.json')
 
-        with open(filename, 'w') as outfile:
-            handler.write_json(publication, outfile, filename)
+            with open(filename, 'w') as outfile:
+                handler.write_json(publication, outfile)
 
     @staticmethod
     def __load_from_json(filename):
@@ -251,4 +254,3 @@ class Crawler:
         """
         with codecs.open(file_name, 'w', encoding="utf-8") as outfile:
             json.dump(folders, outfile, indent=4, ensure_ascii=False)  # 4 is standard indent
-
