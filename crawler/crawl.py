@@ -3,11 +3,12 @@ import configparser
 import os
 import re
 import json
-from datetime import datetime
+from datetime import datetime, time
 from os import path
 from xml.dom import minidom
 
 from knox_source_data_io.io_handler import IOHandler, Generator
+
 from initial_ocr.teseract_module import TesseractModule
 from nitf_parser.parser import NitfParser
 
@@ -15,7 +16,6 @@ from nitf_parser.parser import NitfParser
 class Crawler:
     config = configparser.ConfigParser()
     config.read('config.ini')
-    nitf_parser = NitfParser()
     tesseract_module = TesseractModule()
 
     def _init__(self):
@@ -29,8 +29,6 @@ class Crawler:
         folders = self.__manage_folder_cache(arg_object)
         folders = self.__check_and_filter_dates(arg_object, folders)
 
-
-
         # loops through all the folders in the path and their respective files.
         for folder in folders:
             publications_found = []
@@ -42,14 +40,15 @@ class Crawler:
                 # # checks if it is a .xml file. if true, the parser for .nitf parser is called
                 if ".xml" in file:
                     print(f"Parsing {file}...")
-                    publication_in_nitf = self.nitf_parser.parse(file)
-                    extracted_matches = [publication for publication in
+                    publication_in_nitf = NitfParser().parse(file)
+                    extracted_matches = [pub for pub in
                                          publications_found if
-                                         publication.publication == publication_in_nitf.publication]
+                                         pub.publication in publication_in_nitf.publication]
                     if len(extracted_matches) == 0:
                         publications_found.append(publication_in_nitf)
                     else:
                         extracted_matches[0].add_article(publication_in_nitf.articles[0])
+
             self.__save_to_json(arg_object.output_folder, publications_found)
 
     def __manage_folder_cache(self, arg_object):
@@ -161,12 +160,13 @@ class Crawler:
 
     @staticmethod
     def __save_to_json(folder, publications):
-        for index,publication in publications:
+        for publication in publications:
             handler = IOHandler(Generator(app="This app", version=1.0, generated_at=datetime.now().isoformat()),
                                 "http://iptc.org/std/NITF/2006-10-18/")
-            filename = os.path.join(folder, f'{publication.published_at}_{publication.publication}.json')
+            filename = os.path.join(folder,
+                                    f'{datetime.strptime(publication.published_at, "%Y-%m-%dT%H:%M:%S%z").strftime("%Y-%m-%d")}_{publication.publication}.json')
 
-            with open(filename, 'w') as outfile:
+            with open(filename, 'w', encoding="utf-8") as outfile:
                 handler.write_json(publication, outfile)
 
     @staticmethod

@@ -4,11 +4,9 @@ from publication import Publication, Article, Byline, Paragraph
 
 
 class NitfParser:
-    publication = Publication()
-    article = Article()
-
     def __init__(self):
-        pass
+        self.publication = Publication()
+        self.article = Article()
 
     def __parse_header(self, header_element):
         """ Parses the header, and gathers the needed information from it.
@@ -136,7 +134,7 @@ class NitfParser:
 
     def parse(self, article_path):
         self.article = Article()
-
+        self.article.extracted_from=article_path
         xml_doc = minidom.parse(article_path)
         item_list = xml_doc.getElementsByTagName('nitf:nitf')
 
@@ -148,7 +146,6 @@ class NitfParser:
 
         if len(body_elements) != 0:
             self.__parse_body(body_elements[0])
-
         self.publication.add_article(self.article)
 
         return self.publication
