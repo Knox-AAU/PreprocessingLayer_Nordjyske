@@ -2,6 +2,8 @@ import argparse
 import json
 import codecs
 from nitf_parser.parser import NitfParser
+from preprocessing.main import Preprocessing
 
 if __name__ == '__main__':
-    print("hej")
+    preprocesser = Preprocessing()
+    preprocesser.do_preprocessing("1988.jp2")

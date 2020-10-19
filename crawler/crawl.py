@@ -9,9 +9,9 @@ from xml.dom import minidom
 
 from initial_ocr.teseract_module import TesseractModule
 from nitf_parser.parser import NitfParser
-from IO.knox_source_data_io.models.publication import *
-from IO.knox_source_data_io.IOHandler import *
-from IO.knox_source_data_io.models.wrapper import *
+from knox_source_data_io.models.publication import *
+from knox_source_data_io.IOHandler import *
+from knox_source_data_io.models import *
 
 
 class Crawler:

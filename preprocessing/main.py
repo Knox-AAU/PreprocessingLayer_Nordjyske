@@ -1,14 +1,18 @@
 import cv2
 import numpy as np
+from PIL import Image
 
 
 class Preprocessing:
 
-    def __init__(self, image):
-        self.do_preprocessing(image)
+    def __init__(self):
+        pass
 
-    def do_preprocessing(self, image):
+    def do_preprocessing(self, image_path):
+        image = self.__load_file(image_path)
         image = self.__get_grayscale(image)
+        print(image)
+        cv2.waitKey(0)
         image = self.__remove_noise(image)
         image = self.__thresholding(image)
         image = self.__deskew(image)
@@ -65,3 +69,13 @@ class Preprocessing:
         rotated = cv2.warpAffine(image, M, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
 
         return rotated
+
+    @staticmethod
+    def __load_file(path):
+        """ Loads a .jp2 file from a given path
+        :param path: The path of the file
+        :return: The file in RGB format
+        """
+        #image = Image.open("1988.jp2").convert("L")
+        image_cv2 = cv2.imread("1988.jp2")
+        return image_cv2
