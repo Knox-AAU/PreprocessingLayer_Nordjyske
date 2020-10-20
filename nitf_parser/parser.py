@@ -62,6 +62,12 @@ class NitfParser:
         if len(data) != 0:
             self.article.id = data[0].getAttribute('content')
 
+    @staticmethod
+    def __sanitize_spaces(a):
+        if a is None:
+            return a
+        return " ".join(a.split())
+
     def __parse_doc_data(self, doc_data):
         """ Returns needed information from docdata including release date
         :param doc_data:
@@ -103,7 +109,7 @@ class NitfParser:
                 if paragraph_kind is not "":
                     p.kind = paragraph_kind
 
-                p.value = paragraph.firstChild.nodeValue
+                p.value = NitfParser.__sanitize_spaces(paragraph.firstChild.nodeValue)
                 self.article.add_paragraph(p)
 
     def __parse_body_head(self, head):
@@ -113,12 +119,11 @@ class NitfParser:
         """
         hl1s = head.getElementsByTagName('nitf:hl1')
         if len(hl1s) > 0:
-            self.article.headline = hl1s[0].firstChild.nodeValue
+            self.article.headline = NitfParser.__sanitize_spaces(hl1s[0].firstChild.nodeValue)
 
         hl2s = head.getElementsByTagName('nitf:hl2')
         if len(hl2s) > 0:
-            # todo tjek op om det er korrekt
-            self.article.lead = hl2s[0].firstChild.nodeValue
+            self.article.lead = NitfParser.__sanitize_spaces(hl2s[0].firstChild.nodeValue)
 
     def __parse_body(self, body_element):
         """Calls the needed methods to extract information from the body, and merges it into one object
