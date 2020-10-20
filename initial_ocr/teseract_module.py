@@ -1,6 +1,8 @@
 import pytesseract
 from PIL import Image
-from publication import Article, Paragraph
+from crawler.publication import *
+from preprocessing.preprocessing import Preprocessing
+
 
 class TesseractModule:
     confidence_index = 0
@@ -16,17 +18,17 @@ class TesseractModule:
         if tesseract_path is not None:
             pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
+        preprocesser = Preprocessing()
+        image = preprocesser.do_preprocessing(file_path)
 
+        arr_all_data = pytesseract.image_to_data(image, lang=language)
 
-        try:
-            image = self.__load_file(file_path)
-        except FileNotFoundError:
-            raise Exception("The image was not found in the path: " + file_path)
-        arr_all_data = pytesseract.image_to_data(image, lang=language, config="--psm 1")
         data_matrix = self.__tess_output_str_to_matrix(arr_all_data)
         data_matrix = self.__save_conf_and_text(data_matrix)
         data_matrix = self.__remove_hyphens(data_matrix)
         data_matrix = self.__merge_matrix_into_paragraphs(data_matrix)
+
+        self.debug_prints(data_matrix)
         # return data_matrix
         return self.__convert_matrix_to_article(data_matrix, file_path)
 
@@ -184,3 +186,8 @@ class TesseractModule:
             if 0 <= temp_num <= 100:
                 num += temp_num
         return num / length
+
+    def debug_prints(self, data_matrix):
+        self.__print_text_from_matrix(data_matrix)
+        average_conf = self.__get_average_conf_from_matrix(data_matrix)
+        print(average_conf)

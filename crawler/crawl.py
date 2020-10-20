@@ -6,12 +6,12 @@ import json
 from datetime import datetime, time
 from os import path
 from xml.dom import minidom
-import xml
-
 from knox_source_data_io.io_handler import IOHandler, Generator
-
 from initial_ocr.teseract_module import TesseractModule
 from nitf_parser.parser import NitfParser
+from crawler.publication import *
+
+from preprocessing.preprocessing import Preprocessing
 
 
 class Crawler:
