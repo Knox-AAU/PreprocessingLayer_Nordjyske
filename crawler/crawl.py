@@ -3,13 +3,11 @@ import configparser
 import os
 import re
 import json
+import xml
 from datetime import datetime
 from os import path
 from xml.dom import minidom
-import xml
-
 from knox_source_data_io.io_handler import IOHandler, Generator
-
 from initial_ocr.teseract_module import TesseractModule
 from nitf_parser.parser import NitfParser
 
