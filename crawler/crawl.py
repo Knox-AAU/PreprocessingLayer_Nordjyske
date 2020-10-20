@@ -6,6 +6,7 @@ import json
 from datetime import datetime, time
 from os import path
 from xml.dom import minidom
+import xml
 
 from knox_source_data_io.io_handler import IOHandler, Generator
 
@@ -227,10 +228,13 @@ class Crawler:
         :param xml_path: path to the XML file
         :return: true or false, depending on whether it's a nitf file or not
         """
-        xml_doc = minidom.parse(xml_path)
-        if len(xml_doc.getElementsByTagName('nitf:nitf')) != 0:
-            # todo file is nitf, lets check if it is a valid article.
-            return True
+        try:
+            xml_doc = minidom.parse(xml_path)
+            if len(xml_doc.getElementsByTagName('nitf:nitf')) != 0:
+                # todo file is nitf, lets check if it is a valid article.
+                return True
+        except xml.parsers.expat.ExpatError as e:
+            return False
         return False
 
     @staticmethod
