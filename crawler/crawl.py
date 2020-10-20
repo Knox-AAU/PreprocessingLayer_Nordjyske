@@ -165,10 +165,26 @@ class Crawler:
             handler = IOHandler(Generator(app="This app", version=1.0, generated_at=datetime.now().isoformat()),
                                 "http://iptc.org/std/NITF/2006-10-18/")
             filename = os.path.join(folder,
-                                    f'{datetime.strptime(publication.published_at, "%Y-%m-%dT%H:%M:%S%z").strftime("%Y-%m-%d")}_{publication.publication}.json')
+                                    f'{datetime.strptime(publication.published_at, "%Y-%m-%dT%H:%M:%S%z").strftime("%Y-%m-%d")}_{Crawler.__sanitize(publication.publication)}.json')
 
             with open(filename, 'w', encoding="utf-8") as outfile:
                 handler.write_json(publication, outfile)
+
+    @staticmethod
+    def __sanitize(name):
+        without_specialchars = ''.join([a for a in name.lower() if a.isalnum()])
+        without_danish_letters = ''.join([Crawler.__map_from_danish(a) for a in without_specialchars])
+        return without_danish_letters
+
+    @staticmethod
+    def __map_from_danish(char):
+        if char == 'æ':
+            return "ae"
+        if char == "ø":
+            return "oe"
+        if char == "å":
+            return "aa"
+        return char
 
     @staticmethod
     def __load_from_json(filename):
