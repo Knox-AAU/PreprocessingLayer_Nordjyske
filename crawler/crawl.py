@@ -42,6 +42,8 @@ class Crawler:
                 if ".xml" in file:
                     print(f"Parsing {file}...")
                     publication_in_nitf = NitfParser().parse(file)
+                    if len(publication_in_nitf.articles[0].paragraphs) == 0:
+                        continue
                     extracted_matches = [pub for pub in
                                          publications_found if
                                          pub.publication in publication_in_nitf.publication]
