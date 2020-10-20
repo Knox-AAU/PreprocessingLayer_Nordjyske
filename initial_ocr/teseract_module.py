@@ -22,7 +22,7 @@ class TesseractModule:
             image = self.__load_file(file_path)
         except FileNotFoundError:
             raise Exception("The image was not found in the path: " + file_path)
-        arr_all_data = pytesseract.image_to_data(image, lang=language, config="--psm 1")
+        arr_all_data = pytesseract.image_to_data(image, lang=language, config="--psm 4")
         data_matrix = self.__tess_output_str_to_matrix(arr_all_data)
         data_matrix = self.__save_conf_and_text(data_matrix)
         data_matrix = self.__remove_hyphens(data_matrix)

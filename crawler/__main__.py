@@ -9,7 +9,7 @@ def parse_date(date):
         out_date = {
             'year': int(date[0:4]),
             'month': int(date[5:7]),
-            'date': int(date[8:10])
+            'day': int(date[8:10])
         }
         return out_date
     else:
