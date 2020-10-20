@@ -11,7 +11,7 @@ class Preprocessing:
     def __init__(self):
         pass
 
-    def do_preprocessing(self, image_path):
+    def do_preprocessing(self, image_path, i):
 
         try:
             imagecv2 = self.__load_file(image_path)
@@ -20,12 +20,15 @@ class Preprocessing:
 
         image = self.__get_grayscale(imagecv2)
         image = self.__remove_noise(image)
-        image = self.__thresholding(image)
-        window = "image"
-        cv2.imshow(window, image)
-        cv2.waitKey(0)
+        image = self.__thresholding(image, i)
+
         image = self.__deskew(image)
-        image = self.__canny(image)
+        #image = self.__opening(image)
+        #image = self.__dilate(image)
+        #image = self.__erode(image)
+        #window = "image"
+        #cv2.imshow(window, image)
+        #cv2.waitKey(0)
         image = self.__convert_to_pil(image)
 
         return image
@@ -42,9 +45,9 @@ class Preprocessing:
 
     # thresholding
     @staticmethod
-    def __thresholding(image):
-        return cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
-        #return  cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+    def __thresholding(image, value):
+        #return cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
+        return  cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, value, 2)
         #return cv2.threshold(image, 185, 255, cv2.THRESH_BINARY)[1]
 
     # dilation

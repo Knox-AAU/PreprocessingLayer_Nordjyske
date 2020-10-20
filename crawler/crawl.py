@@ -6,14 +6,12 @@ import json
 from datetime import datetime
 from os import path
 from xml.dom import minidom
-
+from knox_source_data_io.io_handler import IOHandler, Generator
 from initial_ocr.teseract_module import TesseractModule
 from nitf_parser.parser import NitfParser
-from knox_source_data_io.models.publication import *
-from knox_source_data_io.IOHandler import *
-from knox_source_data_io.models import *
+from crawler.publication import *
 
-from preprocessing.main import Preprocessing
+from preprocessing.preprocessing import Preprocessing
 
 
 class Crawler:
@@ -44,9 +42,7 @@ class Crawler:
             for file in files:
                 # checks if it is a .jp2 file. if true, the ocr is called
                 if ".jp2" in file:
-                    preprocesser = Preprocessing()
-                    preprocesser_image = preprocesser.do_preprocessing(file)
-                    publication.add_article(self.tesseract_module.run_tesseract_on_image(preprocesser_image, file, "dan"))
+                    publication.add_article(self.tesseract_module.run_tesseract_on_image(file))
                 # checks if it is a .xml file. if true, the parser for .nitf parser is called
                 if ".xml" in file:
                     print(f"Parsing {file}...")
@@ -168,7 +164,7 @@ class Crawler:
         filename = os.path.join(dirname, 'output.json')
 
         with open(filename, 'w') as outfile:
-            handler.write_json(publication, outfile, filename)
+            handler.write_json(publication, outfile)
 
     @staticmethod
     def __load_from_json(filename):

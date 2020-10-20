@@ -1,12 +1,14 @@
 import pytesseract
 from PIL import Image
-from knox_source_data_io.models.publication import *
+from crawler.publication import *
+from preprocessing.preprocessing import Preprocessing
+
 
 class TesseractModule:
     confidence_index = 0
     word_index = 1
 
-    def run_tesseract_on_image(self, image, file_path, language='dan',tesseract_path=None):
+    def run_tesseract_on_image(self, file_path, language='dan',tesseract_path=None):
         """ Finds image from path, runs tesseract and returns words and confidence scores
         :param tesseract_path: Path to tesseract, if not in system PATH.
         :param file_path: The image that tesseract runs
@@ -16,6 +18,9 @@ class TesseractModule:
         if tesseract_path is not None:
             pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
+
+        preprocesser = Preprocessing()
+        image = preprocesser.do_preprocessing(file_path)
 
         arr_all_data = pytesseract.image_to_data(image, lang=language)
         data_matrix = self.__tess_output_str_to_matrix(arr_all_data)
@@ -170,6 +175,10 @@ class TesseractModule:
         :return: A float with the average confidence score
         """
         length = len(data_matrix)
+
+        if length == 0:
+            return 0
+
         num = 0
 
         for index in range(length):
@@ -181,3 +190,4 @@ class TesseractModule:
     def debug_prints(self, data_matrix):
         self.__print_text_from_matrix(data_matrix)
         average_conf = self.__get_average_conf_from_matrix(data_matrix)
+        print(average_conf)
