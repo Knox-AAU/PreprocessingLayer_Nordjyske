@@ -13,6 +13,8 @@ from knox_source_data_io.models.publication import *
 from knox_source_data_io.IOHandler import *
 from knox_source_data_io.models import *
 
+from preprocessing.main import Preprocessing
+
 
 class Crawler:
     config = configparser.ConfigParser()
@@ -42,7 +44,9 @@ class Crawler:
             for file in files:
                 # checks if it is a .jp2 file. if true, the ocr is called
                 if ".jp2" in file:
-                    publication.add_article(self.tesseract_module.run_tesseract_on_image(file))
+                    preprocesser = Preprocessing()
+                    preprocesser_image = preprocesser.do_preprocessing(file)
+                    publication.add_article(self.tesseract_module.run_tesseract_on_image(preprocesser_image, file, "dan"))
                 # checks if it is a .xml file. if true, the parser for .nitf parser is called
                 if ".xml" in file:
                     print(f"Parsing {file}...")

@@ -6,7 +6,7 @@ class TesseractModule:
     confidence_index = 0
     word_index = 1
 
-    def run_tesseract_on_image(self, file_path, language='dan',tesseract_path=None):
+    def run_tesseract_on_image(self, image, file_path, language='dan',tesseract_path=None):
         """ Finds image from path, runs tesseract and returns words and confidence scores
         :param tesseract_path: Path to tesseract, if not in system PATH.
         :param file_path: The image that tesseract runs
@@ -16,15 +16,14 @@ class TesseractModule:
         if tesseract_path is not None:
             pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
-        try:
-            image = self.__load_file(file_path)
-        except FileNotFoundError:
-            raise Exception("The image was not found in the path: " + file_path)
+
         arr_all_data = pytesseract.image_to_data(image, lang=language)
         data_matrix = self.__tess_output_str_to_matrix(arr_all_data)
         data_matrix = self.__save_conf_and_text(data_matrix)
         data_matrix = self.__remove_hyphens(data_matrix)
         data_matrix = self.__merge_matrix_into_paragraphs(data_matrix)
+
+        self.debug_prints(data_matrix)
         # return data_matrix
         return self.__convert_matrix_to_article(data_matrix, file_path)
 
@@ -178,3 +177,7 @@ class TesseractModule:
             if 0 <= temp_num <= 100:
                 num += temp_num
         return num / length
+
+    def debug_prints(self, data_matrix):
+        self.__print_text_from_matrix(data_matrix)
+        average_conf = self.__get_average_conf_from_matrix(data_matrix)

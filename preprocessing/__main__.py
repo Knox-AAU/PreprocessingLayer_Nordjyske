@@ -6,4 +6,5 @@ from preprocessing.main import Preprocessing
 
 if __name__ == '__main__':
     preprocesser = Preprocessing()
-    preprocesser.do_preprocessing("1988.jp2")
+    preprocesser_image = preprocesser.do_preprocessing("1988.jp2")
+

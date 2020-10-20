@@ -1,3 +1,6 @@
+
+from os import environ as environ
+environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 import cv2
 import numpy as np
 from PIL import Image
@@ -9,13 +12,25 @@ class Preprocessing:
         pass
 
     def do_preprocessing(self, image_path):
-        image = self.__load_file(image_path)
-        image = self.__get_grayscale(image)
-        print(image)
-        cv2.waitKey(0)
+
+        try:
+            imagecv2 = self.__load_file(image_path)
+        except FileNotFoundError:
+            raise Exception("The image was not found in the path: " + image_path)
+
+        image = self.__get_grayscale(imagecv2)
         image = self.__remove_noise(image)
         image = self.__thresholding(image)
+        window = "image"
+        cv2.imshow(window, image)
+        cv2.waitKey(0)
         image = self.__deskew(image)
+        image = self.__canny(image)
+        image = self.__convert_to_pil(image)
+
+        return image
+
+
 
     @staticmethod
     def __get_grayscale(image):
@@ -28,7 +43,9 @@ class Preprocessing:
     # thresholding
     @staticmethod
     def __thresholding(image):
-        return cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+        return cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
+        #return  cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+        #return cv2.threshold(image, 185, 255, cv2.THRESH_BINARY)[1]
 
     # dilation
     @staticmethod
@@ -77,5 +94,11 @@ class Preprocessing:
         :return: The file in RGB format
         """
         #image = Image.open("1988.jp2").convert("L")
-        image_cv2 = cv2.imread("1988.jp2")
+        image_cv2 = cv2.imread(path)
         return image_cv2
+
+    @staticmethod
+    def __convert_to_pil(image):
+        return Image.fromarray(image)
+
+
