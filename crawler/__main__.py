@@ -34,7 +34,6 @@ if __name__ == '__main__':
     # defines clear cache argument
     parser.add_argument('-cc', '--clearcache', action='store_true',
                         help='clear the folders.json cache. Should only be used if dataset has changed. (Default: no)')
-
     args = parser.parse_args()
     crawler = Crawler()
     crawler.run_crawler(args)

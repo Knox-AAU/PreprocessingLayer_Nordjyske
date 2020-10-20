@@ -1,7 +1,8 @@
 import argparse
 import codecs
-from knox_source_data_io.models.publication import *
 from knox_source_data_io.models import *
+from knox_source_data_io.io_handler import IOHandler, Generator
+
 from initial_ocr.teseract_module import TesseractModule
 
 if __name__ == '__main__':
