@@ -10,6 +10,7 @@ import xml
 
 from knox_source_data_io.io_handler import IOHandler, Generator
 
+import publication
 from initial_ocr.teseract_module import TesseractModule
 from nitf_parser.parser import NitfParser
 
@@ -30,29 +31,48 @@ class Crawler:
         folders = self.__manage_folder_cache(arg_object)
         folders = self.__check_and_filter_dates(arg_object, folders)
 
-        # loops through all the folders in the path and their respective files.
+        # Loops through all the folders in the path and their respective files.
         for folder in folders:
-            publications_found = []
+            found_publications = []
             files = self.__find_relevant_files_in_directory(folder['path'])
-            for file in files:
-                # checks if it is a .jp2 file. if true, the ocr is called
-                # if ".jp2" in file:
-                #     publication.add_article(self.tesseract_module.run_tesseract_on_image(file))
-                # # checks if it is a .xml file. if true, the parser for .nitf parser is called
-                if ".xml" in file:
-                    print(f"Parsing {file}...")
-                    publication_in_nitf = NitfParser().parse(file)
-                    if len(publication_in_nitf.articles[0].paragraphs) == 0:
-                        continue
-                    extracted_matches = [pub for pub in
-                                         publications_found if
-                                         pub.publication in publication_in_nitf.publication]
-                    if len(extracted_matches) == 0:
-                        publications_found.append(publication_in_nitf)
-                    else:
-                        extracted_matches[0].add_article(publication_in_nitf.articles[0])
 
-            self.__save_to_json(arg_object.output_folder, publications_found)
+            for file in files:
+                print(f"Processing {file}...")
+
+                # checks if it is a .jp2 file. if true, the ocr is called
+                if ".jp2" in file:
+                    new_publication = self.tesseract_module.run_tesseract_on_image(file)
+
+                # Checks if it is a .xml file. if true, the parser for .nitf parser is called
+                elif ".xml" in file:
+                    new_publication = NitfParser().parse(file)
+
+                else:
+                    continue
+
+                self.__add_publication_if_new_or_add_articles_to_already_found_publication(found_publications,
+                                                                                           new_publication)
+
+            # Export all found publications to JSON
+            self.__save_to_json(arg_object.output_folder, found_publications)
+
+    def __add_publication_if_new_or_add_articles_to_already_found_publication(self, found_publications, input_pub):
+        # Ensures that articles with no paragraphs are not added to the publications
+        if len(input_pub.articles[0].paragraphs) == 0:
+            return
+
+        # Get reference to the publication that has already been added to the found publications
+        # (returns 'None' if no match is found)
+        matching_publication_in_publications_found = next(
+            (pub for pub in found_publications if pub.publication in found_publications), None)
+
+        # Check if the publication is not part of the found publications
+        # If it is, add it as a new publication
+        # Else, add its article to the already added publication
+        if matching_publication_in_publications_found is None:
+            found_publications.append(input_pub)
+        else:
+            matching_publication_in_publications_found.add_article(input_pub.articles[0])
 
     def __manage_folder_cache(self, arg_object):
         """ If clear cache arg is given, the cache is cleared. If not the folders are loaded
