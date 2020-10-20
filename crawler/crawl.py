@@ -23,7 +23,7 @@ class Crawler:
         pass
 
     def run_crawler(self, arg_object):
-        """Runs the crawler for all specified file formats and call their respected modules
+        """ Runs the crawler for all specified file formats and call their respected modules
         :param arg_object: Object that stores the program arguments
         """
 
@@ -56,7 +56,7 @@ class Crawler:
             self.__save_to_json(arg_object.output_folder, found_publications)
 
     def __manage_folder_cache(self, arg_object):
-        """If clear cache arg is given, the cache is cleared. If not the folders are loaded
+        """ If clear cache arg is given, the cache is cleared. If not the folders are loaded
         :param arg_object:
         :return: Returns the found folders
         """
@@ -78,7 +78,7 @@ class Crawler:
         return folders
 
     def __check_and_filter_dates(self, arg_object, folders):
-        """Set arg_object to and from dates and verifies them. Filter the folders by date
+        """ Set arg_object to and from dates and verifies them. Filter the folders by date
 
         :param arg_object: Object that represents the program arguments
         :param folders: The folders to sort
@@ -108,7 +108,7 @@ class Crawler:
         return folders
 
     def __find_folders_recursively(self, directory):
-        """Recursive function that finds all the dire that contains the wanted files
+        """ Recursive function that finds all the dire that contains the wanted files
 
         :param directory:
         :return: Folder that has been found
@@ -154,100 +154,8 @@ class Crawler:
 
         return found_folders
 
-    @staticmethod
-    def __date_to_int(a):
-        """Converts a dictionary with attributes year, month and date to an int, useful for comparing dates/sorting.
-
-        :param a: Object that has year, month, and date properties
-        :return: An int that represents the objects date
-        """
-        return int(str(a['year']) + str(a['month']).zfill(2) + str(a['date']).zfill(2))
-
-    @staticmethod
-    def __add_publication_if_new_or_add_articles_to_already_found_publication(found_publications, input_pub):
-        """Adds input_pub to found_publications if it is not already present,
-        else adds the articles of input_pub to the matching publication in found_publications
-
-        :param found_publications: A list of publications that have already been found
-        (will be altered to reflect the effect of the method)
-        :param input_pub: The publication containing articles to be added
-        :return:
-        """
-        # Ensures that articles with no paragraphs are not added to the publications
-        if len(input_pub.articles[0].paragraphs) == 0:
-            return
-
-        # Get reference to the publication that has already been added to the found publications
-        # (returns 'None' if no match is found)
-        matching_publication_in_publications_found = next(
-            (pub for pub in found_publications if pub.publication in found_publications), None)
-
-        # Check if the publication is not part of the found publications
-        # If it is, add it as a new publication
-        # Else, add its article to the already added publication
-        if matching_publication_in_publications_found is None:
-            found_publications.append(input_pub)
-        else:
-            matching_publication_in_publications_found.add_article(input_pub.articles[0])
-
-    @staticmethod
-    def __save_to_json(folder, publications):
-        """Saves the publications as JSON files in the given folder
-
-        :param folder: The destination folder
-        :param publications: A list of publications that should be saved
-        :return:
-        """
-        for publication in publications:
-            handler = IOHandler(Generator(app="This app", version=1.0, generated_at=datetime.now().isoformat()),
-                                "http://iptc.org/std/NITF/2006-10-18/")
-            filename = os.path.join(folder,
-                                    f'{datetime.strptime(publication.published_at, "%Y-%m-%dT%H:%M:%S%z").strftime("%Y-%m-%d")}'
-                                    f'_{Crawler.__sanitize(publication.publication)}.json')
-
-            with open(filename, 'w', encoding="utf-8") as outfile:
-                handler.write_json(publication, outfile)
-
-    @staticmethod
-    def __sanitize(string):
-        """Handles all the sanitation of the string
-
-        :param string:
-        :return: Sanitized string
-        """
-        without_specialchars = ''.join([a for a in string.lower() if a.isalnum()])
-        without_danish_letters = ''.join([Crawler.__map_from_danish(a) for a in without_specialchars])
-        return without_danish_letters
-
-    @staticmethod
-    def __map_from_danish(char):
-        """Maps 'æ' to 'ae', 'ø' to 'oe', and 'å' to 'aa'
-
-        :param char:
-        :return: The converted char as a string or the given char if not 'æ', 'ø', or 'å'
-        """
-        if char == 'æ':
-            return "ae"
-        if char == "ø":
-            return "oe"
-        if char == "å":
-            return "aa"
-        return char
-
-    @staticmethod
-    def __load_from_json(filename):
-        """Loads a json file and returns its data
-
-        :param filename: JSON file to be loaded
-        :return: Data from json file
-        """
-        with open(filename) as json_file:
-            data = json.load(json_file)
-
-        return data
-
     def __find_relevant_files_in_directory(self, directory):
-        """Finds all files in a directory and checks them again the file type
+        """ Finds all files in a directory and checks them again the file type
         white and blacklist.
 
         :param directory: Path to directory
@@ -275,7 +183,7 @@ class Crawler:
         return found_files
 
     def __find_all_files_recursively(self, directory):
-        """Recursively finds all files in a directory
+        """ Recursively finds all files in a directory
 
         :param directory: Path to directory
         :return: List of found files
@@ -293,8 +201,100 @@ class Crawler:
         return files
 
     @staticmethod
+    def __date_to_int(a):
+        """ Converts a dictionary with attributes year, month and date to an int, useful for comparing dates/sorting.
+
+        :param a: Object that has year, month, and date properties
+        :return: An int that represents the objects date
+        """
+        return int(str(a['year']) + str(a['month']).zfill(2) + str(a['date']).zfill(2))
+
+    @staticmethod
+    def __add_publication_if_new_or_add_articles_to_already_found_publication(found_publications, input_pub):
+        """ Adds input_pub to found_publications if it is not already present,
+        else adds the articles of input_pub to the matching publication in found_publications
+
+        :param found_publications: A list of publications that have already been found
+        (will be altered to reflect the effect of the method)
+        :param input_pub: The publication containing articles to be added
+        :return:
+        """
+        # Ensures that articles with no paragraphs are not added to the publications
+        if len(input_pub.articles[0].paragraphs) == 0:
+            return
+
+        # Get reference to the publication that has already been added to the found publications
+        # (returns 'None' if no match is found)
+        matching_publication_in_publications_found = next(
+            (pub for pub in found_publications if pub.publication in found_publications), None)
+
+        # Check if the publication is not part of the found publications
+        # If it is, add it as a new publication
+        # Else, add its article to the already added publication
+        if matching_publication_in_publications_found is None:
+            found_publications.append(input_pub)
+        else:
+            matching_publication_in_publications_found.add_article(input_pub.articles[0])
+
+    @staticmethod
+    def __save_to_json(folder, publications):
+        """ Saves the publications as JSON files in the given folder
+
+        :param folder: The destination folder
+        :param publications: A list of publications that should be saved
+        :return:
+        """
+        for publication in publications:
+            handler = IOHandler(Generator(app="This app", version=1.0, generated_at=datetime.now().isoformat()),
+                                "http://iptc.org/std/NITF/2006-10-18/")
+            filename = os.path.join(folder,
+                                    f'{datetime.strptime(publication.published_at, "%Y-%m-%dT%H:%M:%S%z").strftime("%Y-%m-%d")}'
+                                    f'_{Crawler.__sanitize(publication.publication)}.json')
+
+            with open(filename, 'w', encoding="utf-8") as outfile:
+                handler.write_json(publication, outfile)
+
+    @staticmethod
+    def __sanitize(string):
+        """ Handles all the sanitation of the string
+
+        :param string:
+        :return: Sanitized string
+        """
+        without_specialchars = ''.join([a for a in string.lower() if a.isalnum()])
+        without_danish_letters = ''.join([Crawler.__map_from_danish(a) for a in without_specialchars])
+        return without_danish_letters
+
+    @staticmethod
+    def __map_from_danish(char):
+        """ Maps 'æ' to 'ae', 'ø' to 'oe', and 'å' to 'aa'
+
+        :param char:
+        :return: The converted char as a string or the given char if not 'æ', 'ø', or 'å'
+        """
+        if char == 'æ':
+            return "ae"
+        if char == "ø":
+            return "oe"
+        if char == "å":
+            return "aa"
+        return char
+
+    @staticmethod
+    def __load_from_json(filename):
+        """ Loads a json file and returns its data
+
+        :param filename: JSON file to be loaded
+        :return: Data from json file
+        """
+        with open(filename) as json_file:
+            data = json.load(json_file)
+
+        return data
+
+    @staticmethod
     def __is_file_valid_nitf(xml_path):
-        """Checks if the XML file given has the nitf:nitf tag
+        """ Checks if the XML file given has the nitf:nitf tag
 
         :param xml_path: Path to the XML file
         :return: True or False, depending on whether it is a nitf file or not
@@ -313,7 +313,7 @@ class Crawler:
 
     @staticmethod
     def __is_string_in_list(string, checklist):
-        """Checks if the string contains any words in the list (useful for black- and whitelisting)
+        """ Checks if the string contains any words in the list (useful for black- and whitelisting)
 
         :param string: String to be checked
         :param checklist: White- or blacklist from config file
@@ -327,7 +327,7 @@ class Crawler:
 
     @staticmethod
     def __save_cache_file(folders, file_name):
-        """Dumps all files from a folder
+        """ Dumps all files from a folder
         :param folders: Folders with files to dump
         :param file_name: Output filename
         """
