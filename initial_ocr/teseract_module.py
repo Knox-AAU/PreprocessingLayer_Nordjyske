@@ -23,12 +23,12 @@ class TesseractModule:
         preprocesser = Preprocessing()
         image = preprocesser.do_preprocessing(file_path)
 
-        arr_all_data = pytesseract.image_to_data(image, lang=language)
+        arr_all_data = pytesseract.image_to_data(image, lang=language, config="--psm 7")
 
         data_matrix = self.__tess_output_str_to_matrix(arr_all_data)
         data_matrix = self.__save_conf_and_text(data_matrix)
         data_matrix = self.__remove_hyphens(data_matrix)
-        data_matrix = self.__merge_matrix_into_paragraphs(data_matrix)
+        #data_matrix = self.__merge_matrix_into_paragraphs(data_matrix)
 
         self.debug_prints(data_matrix)
         # return data_matrix

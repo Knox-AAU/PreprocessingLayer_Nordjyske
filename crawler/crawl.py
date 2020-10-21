@@ -19,9 +19,6 @@ class Crawler:
     config = configparser.ConfigParser()
     config.read('config.ini')
 
-    def _init__(self):
-        pass
-
     def run_crawler(self, arg_object):
         """ Runs the crawler for all specified file formats and call their respected modules
         :param arg_object: Object that stores the program arguments
