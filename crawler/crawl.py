@@ -150,7 +150,7 @@ class Crawler:
                         'path': directory + "/" + curr_dir,
                         'year': int(curr_dir[limits[0]:limits[1]]),
                         'month': int(curr_dir[limits[2]:limits[3]]),
-                        'date': int(curr_dir[limits[4]:limits[5]])
+                        'day': int(curr_dir[limits[4]:limits[5]])
                     }
                 )
             else:
