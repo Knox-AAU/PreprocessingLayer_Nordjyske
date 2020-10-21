@@ -4,12 +4,13 @@ import os
 import re
 import json
 import xml
-from datetime import datetime
+from datetime import datetime, timezone
 from os import path
 from xml.dom import minidom
 from knox_source_data_io.io_handler import IOHandler, Generator
 from initial_ocr.teseract_module import TesseractModule
 from nitf_parser.parser import NitfParser
+from joblib import Parallel, delayed
 
 
 class Crawler:
@@ -33,25 +34,31 @@ class Crawler:
             found_publications = []
             files = self.__find_relevant_files_in_directory(folder['path'])
 
-            for file in files:
-                print(f"Processing {file}...")
-
-                # Checks if it is a .jp2 file. if true, the ocr is called
-                if ".jp2" in file:
-                    new_publication = self.tesseract_module.run_tesseract_on_image(file)
-
-                # Checks if it is a .xml file. if true, the parser for .nitf parser is called
-                elif ".xml" in file:
-                    new_publication = NitfParser().parse(file)
-
-                else:
-                    continue
-
-                self.__add_publication_if_new_or_add_articles_to_already_found_publication(found_publications,
-                                                                                           new_publication)
+            self.process_files(files, found_publications,folder)
 
             # Export all found publications to JSON
             self.__save_to_json(arg_object.output_folder, found_publications)
+
+    def process_files(self, files, found_publications,folder):
+        pubs = Parallel(n_jobs=12, prefer="threads")(delayed(self.process_file)(file, folder) for file in files)
+        for pub in pubs:
+
+            self.__add_publication_if_new_or_add_articles_to_already_found_publication(found_publications,
+                                                                                       pub)
+
+    def process_file(self,file,folder):
+        print(f"Processing {file}...")
+
+        # Checks if it is a .jp2 file. if true, the ocr is called
+        if ".jp2" in file:
+            pub = self.tesseract_module.run_tesseract_on_image(file)
+            pub.published_at = datetime(tzinfo=timezone.utc,year=folder['year'],month=folder['month'],day=folder['day']).isoformat()
+            return self.tesseract_module.run_tesseract_on_image(file)
+
+        # Checks if it is a .xml file. if true, the parser for .nitf parser is called
+        elif ".xml" in file:
+            return NitfParser().parse(file)
+
 
     def __manage_folder_cache(self, arg_object):
         """ If clear cache arg is given, the cache is cleared. If not the folders are loaded
@@ -205,7 +212,7 @@ class Crawler:
         :param a: Object that has year, month, and date properties
         :return: An int that represents the objects date
         """
-        return int(str(a['year']) + str(a['month']).zfill(2) + str(a['date']).zfill(2))
+        return int(str(a['year']) + str(a['month']).zfill(2) + str(a['day']).zfill(2))
 
     @staticmethod
     def __add_publication_if_new_or_add_articles_to_already_found_publication(found_publications, input_pub):
