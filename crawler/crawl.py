@@ -1,22 +1,23 @@
 import codecs
 import configparser
+import multiprocessing
 import os
 import re
 import json
 import xml
+from joblib import Parallel, delayed
 from datetime import datetime, timezone
 from os import path
 from xml.dom import minidom
 from knox_source_data_io.io_handler import IOHandler, Generator
+
 from initial_ocr.teseract_module import TesseractModule
 from nitf_parser.parser import NitfParser
-from joblib import Parallel, delayed
 
 
 class Crawler:
     config = configparser.ConfigParser()
     config.read('config.ini')
-    tesseract_module = TesseractModule()
 
     def _init__(self):
         pass
@@ -34,31 +35,50 @@ class Crawler:
             found_publications = []
             files = self.__find_relevant_files_in_directory(folder['path'])
 
-            self.process_files(files, found_publications,folder)
+            self.__process_files(files, found_publications, folder)
 
             # Export all found publications to JSON
             self.__save_to_json(arg_object.output_folder, found_publications)
 
-    def process_files(self, files, found_publications,folder):
-        pubs = Parallel(n_jobs=12, prefer="threads")(delayed(self.process_file)(file, folder) for file in files)
+    def __process_files(self, files, found_publications, folder):
+        """
+        Process multiples files in parallel to utilize all cores of system.
+        :param files: The list of file paths to process
+        :param found_publications: The array of which to add publications to.
+        :param folder: The folder currently being processed
+        """
+        pubs = Parallel(
+            n_jobs=multiprocessing.cpu_count(), prefer="threads")(
+            delayed(self.__process_file)(file, folder)
+            for file in files)
         for pub in pubs:
+            self.__add_publication_if_new_or_add_articles_to_already_found_publication(
+                found_publications,
+                pub)
 
-            self.__add_publication_if_new_or_add_articles_to_already_found_publication(found_publications,
-                                                                                       pub)
-
-    def process_file(self,file,folder):
+    @staticmethod
+    def __process_file(file, folder):
+        """
+        This method is called to process an input file.
+        :param file: The file path to be processed
+        :param folder: The folder currently being searched in.
+        :return: Publication matching the processed file.
+        """
         print(f"Processing {file}...")
 
-        # Checks if it is a .jp2 file. if true, the ocr is called
         if ".jp2" in file:
-            pub = self.tesseract_module.run_tesseract_on_image(file)
-            pub.published_at = datetime(tzinfo=timezone.utc,year=folder['year'],month=folder['month'],day=folder['day']).isoformat()
-            return self.tesseract_module.run_tesseract_on_image(file)
+            tesseract_module = TesseractModule()
+            pub = tesseract_module.run_tesseract_on_image(file)
+            pub.published_at = datetime(tzinfo=timezone.utc, year=folder['year'],
+                                        month=folder['month'],
+                                        day=folder['day']).isoformat()
+            return pub
 
         # Checks if it is a .xml file. if true, the parser for .nitf parser is called
-        elif ".xml" in file:
+        if ".xml" in file:
             return NitfParser().parse(file)
 
+        return None
 
     def __manage_folder_cache(self, arg_object):
         """ If clear cache arg is given, the cache is cleared. If not the folders are loaded
@@ -66,7 +86,8 @@ class Crawler:
         :return: Returns the found folders
         """
         if arg_object.clearcache or not path.exists(self.config['structure']['cache_file']):
-            print("Could not find cache, or clear cache flag was enabled.. Searching file structure..")
+            print(
+                "Could not find cache, or clear cache flag was enabled..")
             # Recalculate folders.json
             folders = self.__find_folders_recursively(arg_object.path)
 
@@ -108,7 +129,8 @@ class Crawler:
         # Filter folders by dates
         to_date = self.__date_to_int(arg_object.to_date)
         from_date = self.__date_to_int(arg_object.from_date)
-        folders = [folder for folder in folders if from_date <= self.__date_to_int(folder) <= to_date]
+        folders = [folder for folder in folders if
+                   from_date <= self.__date_to_int(folder) <= to_date]
 
         return folders
 
@@ -133,7 +155,8 @@ class Crawler:
             {
                 'compiled': re.compile(pattern_string[0]),
                 'original': pattern_string[0],
-                'limits': [int(y) for y in pattern_string[1:7]]  # 6 because there are three sets of base and bounds
+                'limits': [int(y) for y in pattern_string[1:7]]
+                # 6 because there are three sets of base and bounds
             }
 
             for pattern_string in pattern_strings]
@@ -174,16 +197,16 @@ class Crawler:
         # Checks whether the file should be appended, by using config white- and blacklist
         found_files = []
         for file in files:
-            if self.__is_string_in_list(file, blacklist) or not self.__is_string_in_list(file, whitelist):
+            if self.__is_string_in_list(file, blacklist) or not self.__is_string_in_list(file,
+                                                                                         whitelist):
                 continue
 
-            elif ".xml" in file:
+            if ".xml" in file:
                 if self.__is_file_valid_nitf(directory + "/" + file):
                     found_files.append(directory + "/" + file)
 
             else:
                 found_files.append(directory + "/" + file)
-            # Todo: add new file formats
 
         return found_files
 
@@ -206,16 +229,18 @@ class Crawler:
         return files
 
     @staticmethod
-    def __date_to_int(a):
-        """ Converts a dictionary with attributes year, month and date to an int, useful for comparing dates/sorting.
+    def __date_to_int(date):
+        """ Converts a dictionary with attributes year, month and date to an int.
+        Useful for comparing dates/sorting.
 
-        :param a: Object that has year, month, and date properties
+        :param date: Object that has year, month, and date properties
         :return: An int that represents the objects date
         """
-        return int(str(a['year']) + str(a['month']).zfill(2) + str(a['day']).zfill(2))
+        return int(str(date['year']) + str(date['month']).zfill(2) + str(date['day']).zfill(2))
 
     @staticmethod
-    def __add_publication_if_new_or_add_articles_to_already_found_publication(found_publications, input_pub):
+    def __add_publication_if_new_or_add_articles_to_already_found_publication(found_publications,
+                                                                              input_pub):
         """ Adds input_pub to found_publications if it is not already present,
         else adds the articles of input_pub to the matching publication in found_publications
 
@@ -249,15 +274,17 @@ class Crawler:
         :param publications: A list of publications that should be saved
         :return:
         """
-        for publication in publications:
-            handler = IOHandler(Generator(app="This app", version=1.0, generated_at=datetime.now().isoformat()),
-                                "http://iptc.org/std/NITF/2006-10-18/")
-            filename = os.path.join(folder,
-                                    f'{datetime.strptime(publication.published_at, "%Y-%m-%dT%H:%M:%S%z").strftime("%Y-%m-%d")}'
-                                    f'_{Crawler.__sanitize(publication.publication)}.json')
+        for pub in publications:
+            handler = IOHandler(
+                Generator(app="This app", version=1.0, generated_at=datetime.now().isoformat()),
+                "http://iptc.org/std/NITF/2006-10-18/")
+            filename = os.path.join(
+                folder,
+                f'{datetime.strptime(pub.published_at, "%Y-%m-%dT%H:%M:%S%z").strftime("%Y-%m-%d")}'
+                f'_{Crawler.__sanitize(pub.publication)}.json')
 
             with open(filename, 'w', encoding="utf-8") as outfile:
-                handler.write_json(publication, outfile)
+                handler.write_json(pub, outfile)
 
     @staticmethod
     def __sanitize(string):
@@ -266,8 +293,9 @@ class Crawler:
         :param string:
         :return: Sanitized string
         """
-        without_specialchars = ''.join([a for a in string.lower() if a.isalnum()])
-        without_danish_letters = ''.join([Crawler.__map_from_danish(a) for a in without_specialchars])
+        without_special_chars = ''.join([a for a in string.lower() if a.isalnum()])
+        without_danish_letters = ''.join(
+            [Crawler.__map_from_danish(a) for a in without_special_chars])
         return without_danish_letters
 
     @staticmethod
@@ -308,7 +336,6 @@ class Crawler:
             xml_doc = minidom.parse(xml_path)
 
             if len(xml_doc.getElementsByTagName('nitf:nitf')) != 0:
-                # todo file is nitf, lets check if it is a valid article.
                 return True
 
         except xml.parsers.expat.ExpatError:
