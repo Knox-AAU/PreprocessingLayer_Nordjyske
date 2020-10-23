@@ -1,7 +1,7 @@
 import argparse
 import re
 from crawler.crawl import Crawler
-from mother.run import MotherRunner
+from mother.consume_folders import MotherRunner
 
 
 def parse_date(date):
@@ -39,4 +39,4 @@ if __name__ == '__main__':
                         help='clear the folders.json cache. Should only be used if dataset has changed. (Default: no)')
     args = parser.parse_args()
 
-    MotherRunner().run(args)
+    MotherRunner(args.path).start(args.path)
