@@ -27,7 +27,7 @@ class MotherRunner:
     def __process_file(file):
         if file.type == FileType.JP2:
             # run OCR
-            return TesseractModule().run_tesseract_on_file(file)
+            return TesseractModule().generate_publication_based_on_file(file)
         if file.type == FileType.NITF:
             # run NITF parser
             return NitfParser().parse_file(file)

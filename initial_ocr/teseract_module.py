@@ -15,7 +15,7 @@ class TesseractModule:
         self.confidence_index = 0
         self.word_index = 1
 
-    def run_tesseract_on_file(self, file):
+    def generate_publication_based_on_file(self, file):
         pub = self.run_tesseract_on_image(file.path)
         pub.published_at = file.folder.get_datetime().strftime("%Y-%m-%dT%H:%M:%S%z")
         return pub
@@ -36,10 +36,8 @@ class TesseractModule:
         data_matrix = self.__tess_output_str_to_matrix(arr_all_data)
         data_matrix = self.__save_conf_and_text(data_matrix)
         data_matrix = self.__remove_hyphens(data_matrix)
-        # data_matrix = self.__merge_matrix_into_paragraphs(data_matrix)
+        # Will be fixed: data_matrix = self.__merge_matrix_into_paragraphs(data_matrix)
 
-        self.debug_prints(data_matrix)
-        # return data_matrix
         return self.__convert_matrix_to_publication(data_matrix, file_path)
 
     def __convert_matrix_to_publication(self, paragraph_matrix, file_path):

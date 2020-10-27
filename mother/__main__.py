@@ -20,17 +20,19 @@ if __name__ == '__main__':
     parser.add_argument("path", help='The root to crawl.')
     parser.add_argument("output_path", help='The root to crawl.')
 
+    # defines from_date argument
+    parser.add_argument('-f', '--from', dest="from_date", type=parse_date,
+                        default=datetime(year=1, month=1, day=1, tzinfo=timezone.utc),
+                        help='defines the end date from the collected data.'
+                             ' It should be formatted as YYYY-MM-DD. (Default: no)')
+
     # defines toDate argument
     parser.add_argument('-t', '--to', dest="to_date", type=parse_date,
                         default=datetime(year=9999, month=1, day=1, tzinfo=timezone.utc),
                         help='defines the end date from the collected data. '
                              'It should be formatted as YYYY-MM-DD. (Default: no)')
 
-    # defines from_date argument
-    parser.add_argument('-f', '--from', dest="from_date", type=parse_date,
-                        default=datetime(year=1, month=1, day=1, tzinfo=timezone.utc),
-                        help='defines the end date from the collected data.'
-                             ' It should be formatted as YYYY-MM-DD. (Default: no)')
+
 
     args = parser.parse_args()
 
