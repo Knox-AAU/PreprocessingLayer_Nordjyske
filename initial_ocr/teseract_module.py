@@ -1,42 +1,58 @@
+import configparser
 import pytesseract
+
 from PIL import Image
-from crawler.publication import *
+from publication import Article, Paragraph, Publication
 from preprocessing.preprocessing import Preprocessing
 
 
 class TesseractModule:
-    confidence_index = 0
-    word_index = 1
 
-    def run_tesseract_on_image(self, file_path, language='dan',tesseract_path=None):
+    def __init__(self, language="dan", tesseract_path=None):
+        self.language = language
+        self.tesseract_path = tesseract_path
+
+        self.confidence_index = 0
+        self.word_index = 1
+
+    def generate_publication_based_on_file(self, file):
+        pub = self.run_tesseract_on_image(file.path)
+        pub.published_at = file.folder.get_datetime().strftime("%Y-%m-%dT%H:%M:%S%z")
+        return pub
+
+    def run_tesseract_on_image(self, file_path):
         """ Finds image from path, runs tesseract and returns words and confidence scores
-        :param tesseract_path: Path to tesseract, if not in system PATH.
         :param file_path: The image that tesseract runs
-        :param language: The language of the image text
         :return: A matrix with the word and the corresponding confidence score
         """
-        if tesseract_path is not None:
-            pytesseract.pytesseract.tesseract_cmd = tesseract_path
+        if self.tesseract_path is not None:
+            pytesseract.pytesseract.tesseract_cmd = self.tesseract_path
 
         preprocesser = Preprocessing()
         image = preprocesser.do_preprocessing(file_path)
 
-        arr_all_data = pytesseract.image_to_data(image, lang=language)
+        arr_all_data = pytesseract.image_to_data(image, lang=self.language)
 
         data_matrix = self.__tess_output_str_to_matrix(arr_all_data)
         data_matrix = self.__save_conf_and_text(data_matrix)
         data_matrix = self.__remove_hyphens(data_matrix)
-        data_matrix = self.__merge_matrix_into_paragraphs(data_matrix)
+        # Will be fixed: data_matrix = self.__merge_matrix_into_paragraphs(data_matrix)
 
-        self.debug_prints(data_matrix)
-        # return data_matrix
-        return self.__convert_matrix_to_article(data_matrix, file_path)
+        return self.__convert_matrix_to_publication(data_matrix, file_path)
 
-    def __convert_matrix_to_article(self, paragraph_matrix, file_path):
+    def __convert_matrix_to_publication(self, paragraph_matrix, file_path):
         """ Converts the output matrix (List of paragraphs) into an article
        :param paragraph_matrix: List of paragraphs
        :return: An article
        """
+
+        # Load the config file to get default publication name
+        config = configparser.ConfigParser()
+        config.read('publication_default.ini')
+
+        # Generate new publication and set the publication name to the default
+        pub = Publication()
+        pub.publication = config['publication']['name']
 
         article = Article()
         for row in paragraph_matrix:
@@ -47,7 +63,9 @@ class TesseractModule:
         article.confidence = self.__get_average_conf_from_matrix(paragraph_matrix)
         article.extracted_from = file_path
 
-        return article
+        pub.add_article(article)
+
+        return pub
 
     @staticmethod
     def __load_file(path):

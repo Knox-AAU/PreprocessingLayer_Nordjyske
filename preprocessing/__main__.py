@@ -1,7 +1,3 @@
-import argparse
-import json
-import codecs
-from nitf_parser.parser import NitfParser
 from preprocessing.preprocessing import Preprocessing
 
 if __name__ == '__main__':

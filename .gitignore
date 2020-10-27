@@ -7,3 +7,4 @@ output.json
 build
 dist
 *.egg-info
+folders.json

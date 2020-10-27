@@ -22,10 +22,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     tesseract_module = TesseractModule()
-    article = tesseract_module.run_tesseract_on_image(args.path, language=args.language, tesseract_path=args.tesseract_path)
-
-    publication = Publication()  # todo io stuff is sketchy atm
-    publication.articles = [article]
+    publication = tesseract_module.run_tesseract_on_image(args.path, language=args.language, tesseract_path=args.tesseract_path)
     if args.output_path is None:
         print(publication.to_json())
     else:

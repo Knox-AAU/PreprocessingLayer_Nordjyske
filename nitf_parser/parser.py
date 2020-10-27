@@ -139,7 +139,7 @@ class NitfParser:
 
     def parse(self, article_path):
         self.article = Article()
-        self.article.extracted_from=article_path
+        self.article.extracted_from = article_path
         xml_doc = minidom.parse(article_path)
         item_list = xml_doc.getElementsByTagName('nitf:nitf')
 
@@ -154,3 +154,6 @@ class NitfParser:
         self.publication.add_article(self.article)
 
         return self.publication
+
+    def parse_file(self, file):
+        return self.parse(file.path)
