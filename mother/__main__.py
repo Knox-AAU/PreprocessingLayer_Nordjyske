@@ -32,8 +32,6 @@ if __name__ == '__main__':
                         help='defines the end date from the collected data. '
                              'It should be formatted as YYYY-MM-DD. (Default: no)')
 
-
-
     args = parser.parse_args()
 
     MotherRunner(args.path, args.from_date, args.to_date, args.output_path).start()
