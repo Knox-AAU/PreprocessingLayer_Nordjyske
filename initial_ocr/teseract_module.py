@@ -7,28 +7,36 @@ from preprocessing.preprocessing import Preprocessing
 
 
 class TesseractModule:
-    confidence_index = 0
-    word_index = 1
 
-    def run_tesseract_on_image(self, file_path, language='dan', tesseract_path=None):
+    def __init__(self, language="dan", tesseract_path=None):
+        self.language = language
+        self.tesseract_path = tesseract_path
+
+        self.confidence_index = 0
+        self.word_index = 1
+
+    def run_tesseract_on_file(self, file):
+        pub = self.run_tesseract_on_image(file.path)
+        pub.published_at = file.folder.get_datetime().strftime("%Y-%m-%dT%H:%M:%S%z")
+        return pub
+
+    def run_tesseract_on_image(self, file_path):
         """ Finds image from path, runs tesseract and returns words and confidence scores
-        :param tesseract_path: Path to tesseract, if not in system PATH.
         :param file_path: The image that tesseract runs
-        :param language: The language of the image text
         :return: A matrix with the word and the corresponding confidence score
         """
-        if tesseract_path is not None:
-            pytesseract.pytesseract.tesseract_cmd = tesseract_path
+        if self.tesseract_path is not None:
+            pytesseract.pytesseract.tesseract_cmd = self.tesseract_path
 
         preprocesser = Preprocessing()
         image = preprocesser.do_preprocessing(file_path)
 
-        arr_all_data = pytesseract.image_to_data(image, lang=language, config="--psm 7")
+        arr_all_data = pytesseract.image_to_data(image, lang=self.language)
 
         data_matrix = self.__tess_output_str_to_matrix(arr_all_data)
         data_matrix = self.__save_conf_and_text(data_matrix)
         data_matrix = self.__remove_hyphens(data_matrix)
-        #data_matrix = self.__merge_matrix_into_paragraphs(data_matrix)
+        # data_matrix = self.__merge_matrix_into_paragraphs(data_matrix)
 
         self.debug_prints(data_matrix)
         # return data_matrix

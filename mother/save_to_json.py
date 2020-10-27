@@ -11,7 +11,6 @@ def save_to_json(folder, publications):
     :param publications: A list of publications that should be saved
     :return:
     """
-    # todo merge publications like we used to do in crawler
     publications = __merge(publications)
 
     for pub in publications:
@@ -78,7 +77,9 @@ def __add_publication_if_new_or_add_articles_to_already_found_publication(found_
     # Get reference to the publication that has already been added to the found publications
     # (returns 'None' if no match is found)
     matching_publication_in_publications_found = next(
-        (pub for pub in found_publications if pub.publication in found_publications), None)
+        (pub for pub in found_publications
+         if pub.publication == input_pub.publication
+         ), None)
 
     # Check if the publication is not part of the found publications
     # If it is, add it as a new publication
