@@ -74,3 +74,10 @@ If _conda_ is used, it is necessary to install _pip_ in the virtual environment 
 https://packaging.python.org/tutorials/packaging-projects/
 https://packaging.python.org/guides/hosting-your-own-index/
 ```
+
+## .jp2 to tiff conversion (Linux)
+```
+sudo apt install ffmpeg
+
+ffmpeg -i input.jp2 output.tiff
+```
