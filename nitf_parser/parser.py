@@ -36,11 +36,9 @@ class NitfParser:
         config.read('metadata-mapper.ini')
 
         # get name attribute
-        data = [data for data in metadata if data.getAttribute("name") == config['metadata']['name']]
-        byline = {'name': None,
-                  'email': None
-                  }
+        byline = {'name': None, 'email': None}
 
+        data = [data for data in metadata if data.getAttribute("name") == config['metadata']['name']]
         if len(data) != 0:
             byline['name'] = data[0].getAttribute('content')
 
