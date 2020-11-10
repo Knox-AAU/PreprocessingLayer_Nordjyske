@@ -1,6 +1,6 @@
 from xml.dom import minidom
 import configparser
-from publication import Publication, Article, Byline, Paragraph
+from knox_source_data_io.models.publication import Publication, Article, Paragraph
 
 
 class NitfParser:
@@ -37,8 +37,8 @@ class NitfParser:
 
         # get name attribute
         data = [data for data in metadata if data.getAttribute("name") == config['metadata']['name']]
-        byline = {'name': {},
-                  'email': {}
+        byline = {'name': None,
+                  'email': None
                   }
 
         if len(data) != 0:
@@ -50,7 +50,8 @@ class NitfParser:
             byline['email'] = data[0].getAttribute('content')
 
         # add name and email
-        self.article.byline = Byline(byline)
+        if byline['name'] is not None:
+            self.article.add_byline(byline['name'], byline['email'])
 
         # get page attribute
         data = [data for data in metadata if data.getAttribute("name") == config['metadata']['page']]
@@ -139,7 +140,7 @@ class NitfParser:
 
     def parse(self, article_path):
         self.article = Article()
-        self.article.extracted_from = article_path
+        self.article.add_extracted_from(article_path)
         xml_doc = minidom.parse(article_path)
         item_list = xml_doc.getElementsByTagName('nitf:nitf')
 
