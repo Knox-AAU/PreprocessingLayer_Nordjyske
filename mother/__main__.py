@@ -1,7 +1,9 @@
 import argparse
+import os
 import re
 from datetime import datetime, timezone
 from mother.consume_folders import MotherRunner
+os.environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 
 
 def parse_date(date):

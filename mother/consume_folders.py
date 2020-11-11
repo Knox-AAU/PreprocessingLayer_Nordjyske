@@ -6,7 +6,7 @@ from crawler.crawl import Crawler
 
 # https://asyncio.readthedocs.io/en/latest/producer_consumer.html
 from crawler.file_types import FileType
-from initial_ocr.teseract_module import TesseractModule
+from ocr.tesseract import TesseractModule
 from mother.save_to_json import save_to_json
 from nitf_parser.parser import NitfParser
 
@@ -25,7 +25,7 @@ class MotherRunner:
     def __process_file(file):
         if file.type == FileType.JP2:
             # run OCR
-            return TesseractModule().generate_publication_based_on_file(file)
+            return TesseractModule.from_file(file).to_publication()
         if file.type == FileType.NITF:
             # run NITF parser
             return NitfParser().parse_file(file)
