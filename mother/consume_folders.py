@@ -50,7 +50,7 @@ class MotherRunner:
             print(f'[Consumer Thread] done with item {item.__dict__}...')
 
     def __producer(self):
-        Crawler().crawl_folders(self.q, self.root,self.from_date, self.to_date)
+        Crawler().crawl_folders(self.q, self.root, self.from_date, self.to_date)
 
         # indicate we are done adding to queue
         self.q.put(None)

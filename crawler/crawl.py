@@ -62,9 +62,9 @@ class Crawler:
                     continue
 
                 if ".xml" in entry.name and self.__is_file_valid_nitf(entry.path):
-                    folder.add_file(File(entry.path, entry.name, FileType.NITF))
+                    folder.add_file(File(entry.path, FileType.NITF, name=entry.name))
                 if ".jp2" in entry.name:
-                    folder.add_file(File(entry.path, entry.name, FileType.JP2))
+                    folder.add_file(File(entry.path, FileType.JP2, name=entry.name))
 
             else:
                 # entry is folder, search recursively:
