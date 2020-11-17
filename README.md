@@ -55,7 +55,7 @@ The virtual environment should just be set up for each module, as it should neve
 
 To generate a new virtual environment, run ``python -m venv venv``.
 
-Be sure to set the virtual environment as you python interpreter. If you are working in PyCharm, then you have to add a new interpreter under ``FIle > Settings > Project > Python Interpreter`` and point the path to the generated virtual environment.
+Be sure to set the virtual environment as you python interpreter. If you are working in PyCharm, then you have to add a new interpreter under ``File > Settings > Project > Python Interpreter`` and point the path to the generated virtual environment.
 
 > :warning: Remember to activate your virtual environment by running `source venv/bin/activate`.
 
