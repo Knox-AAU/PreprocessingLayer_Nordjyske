@@ -1,10 +1,8 @@
 import re
 from datetime import datetime
-
 import cv2
 import pytesseract
 from knox_source_data_io.models.publication import Publication, Article, Paragraph
-
 from crawler.file import File
 
 
