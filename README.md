@@ -80,4 +80,7 @@ https://packaging.python.org/guides/hosting-your-own-index/
 sudo apt install ffmpeg
 
 ffmpeg -i input.jp2 output.tiff
+
 ```
+
+python -m venv venv

@@ -1,4 +1,3 @@
-
 from os import environ as environ
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 import cv2
