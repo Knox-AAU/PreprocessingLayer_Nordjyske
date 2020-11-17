@@ -3,22 +3,36 @@ from datetime import datetime
 import cv2
 import pytesseract
 from knox_source_data_io.models.publication import Publication, Article, Paragraph
+
+from alto_segment_lib.segment_module import SegmentModule
 from crawler.file import File
 
 
 class TesseractModule:
 
-    def __init__(self, image, language='dan', tesseract_path=None):
+    def __init__(self, image, segments, language='dan', tesseract_path=None):
         if tesseract_path is not None:
             pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
-        self.data = pytesseract.image_to_data(image, lang=language, output_type='dict', config="")
+        for segment in segments:
+            cropped_image = image[segment.y1:segment.y2, segment.x1:segment.x2]
+
+
+            cv2.imwrite(r"/home/jakob/Desktop/test/output/segment.png", cropped_image)
+
+            text = pytesseract.image_to_data(image, lang=language, output_type='dict', config="")
+
+
+        #self.data = pytesseract.image_to_data(image, lang=language, output_type='dict', config="")
 
     @classmethod
     def from_file(cls, file: File):
         # todo do preprocessing methods instead of loading file
         img = cv2.imread(file.path)
-        tm = cls(img)
+
+        segments = SegmentModule.run_segmentation(file.path.split(".")[0])
+
+        tm = cls(img, segments)
 
         return tm
 
