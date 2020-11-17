@@ -54,12 +54,16 @@ class NitfParser:
         # get page attribute
         data = [data for data in metadata if data.getAttribute("name") == config['metadata']['page']]
         if len(data) != 0:
-            self.article.page = data[0].getAttribute('content')
+            self.article.page = int(data[0].getAttribute('content'))
 
         # get nmid attribute
         data = [data for data in metadata if data.getAttribute("name") == config['metadata']['nmid']]
         if len(data) != 0:
-            self.article.id = data[0].getAttribute('content')
+            if data[0].getAttribute('content') != "noid":
+                self.article.id = data[0].getAttribute('content')
+            else:
+                self.article.id = None
+
 
     @staticmethod
     def __sanitize_spaces(a):

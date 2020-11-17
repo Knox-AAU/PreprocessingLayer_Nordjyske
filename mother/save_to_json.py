@@ -55,9 +55,19 @@ def __map_from_danish(char):
 
 def __merge(publications):
     found_publications = []
+    page_amount = 0
     for pub in publications:
         __add_publication_if_new_or_add_articles_to_already_found_publication(found_publications, pub)
     return found_publications
+
+
+def find_page_amount(publication):
+    max_page = 0
+    for article in publication.articles:
+        if article.page > max_page:
+            max_page = article.page
+    publication.pages = max_page
+
 
 
 def __add_publication_if_new_or_add_articles_to_already_found_publication(found_publications,
@@ -88,3 +98,4 @@ def __add_publication_if_new_or_add_articles_to_already_found_publication(found_
         found_publications.append(input_pub)
     else:
         matching_publication_in_publications_found.add_article(input_pub.articles[0])
+        find_page_amount(matching_publication_in_publications_found)
