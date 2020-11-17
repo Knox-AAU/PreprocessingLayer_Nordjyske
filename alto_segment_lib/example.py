@@ -1,18 +1,12 @@
 import argparse
 import os
-
-import alto_segment_lib.line_extractor
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 from alto_segment_lib.repair_segments import RepairSegments
 from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
-import matplotlib.pyplot as plt
-
-from alto_segment_lib.segment_helper import SegmentHelper
-from alto_segment_lib.segment_ordering import SegmentOrdering
-from matplotlib.patches import Rectangle
-from PIL import Image
-from matplotlib.patches import ConnectionPatch
-
 from alto_segment_lib.line_extractor.extractor import LineExtractor
+from alto_segment_lib.segment_helper import SegmentHelper
+from PIL import Image
 
 base_path: str
 filename: str
