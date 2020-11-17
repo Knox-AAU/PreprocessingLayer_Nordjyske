@@ -41,7 +41,8 @@ class MotherRunner:
 
             print(f'[Consumer Thread] consuming item {item.__dict__}...')
 
-            publications = Parallel(n_jobs=multiprocessing.cpu_count(), prefer="threads")(
+            num_jobs = (multiprocessing.cpu_count()/2)
+            publications = Parallel(n_jobs=num_jobs, prefer="threads")(
                 delayed(self.__process_file)(file)
                 for file in item.files)
 
