@@ -27,8 +27,7 @@ class AltoSegmentExtractor:
     def __init__(self, alto_path: str = "", dpi: int = 300, margin: int = 0):
         self.__dpi = dpi
         self.__margin = margin
-        if not alto_path == "":
-            self.set_path(alto_path)
+        self.set_path(alto_path)
         self.__median_line_width = 0
 
     def set_path(self, path: str):
@@ -76,10 +75,10 @@ class AltoSegmentExtractor:
         return segments
 
     def find_headlines(self):
-        return self.__find_segs_with_type(FindType.Header)
+        return self.__find_lines_with_type(FindType.Header)
 
     def find_paragraphs(self):
-        return self.__find_segs_with_type(FindType.Paragraph)
+        return self.__find_lines_with_type(FindType.Paragraph)
 
     def __find_segs_with_type(self, SegmentsToExtract: FindType):
         segments: list = []
@@ -104,6 +103,29 @@ class AltoSegmentExtractor:
                 segments.append(coordinate)
 
         return segments
+
+    def __find_lines_with_type(self, LinesToExtract: FindType):
+        lines: list = []
+
+        text_blocks = self.__xmldoc.getElementsByTagName('TextBlock')
+
+        for text_block in text_blocks:
+            text_lines = text_block.getElementsByTagName('TextLine')
+            for text_line in text_lines:
+                coordinate = None
+
+                if LinesToExtract == FindType.Header:
+                    if text_line.attributes['STYLEREFS'].value not in self.__para_fonts \
+                            and text_line.attributes['STYLEREFS'].value is not None:
+                        coordinate = self.__extract_coordinates(text_line)
+                elif LinesToExtract == FindType.Paragraph:
+                    if text_line.attributes['STYLEREFS'].value in self.__para_fonts:
+                        coordinate = self.__extract_coordinates(text_line)
+
+                if coordinate is not None:
+                    lines.append(coordinate)
+
+        return lines
 
     def extract_segments(self):
         segments = []
@@ -141,7 +163,8 @@ class AltoSegmentExtractor:
 
         for text_line in text_lines:
             text_line_coordinates = self.__extract_coordinates(text_line)
-            line = Line(text_line_coordinates)
+            font = self.__extract_font(text_line)
+            line = Line(text_line_coordinates, font)
 
             lines.append(line)
 
@@ -174,6 +197,10 @@ class AltoSegmentExtractor:
 
         return coordinates
 
+    def __extract_font(self, element: minidom):
+        font = str(element.attributes['STYLEREFS'].value)
+        return float(font.split("TS")[1])
+
     def inch1200_to_px(self, inch1200: int):
         return int(round((inch1200 * self.__dpi) / 1200))
 
@@ -181,6 +208,7 @@ class AltoSegmentExtractor:
         fonts: dict = self.__find_font_sizes()
         stats = {}
 
+        # Finds how many instances there are of each font
         for key in fonts:
             lines = self.__xmldoc.getElementsByTagName('TextLine')
             for line in lines:
@@ -191,15 +219,13 @@ class AltoSegmentExtractor:
                         stats[key] += 1
 
         most_used_font = max(stats.items(), key=operator.itemgetter(1))[0]
-        #print(most_used_font)
 
+        # Add each font to either para fonts or head fonts
         for key in fonts:
-            if fonts.get(key) <= fonts.get(most_used_font) + 1:
+            if fonts.get(key) <= fonts.get(most_used_font) + 1.5:
                 self.__para_fonts.append(key)
-                #print("Para: " + key)
             else:
                 self.__head_fonts.append(key)
-                #print("Head: " + key)
 
     def __find_font_sizes(self):
         fonts = {}

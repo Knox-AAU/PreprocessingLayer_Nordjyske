@@ -1,10 +1,14 @@
 import statistics
+
+from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
 from alto_segment_lib.segment import Segment, Line
 
 
 class SegmentHelper:
-    def __init__(self):
-        pass
+    __file_path: str
+
+    def __init__(self, file_path):
+        self.__file_path = file_path
 
     @staticmethod
     def find_line_height_median(lines):
@@ -23,11 +27,20 @@ class SegmentHelper:
     def group_lines_into_paragraphs_headers(self, lines):
         paragraph = []
         header = []
+        alto_extractor = AltoSegmentExtractor(self.__file_path)
         median = self.find_line_height_median(lines)
-        threshold = 17
+        threshold = 1.39
+
+        paragraph_list = alto_extractor.find_paragraphs()
+        header_list = alto_extractor.find_headlines()
 
         for line in lines:
-            if line.height() > median + threshold:
+            # Checks if line height or font size indicates that the line is a paragraph
+            if line.height() < (median * threshold) \
+                    and [line.x1, line.y1, line.x2, line.y2] in paragraph_list \
+                    and [line.x1, line.y1, line.x2, line.y2] not in header_list:
+                paragraph.append(line)
+            elif line.height() > (median * threshold):
                 header.append(line)
             else:
                 paragraph.append(line)

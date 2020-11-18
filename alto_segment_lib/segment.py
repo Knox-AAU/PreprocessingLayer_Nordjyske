@@ -47,8 +47,9 @@ class Line:
     y1: int
     x2: int
     y2: int
+    font: float
 
-    def __init__(self, coord: list = None):
+    def __init__(self, coord: list = None, font: float = None):
         if coord is None:
             coord = []
 
@@ -59,6 +60,8 @@ class Line:
             self.y2 = coord[3]
             self.length = math.sqrt(math.pow((self.x2 - self.x1), 2) + math.pow((self.y2 - self.y1), 2))
             self.orientation = self.get_orientation()
+
+        self.font = font
 
     def width(self):
         return self.x2 - self.x1
