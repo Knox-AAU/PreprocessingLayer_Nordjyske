@@ -1,17 +1,12 @@
 import argparse
 import os
-
-import alto_segment_lib.line_extractor
 from alto_segment_lib.repair_segments import RepairSegments
+from alto_segment_lib.segment_grouper import SegmentGrouper
 from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
 import matplotlib.pyplot as plt
-
 from alto_segment_lib.segment_helper import SegmentHelper
-from alto_segment_lib.segment_ordering import SegmentOrdering
 from matplotlib.patches import Rectangle
 from PIL import Image
-from matplotlib.patches import ConnectionPatch
-
 from alto_segment_lib.line_extractor.extractor import LineExtractor
 
 base_path: str
@@ -89,15 +84,29 @@ def run_file(file_path):
     text_lines = segment_helper.repair_text_lines(text_lines, lines)
     lists = segment_helper.group_lines_into_paragraphs_headers(text_lines)
     #display_lines(lists[0], lists[1], "lines", file_path)
+    header_segments = segment_helper.combine_lines_into_segments(lists[0])
     segments = segment_helper.combine_lines_into_segments(lists[1])
     #display_segments(segments, file_path, "segments")
 
+    headers = [segment for segment in segments if segment.type == "header"]
     paragraphs = [segment for segment in segments if segment.type == "paragraph"]
     repair = RepairSegments(paragraphs, 30)
     rep_rows_segments2 = repair.repair_rows()
-    paragraphs.clear()
+
     segments_para = rep_rows_segments2
-    display_segments(segments_para, file_path, "repaired")
+    #display_segments(segments_para, file_path, "repaired")
+    lines = [element for element, element in enumerate(lines) if element.is_horizontal()]
+
+    grouper = SegmentGrouper()
+    groups = grouper.group_segments_in_order(header_segments, paragraphs, lines)
+    print("Groups: "+str(len((groups))))
+
+    display_segments(lines, file_path, "grouped")
+    #display_segments(segments_para, file_path, "paragrphs")
+    #display_segments(header_segments, file_path, "headers")
+
+
+    paragraphs.clear()
 
 
 if __name__ == '__main__':
@@ -111,5 +120,5 @@ if __name__ == '__main__':
     filename = args.filename
     filepath = base_path + filename
 
-    run_multiple_files(base_path)
-    # run_file(filepath)
+    #run_multiple_files(base_path)
+    run_file(filepath)

@@ -30,9 +30,8 @@ class LineExtractor:
         self.vertical_size = int(self.config['line_enhancement']['vertical_size'])
         self.horizontal_size = int(self.config['line_enhancement']['horizontal_size'])
 
-    def extract_lines_via_path(self, image_path):
+    def extract_lines_via_path(self, image_path: str):
         image = cv2.imread(image_path, cv2.CV_8UC1)
-
 
         lines = self.extract_lines_via_image(image)
         #corrected_lines = self.correct_lines(lines)
@@ -41,11 +40,11 @@ class LineExtractor:
         final_lines = self.remove_outline_lines(extended_lines, image)
         return final_lines
 
-    def extract_lines_via_image(self, image):
+    def extract_lines_via_image(self, image: object):
         enhanced_image = self.enhance_lines(image)
         return self.get_lines_from_binary_image(enhanced_image)
 
-    def remove_outline_lines(self, lines, image):
+    def remove_outline_lines(self, lines, image: object):
         outline_stop = 100
         max_x, max_y = image.shape
         lines_to_remove = []

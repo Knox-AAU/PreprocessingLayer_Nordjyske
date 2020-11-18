@@ -29,7 +29,7 @@ class Segment:
         return (self.x1 == segment.x1 and self.y1 == segment.y1
                 and self.x2 == segment.x2 and self.y2 == segment.y2)
 
-    def between_x_coords(self, coord: int, margin: float = 0.0):
+    def between_x_coords(self, coord: int, margin: int = 0):
         return (self.x1 * (1 - margin)) <= coord <= (self.x2 * (1 + margin))
 
     def between_y_coords(self, coord: int, margin: int = 0):
@@ -99,3 +99,13 @@ class Line:
             return True
 
         return False
+
+
+class SegmentGroup:
+    headers: list[Segment]
+    paragraphs: list[Segment]
+
+    def __init__(self):
+        self.headers = []
+        self.paragraphs = []
+

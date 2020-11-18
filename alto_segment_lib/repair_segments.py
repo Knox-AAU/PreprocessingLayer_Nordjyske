@@ -38,7 +38,6 @@ class RepairSegments:
                         subsegment_index = return_segments.index(subsegment)
                     else:
                         continue
-
                     # Checks if the subsegment is entirely within the segment
                     if segment.between_y_coords(subsegment.y1 + thresh_within) \
                             and segment.between_y_coords(subsegment.y2 - thresh_within) \

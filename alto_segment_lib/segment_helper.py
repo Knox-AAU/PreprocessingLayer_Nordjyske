@@ -21,18 +21,18 @@ class SegmentHelper:
         return statistics.median(width)
 
     def group_lines_into_paragraphs_headers(self, lines):
-        paragraph = []
-        header = []
+        paragraphs = []
+        headers = []
         median = self.find_line_height_median(lines)
         threshold = 17
 
         for line in lines:
             if line.height() > median + threshold:
-                header.append(line)
+                headers.append(line)
             else:
-                paragraph.append(line)
+                paragraphs.append(line)
 
-        return header, paragraph
+        return headers, paragraphs
 
     def combine_lines_into_segments(self, lines):
         segments = []
@@ -172,3 +172,28 @@ class SegmentHelper:
             return True, new_lines
         else:
             return False, None
+
+    @staticmethod
+    def get_content_bounds(segments: list):
+        # x1 and y1 need to be reduced to lowest possible value, we start at high value (10000).
+        x1 = y1 = 10000
+        x2 = y2 = 0
+
+        for segment in segments:
+            # Find x-coordinate upper left corner
+            if segment.x1 < x1:
+                x1 = segment.x1
+
+            # Find x-coordinate lower right corner
+            if segment.x2 > x2:
+                x2 = segment.x2
+
+            # Find y-coordinate upper left corner
+            if segment.y1 < y1:
+                y1 = segment.y1
+
+            # Find y-coordinate lower right corner
+            if segment.y2 > y2:
+                y2 = segment.y2
+
+        return x1, y1, x2, y2
