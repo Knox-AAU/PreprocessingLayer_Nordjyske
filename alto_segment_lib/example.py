@@ -87,17 +87,17 @@ def run_file(file_path):
 
     text_lines = altoExtractor.extract_lines()
     (headers, text_lines) = segment_helper.group_lines_into_paragraphs_headers(text_lines)
-    display_lines(headers, text_lines, file_path, "lines-height-font")
+    # display_lines(headers, text_lines, file_path, "lines-height-font")
     text_lines = segment_helper.repair_text_lines(text_lines, lines)
-    # segments = segment_helper.combine_lines_into_segments(text_lines)
+    segments = segment_helper.combine_lines_into_segments(text_lines)
     # display_segments(segments, file_path, "segments")
-    #
-    # paragraphs = [segment for segment in segments if segment.type == "paragraph"]
-    # repair = RepairSegments(paragraphs, 30)
-    # rep_rows_segments2 = repair.repair_rows()
-    # paragraphs.clear()
-    # segments_para = rep_rows_segments2
-    # display_segments(segments_para, file_path, "repaired")
+
+    paragraphs = [segment for segment in segments if segment.type == "paragraph"]
+    repair = RepairSegments(paragraphs, 30)
+    rep_rows_segments2 = repair.repair_rows()
+    paragraphs.clear()
+    segments_para = rep_rows_segments2
+    display_segments(segments_para, file_path, "repaired")
 
 
 if __name__ == '__main__':
@@ -111,5 +111,5 @@ if __name__ == '__main__':
     filename = args.filename
     filepath = base_path + filename
 
-    run_multiple_files(base_path)
-    # run_file(filepath)
+    # run_multiple_files(base_path)
+    run_file(filepath)

@@ -1,4 +1,5 @@
 import statistics
+import math
 
 from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
 from alto_segment_lib.segment import Segment, Line
@@ -155,21 +156,26 @@ class SegmentHelper:
         return segment
 
     def repair_text_lines(self, text_lines, lines):
+        new_text_lines = []
         for text_line in text_lines:
             if text_line.is_box_horizontal():
                 # Gets whether the text line is intersected and which lines intersect it
                 (does_line_intersect, intersecting_lines) = self.__does_line_intersect_text_line(text_line, lines)
                 if does_line_intersect:
                     for line in intersecting_lines:
-                        coords = [line.x1, text_line.y1, text_line.x2, text_line.y2]
-                        text_line.x2 = line.x1
+                        split_x_coord = int(self.__find_split_x_coord(text_line, line))
+                        coords = [split_x_coord, text_line.y1, text_line.x2, text_line.y2]
 
-                        text_lines.append(Line(coords))
+                        new_text_lines.append(Line([text_line.x1, text_line.y1, split_x_coord, text_line.y2]))
+                        new_text_lines.append(Line(coords))
+                else:
+                    new_text_lines.append(text_line)
 
-        return text_lines
+        return new_text_lines
 
     def __does_line_intersect_text_line(self, text_line, lines: list):
         new_lines = []
+
         for line in lines:
             # Finds 5% of the width as a buffer to avoid false positives due to crooked lines
             width_5_percent = (text_line.x2 - text_line.x1) * 0.05
@@ -185,3 +191,19 @@ class SegmentHelper:
             return True, new_lines
         else:
             return False, None
+
+    def __find_split_x_coord(self, text_line, line):
+        # Calculates coordinates for B based on angle A, C and line b, where C is 90
+        # Calculate A
+        line_slope = abs(line.x2-line.x1) / abs(line.y2-line.y1)
+        line_degree = math.atan(line_slope)
+        # Calculate B
+        other_angle = 180 - 90 - line_degree
+        # Calculate b
+        line_height_from_text = text_line.y1 - line.y1
+
+        # Calculate a, which is the distance from the line to the
+        dist_text_to_line = line_height_from_text / math.sin(other_angle) * math.sin(line_degree)
+        # The x-coordinate for B where the line and text_line intersect
+        split_x_coord = (line.x1 + dist_text_to_line) if line.x1 < line.x2 else (line.x1 - dist_text_to_line)
+        return split_x_coord
