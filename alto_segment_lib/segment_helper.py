@@ -26,8 +26,8 @@ class SegmentHelper:
         return statistics.median(width)
 
     def group_lines_into_paragraphs_headers(self, lines):
-        paragraph = []
-        header = []
+        paragraphs = []
+        headers = []
         alto_extractor = AltoSegmentExtractor(self.__file_path)
         median = self.find_line_height_median(lines)
         threshold = 1.39
@@ -40,18 +40,69 @@ class SegmentHelper:
             if line.height() < (median * threshold) \
                     and [line.x1, line.y1, line.x2, line.y2] in paragraph_list \
                     and [line.x1, line.y1, line.x2, line.y2] not in header_list:
-                paragraph.append(line)
-            elif line.height() > (median * threshold):
-                header.append(line)
+                paragraphs.append(line)
+            elif line.height() > (median * threshold * 1.1):
+                headers.append(line)
             else:
-                paragraph.append(line)
+                paragraphs.append(line)
 
-        return header, paragraph
+        if len(headers) > 0:
+            (headers, new_paragraphs) = self.repair_header_clusters(headers)
+            paragraphs.extend(new_paragraphs)
+
+            (headers, new_paragraphs) = self.repair_headers_in_paragraphs(headers, paragraphs)
+            paragraphs.extend(new_paragraphs)
+
+            paragraphs = self.remove_paragraphs_within_headers(headers, paragraphs)
+
+        return headers, paragraphs
+
+    def remove_paragraphs_within_headers(self, headers, paragraphs):
+        updated_paragraphs = paragraphs.copy()
+        for header in headers:
+            for paragraph in paragraphs:
+                if header.between_y_coords(paragraph.y1) \
+                        and header.between_y_coords(paragraph.y2) \
+                        and header.between_x_coords(paragraph.x1) \
+                        and header.between_x_coords(paragraph.x2) \
+                        and paragraph in updated_paragraphs:
+                    updated_paragraphs.remove(paragraph)
+
+        return updated_paragraphs
+
+    def repair_headers_in_paragraphs(self, headers, paragraphs):
+        new_headers = headers.copy()
+        new_paragraphs = []
+        margin = 2
+
+        for paragraph in paragraphs:
+            for header in headers:
+                if (paragraph.between_x_coords(header.x1 + margin) and paragraph.between_y_coords(header.y1 - margin)) \
+                        or (paragraph.between_x_coords(header.x2 - margin) and paragraph.between_y_coords(header.y2 + margin)):
+                    new_paragraphs.append(header)
+                    if header in new_headers:
+                        new_headers.remove(header)
+
+        return new_headers, new_paragraphs
+
+    def repair_header_clusters(self, headers):
+        header_column_groups = self.__group_same_column(headers)
+        header_segment_groups = self.__group_same_segment(header_column_groups, True)
+        new_paragraphs = []
+        new_headers = []
+
+        for grouped_headers in header_segment_groups:
+            if len(grouped_headers) > 3:
+                new_paragraphs.extend(grouped_headers)
+            else:
+                new_headers.extend(grouped_headers)
+
+        return new_headers, new_paragraphs
 
     def combine_lines_into_segments(self, lines):
         segments = []
         column_groups = self.__group_same_column(lines)
-        segment_groups = self.__group_same_segment(column_groups)
+        segment_groups = self.__group_same_segment(column_groups, False)
 
         for group in segment_groups:
             if len(group) > 0:
@@ -64,7 +115,7 @@ class SegmentHelper:
         previous_line = None
         temp = []
         column_groups = []
-        median = self.find_line_width_median(lines) * 0.4 # Add a 40 % margin
+        median = self.find_line_width_median(lines) * 0.4  # Adds a 40 % margin
 
         # Sorts the list in an ascending order based on x1
         lines = sorted(lines, key=lambda sorted_line: sorted_line.x1)
@@ -89,13 +140,13 @@ class SegmentHelper:
 
         return column_groups
 
-    def __group_same_segment(self, column_groups):
+    def __group_same_segment(self, column_groups, ignore_width):
         temp = []
         segment_groups = []
 
         for group in column_groups:
             group = sorted(group, key=lambda sorted_group: sorted_group.y1)
-            median = self.find_line_height_median(group)
+            median = self.find_line_height_median(group) * 3 if ignore_width else 1
             previous_line = None
 
             for line in group:
@@ -108,7 +159,7 @@ class SegmentHelper:
                 max_diff = 100
 
                 # Checks if the current and previous lines are in the same segment
-                if line.y1 - previous_line.y2 < median and line_diff in range(-max_diff, max_diff):
+                if line.y1 - previous_line.y2 < median and (ignore_width or line_diff in range(-max_diff, max_diff)):
                     temp.append(line)
                 else:
                     segment_groups.append(temp)
@@ -195,7 +246,7 @@ class SegmentHelper:
     def __find_split_x_coord(self, text_line, line):
         # Calculates coordinates for B based on angle A, C and line b, where C is 90
         # Calculate A
-        line_slope = abs(line.x2-line.x1) / abs(line.y2-line.y1)
+        line_slope = abs(line.x2 - line.x1) / abs(line.y2 - line.y1)
         line_degree = math.atan(line_slope)
         # Calculate B
         other_angle = 180 - 90 - line_degree
