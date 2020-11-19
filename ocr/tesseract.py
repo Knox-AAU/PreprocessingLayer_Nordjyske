@@ -23,11 +23,21 @@ class TesseractModule:
     @classmethod
     def from_file(cls, file: File):
         # todo do preprocessing methods instead of loading file
-        img = cv2.imread(file.path)
+        #img = cv2.imread(file.path)
 
-        tm = cls(img)
+        tm = cls(file)
 
         return tm
+
+    @staticmethod
+    def from_articles_to_publication(articles):
+        # todo find publication, published, publisher, and page count.
+        pub = Publication()
+        pub.publication = ""
+        pub.published_at = datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+        [pub.add_article(article) for article in articles]
+
+        return pub
 
     def to_publication(self):
         #todo find publication, published, publisher, and page count.

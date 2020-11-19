@@ -4,6 +4,7 @@ from knox_source_data_io.models.publication import Article
 from pytesseract import pytesseract
 
 from alto_segment_lib.segment_module import SegmentModule
+from ocr.tesseract import TesseractModule
 
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 import cv2
@@ -21,14 +22,25 @@ class OCRRunner:
         segments = SegmentModule.run_segmentation(file.path.split(".")[0])
 
         article = Article()
-        data = []
-        i = 0
+        articles = []
+
+        segments[40].type = "headline"
+
         for segment in segments:
+            cropped_image = image[segment.y1:segment.y2, segment.x1:segment.x2]
 
-            if i < 3:
-                cropped_image = image[segment.y1:segment.y2, segment.x1:segment.x2]
+            if segment.type == "paragraph":
+                paragraphs = TesseractModule.from_file(cropped_image).to_paragraphs()
+                [article.add_paragraph(p) for p in paragraphs]
 
-                data.append(pytesseract.image_to_data(image, lang=language, output_type='dict', config=""))
-                i += 1
-            else:
-                continue
+            if segment.type == "headline":
+                # todo implement when ordering is done
+                articles.append(article)
+                article = Article()
+                headline = TesseractModule.from_file(cropped_image).to_paragraphs()
+                article.headline = headline[0].value
+
+        articles.append(article)
+        publication = TesseractModule.from_articles_to_publication(articles)
+
+        return publication

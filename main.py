@@ -20,7 +20,7 @@ if __name__ == '__main__':
         "The main module of data-processing of input files from a dataset.")
 
     parser.add_argument("path", help='The root to crawl.')
-    parser.add_argument("output_path", help='The root to crawl.')
+    parser.add_argument("output_path", help='The path to output folder.')
 
     # defines from_date argument
     parser.add_argument('-f', '--from', dest="from_date", type=parse_date,

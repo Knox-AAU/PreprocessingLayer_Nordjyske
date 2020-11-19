@@ -6,6 +6,7 @@ from crawler.crawl import Crawler
 
 # https://asyncio.readthedocs.io/en/latest/producer_consumer.html
 from crawler.file_types import FileType
+from ocr.ocr_runner import OCRRunner
 from ocr.tesseract import TesseractModule
 from save_to_json import save_to_json
 from nitf_parser.parser import NitfParser
@@ -25,12 +26,12 @@ class MotherRunner:
     def __process_file(file):
         if file.type == FileType.JP2:
             # run OCR
-            return TesseractModule.from_file(file).to_publication()
+            return OCRRunner.run_ocr(file)
         if file.type == FileType.NITF:
             # run NITF parser
             return NitfParser().parse_file(file)
 
-    def __consumer(self):
+    def _consumer(self):
         while True:
             # wait for an item from the producer
             print(f'Waiting on new item...')
@@ -58,7 +59,7 @@ class MotherRunner:
     def start(self):
         print("starting %d workers" % self.worker_count)
         self.workers = [
-            Process(target=self.__consumer)
+            Process(target=self._consumer)
             for i in range(self.worker_count)]
         for w in self.workers:
             w.start()

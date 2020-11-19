@@ -80,8 +80,9 @@ def __add_publication_if_new_or_add_articles_to_already_found_publication(found_
     :return:
     """
     # Ensures that articles with no paragraphs are not added to the publications
-    if len(input_pub.articles[0].paragraphs) == 0:
-        return
+    # todo fix: der er flere end en artikel, så man kan ikke kun tage den første artikel.
+    #if len(input_pub.articles[0].paragraphs) == 0:
+    #    return
 
     # Get reference to the publication that has already been added to the found publications
     # (returns 'None' if no match is found)
