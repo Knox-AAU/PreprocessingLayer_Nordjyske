@@ -25,6 +25,7 @@ class OCRRunner:
         articles = []
 
         segments[40].type = "headline"
+        segments[40].type = "subhead"
 
         for segment in segments:
             cropped_image = image[segment.y1:segment.y2, segment.x1:segment.x2]
@@ -32,13 +33,21 @@ class OCRRunner:
             if segment.type == "paragraph":
                 paragraphs = TesseractModule.from_file(cropped_image).to_paragraphs()
                 [article.add_paragraph(p) for p in paragraphs]
+                article.add_extracted_from(file.path)
 
             if segment.type == "headline":
                 # todo implement when ordering is done
                 articles.append(article)
                 article = Article()
                 headline = TesseractModule.from_file(cropped_image).to_paragraphs()
-                article.headline = headline[0].value
+                if headline[0] is not None:
+                    article.headline = headline[0].value
+
+            if segment.type == "subhead":
+                # todo implement when ordering is done
+                subhead = TesseractModule.from_file(cropped_image).to_paragraphs()
+                if subhead[0] is not None:
+                    article.subhead = subhead[0].value
 
         articles.append(article)
         publication = TesseractModule.from_articles_to_publication(articles)
