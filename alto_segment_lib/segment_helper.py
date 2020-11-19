@@ -187,7 +187,7 @@ class SegmentHelper:
 
         for group in column_groups:
             group = sorted(group, key=lambda sorted_group: sorted_group.y1)
-            median = self.find_line_height_median(group) * 3 if ignore_width else 1
+            median = self.find_line_height_median(group) * (3 if ignore_width else 1)
             previous_line = None
 
             for text_line in group:
