@@ -105,5 +105,5 @@ if __name__ == '__main__':
     filename = args.filename
     filepath = base_path + filename
 
-    run_multiple_files(base_path)
-    # run_file(filepath)
+    #run_multiple_files(base_path)
+    run_file(filepath)
