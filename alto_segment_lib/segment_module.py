@@ -15,7 +15,7 @@ class SegmentModule:
         alto_extractor.set_dpi(300)
         alto_extractor.set_margin(0)
 
-        segment_helper = SegmentHelper()
+        segment_helper = SegmentHelper(file_path + ".alto.xml")
 
         text_lines = alto_extractor.extract_lines()
         text_lines = segment_helper.repair_text_lines(text_lines, lines)
@@ -27,6 +27,6 @@ class SegmentModule:
         rep_rows_segments = repair.repair_rows()
         paragraphs.clear()
         segments_para = rep_rows_segments
-        display_segments(segments_para, file_path, "repaired")
+        #display_segments(segments_para, file_path, "repaired")
 
         return segments_para

@@ -26,7 +26,7 @@ class MotherRunner:
     def __process_file(file):
         if file.type == FileType.JP2:
             # run OCR
-            return OCRRunner.run_ocr(file)
+            return OCRRunner().run_ocr(file)
         if file.type == FileType.NITF:
             # run NITF parser
             return NitfParser().parse_file(file)

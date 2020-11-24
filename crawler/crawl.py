@@ -70,6 +70,8 @@ class Crawler:
                 # entry is folder, search recursively:
                 self.__crawl_for_files_in_folders(folder, entry.path)
 
+        folder.sort()
+
     @staticmethod
     def __is_file_valid_nitf(xml_path):
         """ Checks if the XML file given has the nitf:nitf tag

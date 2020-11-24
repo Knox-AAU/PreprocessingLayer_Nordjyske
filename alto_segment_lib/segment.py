@@ -1,5 +1,7 @@
 import math
 
+from typing import List
+
 
 class Segment:
     type: str
@@ -111,15 +113,10 @@ class Line:
 
 
 class SegmentGroup:
-    headers: list[Segment]
-    paragraphs: list[Segment]
+    headers: List[Segment]
+    paragraphs: List[Segment]
 
     def __init__(self):
         self.headers = []
         self.paragraphs = []
 
-    def between_x_coords(self, coord: int, margin: float = 0.0):
-        return (self.x1 * (1 - margin)) <= coord <= (self.x2 * (1 + margin))
-
-    def between_y_coords(self, coord: int, margin: int = 0):
-        return (self.y1 * (1 - margin)) <= coord <= (self.y2 * (1 + margin))

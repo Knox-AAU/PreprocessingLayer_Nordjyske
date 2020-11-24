@@ -102,7 +102,7 @@ def run_file(file_path):
     groups = grouper.group_segments_in_order(header_segments, paragraphs, lines)
     print("Groups: "+str(len((groups))))
 
-    display_segments(lines, file_path, "grouped")
+    #display_segments(lines, file_path, "grouped")
     #display_segments(segments_para, file_path, "paragrphs")
     #display_segments(header_segments, file_path, "headers")
 

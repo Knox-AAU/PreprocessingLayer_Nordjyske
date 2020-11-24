@@ -1,9 +1,11 @@
+from typing import List
+
 from alto_segment_lib.segment import SegmentGroup, Segment
 from alto_segment_lib.segment_helper import SegmentHelper
 
 
 class SegmentGroupHandler:
-    groups: list[SegmentGroup]
+    groups: List[SegmentGroup]
     current_group = None
     unfinished_group = None
 
