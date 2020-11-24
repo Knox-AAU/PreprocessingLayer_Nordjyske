@@ -5,9 +5,9 @@ from math import atan2
 from os import environ
 from alto_segment_lib.line_extractor.hough_bundler import HoughBundler
 from alto_segment_lib.segment import Line
+from cv2 import cv2
 
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
-import cv2
 
 
 class LineExtractor:
@@ -30,9 +30,8 @@ class LineExtractor:
         self.vertical_size = int(self.config['line_enhancement']['vertical_size'])
         self.horizontal_size = int(self.config['line_enhancement']['horizontal_size'])
 
-    def extract_lines_via_path(self, image_path):
+    def extract_lines_via_path(self, image_path: str):
         image = cv2.imread(image_path, cv2.CV_8UC1)
-
 
         lines = self.extract_lines_via_image(image)
         #corrected_lines = self.correct_lines(lines)
@@ -41,11 +40,11 @@ class LineExtractor:
         final_lines = self.remove_outline_lines(extended_lines, image)
         return final_lines
 
-    def extract_lines_via_image(self, image):
+    def extract_lines_via_image(self, image: object):
         enhanced_image = self.enhance_lines(image)
         return self.get_lines_from_binary_image(enhanced_image)
 
-    def remove_outline_lines(self, lines, image):
+    def remove_outline_lines(self, lines, image: object):
         outline_stop = 100
         max_x, max_y = image.shape
         lines_to_remove = []
@@ -129,8 +128,8 @@ class LineExtractor:
 
         lines_edges = cv2.addWeighted(image_in_color, 0.5, line_image, 1, 0)
 
-        cv2.imwrite("1919-streger.png", lines_edges)
-        #print("done")
+        # cv2.imwrite("1919-stregerne.png", lines_edges)
+        # print("done")
         # cv2.namedWindow("image", cv2.WINDOW_NORMAL)
         # cv2.imshow("image", lines_edges)
         # cv2.waitKey(0)

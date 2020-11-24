@@ -3,6 +3,7 @@ import os
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from alto_segment_lib.repair_segments import RepairSegments
+from alto_segment_lib.segment_grouper import SegmentGrouper
 from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
 from alto_segment_lib.line_extractor.extractor import LineExtractor
 from alto_segment_lib.segment_helper import SegmentHelper
@@ -45,13 +46,13 @@ def display_lines(headers_for_display, paragraphs_for_display, file_path, name):
         plt.gca().add_patch(
             Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.3,
                       edgecolor='b', facecolor='none'))
-        counter += 1
+        # plt.text(segment.x1+25, segment.y1+30, "["+str(segment.font)+"]", horizontalalignment='left', verticalalignment='top')
 
     for segment in paragraphs_for_display:
         plt.gca().add_patch(
             Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.3,
                       edgecolor='r', facecolor='none'))
-        counter += 1
+        # plt.text(segment.x1+25, segment.y1+30, "["+str(segment.font)+"]", horizontalalignment='left', verticalalignment='top')
 
     plt.savefig(file_path + "-" + name + ".png", dpi=600, bbox_inches='tight')
     plt.gca().clear()
@@ -71,27 +72,42 @@ def run_multiple_files(basepath):
 
 def run_file(file_path):
     lines = LineExtractor().extract_lines_via_path(file_path + ".jp2")
-    #display_lines([], lines, file_path, "streger")
+    # display_lines([], lines, file_path, "streger")
 
     altoExtractor = AltoSegmentExtractor(file_path + ".alto.xml")
     altoExtractor.set_dpi(300)
     altoExtractor.set_margin(0)
 
-    segment_helper = SegmentHelper()
+    segment_helper = SegmentHelper(file_path + ".alto.xml")
 
     text_lines = altoExtractor.extract_lines()
+
     text_lines = segment_helper.repair_text_lines(text_lines, lines)
     lists = segment_helper.group_lines_into_paragraphs_headers(text_lines)
     #display_lines(lists[0], lists[1], "lines", file_path)
+    header_segments = segment_helper.combine_lines_into_segments(lists[0])
     segments = segment_helper.combine_lines_into_segments(lists[1])
     #display_segments(segments, file_path, "segments")
 
+    headers = [segment for segment in segments if segment.type == "header"]
     paragraphs = [segment for segment in segments if segment.type == "paragraph"]
     repair = RepairSegments(paragraphs, 30)
     rep_rows_segments2 = repair.repair_rows()
-    paragraphs.clear()
+
     segments_para = rep_rows_segments2
-    display_segments(segments_para, file_path, "repaired")
+    #display_segments(segments_para, file_path, "repaired")
+    lines = [element for element, element in enumerate(lines) if element.is_horizontal()]
+
+    grouper = SegmentGrouper()
+    groups = grouper.group_segments_in_order(header_segments, paragraphs, lines)
+    print("Groups: "+str(len((groups))))
+
+    display_segments(lines, file_path, "grouped")
+    #display_segments(segments_para, file_path, "paragrphs")
+    #display_segments(header_segments, file_path, "headers")
+
+
+    paragraphs.clear()
 
 
 if __name__ == '__main__':

@@ -1,11 +1,6 @@
 import statistics
-from itertools import count
 from os import environ
-from xml.dom import minidom
-import operator
-import enum
 from matplotlib.patches import ConnectionPatch
-
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from PIL import Image
@@ -13,10 +8,11 @@ from alto_segment_lib.segment import Segment
 from alto_segment_lib.line_extractor.extractor import LineExtractor
 from alto_segment_lib.segment import Line
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
-import cv2
 
 
 class SegmentOrdering:
+
+
     Paragraph_normal_width: float
 
     def __init__(self, file_path, file_name):
