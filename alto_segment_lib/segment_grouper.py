@@ -11,6 +11,7 @@ class SegmentGrouper:
 
     def group_segments_in_order(self, headers_in: list[Line], paragraphs_in: list[Segment], lines_in: list[Line]):
         segments = paragraphs_in.copy()
+        segments.extend(headers_in)
 
         # Find paragraph median
         segment_width = []
@@ -21,17 +22,8 @@ class SegmentGrouper:
 
         lines = [element for element, element in enumerate(lines_in) if element.is_horizontal()]
 
-        for header in headers_in:
-            segment = Segment()
-            segment.type = "heading"
-            segment.x1 = header.x1
-            segment.x2 = header.x2
-            segment.y1 = header.y1
-            segment.y2 = header.y2
-            segments.append(segment)
 
-        content_bounds = SegmentHelper.get_content_bounds(segments)
-        print(content_bounds)
+        #content_bounds = SegmentHelper.get_content_bounds(segments)
 
         for line in lines:
             segment = Segment()
@@ -46,7 +38,6 @@ class SegmentGrouper:
         segments = self.__order_segments_by_x1_y1(segments)
 
         # print(paragraph_median*6)
-
         # print("Found segments: "+str(len(segments)))
 
         segments_to_check = segments.copy()

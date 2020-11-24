@@ -114,7 +114,7 @@ class SegmentHelper:
         header_segment_groups = self.__group_same_segment(header_column_groups, True)
         new_paragraphs = []
         new_headers = []
-        min_cluster_size = 3
+        min_cluster_size = 6
 
         for grouped_headers in header_segment_groups:
             if len(grouped_headers) > min_cluster_size:
@@ -216,7 +216,7 @@ class SegmentHelper:
         return segment_groups
 
     @staticmethod
-    def make_box_around_lines(text_lines: list):
+    def make_box_around_lines(text_lines: list, return_coordiantes=False):
         """ Finds the coordinates for the segment containing the lines and creates the segment
 
         @param text_lines: list of text lines
@@ -247,6 +247,9 @@ class SegmentHelper:
             # Find y-coordinate lower right corner
             if line.y2 > y2:
                 y2 = line.y2
+
+        if return_coordiantes:
+            return x1, y1, x2, y2
 
         segment = Segment([x1, y1, x2, y2])
         segment.lines = text_lines
@@ -350,3 +353,45 @@ class SegmentHelper:
         split_x_coord = (line.x1 + dist_text_to_line) if line.x1 < line.x2 else (line.x1 - dist_text_to_line)
 
         return split_x_coord
+
+    @staticmethod
+    def group_headers_into_segments(header_lines):
+        header_segments = []
+        segment = None
+
+        x = 0
+        y = 0
+        radius = 0
+
+        for line in header_lines:
+            print("Line: "+str(line.x1)+", "+str(line.y1)+" - "+str(line.height()))
+
+            if radius > 0 and SegmentHelper.__isInsideCircle(x, y, radius, line.x1, line.y1):
+                segment.add_line(line)
+            else:
+                if segment is not None:
+                    segment.calculate_coordinates()
+                    header_segments.append(segment)
+
+                segment = Segment()
+                segment.type = "heading"
+                segment.add_line(line)
+
+            x = line.x1
+            y = line.y1
+            radius = line.height()+400
+
+        if segment is not None:
+            segment.calculate_coordinates()
+            header_segments.append(segment)
+
+        return header_segments
+
+    # https://www.geeksforgeeks.org/find-if-a-point-lies-inside-or-on-circle/
+    @staticmethod
+    def __isInsideCircle(circle_x, circle_y, rad, x, y):
+
+        # Compare radius of circle
+        # with distance of its center
+        # from given point
+        return (x - circle_x) * (x - circle_x) + (y - circle_y) * (y - circle_y) <= rad * rad
