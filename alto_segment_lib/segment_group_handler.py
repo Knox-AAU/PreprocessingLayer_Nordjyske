@@ -16,7 +16,7 @@ class SegmentGroupHandler:
             if self.unfinished_group is not None:
                 self.groups.append(self.unfinished_group)
             self.unfinished_group = self.current_group
-            self.current_group = SegmentGroup()
+        self.current_group = SegmentGroup()
 
     def add_segment(self, segment: Segment):
         if self.current_group is not None:
