@@ -24,6 +24,7 @@ class SegmentGrouper:
 
         segments_to_check = segments.copy()
         group_handler = SegmentGroupHandler()
+        previous_lowest_y = 0
 
         for segment in segments:
             # Skip all segments that should not be checked
@@ -31,14 +32,19 @@ class SegmentGrouper:
                 continue
 
             if segment.type == "heading":
-                # End the current group, start a new group, and add all lines of the header to the article
-                group_handler.end_group()
+                # End the current group, if the encountered header is beneath the previous segment
+                if segment.y1 > previous_lowest_y:
+                    group_handler.end_group()
+
+                # Start a new group and add all lines of the header to the article
                 group_handler.start_group()
                 group_handler.add_segment(segment)
             elif segment.type == "line":
                 self.__finish_article_based_on_line(group_handler, segment, segments_to_check)
             else:
                 group_handler.add_segment(segment)
+
+            previous_lowest_y = segment.y2
 
             # Remove the segment
             segments_to_check.remove(segment)
