@@ -4,8 +4,8 @@ from alto_segment_lib.segment_helper import SegmentHelper
 
 class SegmentGroupHandler:
     groups: list[SegmentGroup]
-    current_group = None
-    unfinished_group = None
+    current_group: SegmentGroup = None
+    unfinished_group: SegmentGroup = None
 
     def __init__(self):
         self.groups = []
