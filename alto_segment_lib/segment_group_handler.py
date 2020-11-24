@@ -21,7 +21,8 @@ class SegmentGroupHandler:
     def add_segment(self, segment: Segment):
         if self.current_group is not None:
             if segment.type == "heading":
-                self.current_group.headers.append(segment)
+                self.current_group.headers = segment.lines
+                # ToDo: remove; Option to add more headers to heading list[self.current_group.headers.append(sub_head) for sub_head in segment.lines]
             elif segment.type == "paragraph":
                 self.current_group.paragraphs.append(segment)
         else:

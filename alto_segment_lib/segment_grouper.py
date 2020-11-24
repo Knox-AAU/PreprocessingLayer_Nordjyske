@@ -10,15 +10,16 @@ environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 
 class SegmentGrouper:
 
-    def group_segments_in_order(self, headers_in: list[Line], paragraphs_in: list[Segment], lines_in: list[Line]):
+    def group_segments_in_order(self, headers_in: list[Segment], paragraphs_in: list[Segment], lines_in: list[Line]):
         segments = paragraphs_in.copy()
+        segments.extend(headers_in)
 
         # Convert all lines to segments
         lines = [element for element, element in enumerate(lines_in) if element.is_horizontal()]
         for line in lines:
             segments.append(self.__convert_line_to_segment(line))
 
-        # Order segments based on coordinates
+        # Sort headers and paragraphs by lowest x, lowest y.
         segments = self.__order_segments_by_x1_y1(segments)
 
         segments_to_check = segments.copy()
@@ -33,7 +34,7 @@ class SegmentGrouper:
                 # End the current group, start a new group, and add all lines of the header to the article
                 group_handler.end_group()
                 group_handler.start_group()
-                [group_handler.add_segment(sub_head) for sub_head in segment.lines]
+                group_handler.add_segment(segment)
             elif segment.type == "line":
                 self.__finish_article_based_on_line(group_handler, segment, segments_to_check)
             else:
