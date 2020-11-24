@@ -128,8 +128,8 @@ class LineExtractor:
 
         lines_edges = cv2.addWeighted(image_in_color, 0.5, line_image, 1, 0)
 
-        #cv2.imwrite("1919-streger.png", lines_edges)
-        #print("done")
+        # cv2.imwrite("1919-stregerne.png", lines_edges)
+        # print("done")
         # cv2.namedWindow("image", cv2.WINDOW_NORMAL)
         # cv2.imshow("image", lines_edges)
         # cv2.waitKey(0)

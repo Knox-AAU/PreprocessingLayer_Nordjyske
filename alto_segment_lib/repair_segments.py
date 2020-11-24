@@ -45,8 +45,8 @@ class RepairSegments:
                             and segment.between_x_coords(subsegment.x2 - thresh_within):
                         return_segments.remove(subsegment)
                     # Checks if subsegment's x-coords are close to segment
-                    elif (segment.between_x_coords(subsegment.x1 + thresh_close_to) \
-                            or segment.between_x_coords(subsegment.x2 - thresh_close_to)):
+                    elif segment.between_x_coords(subsegment.x1 + thresh_close_to) \
+                            and segment.between_x_coords(subsegment.x2 - thresh_close_to):
                         # Checks if the upper y-coordinate for subsegment is withing segment
                         if segment.between_y_coords(subsegment.y1):
                             # Move y-coordinate to be beside segment
