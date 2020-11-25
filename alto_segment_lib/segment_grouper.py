@@ -14,8 +14,12 @@ class SegmentGrouper:
         segments = paragraphs_in.copy()
         segments.extend(headers_in)
 
+        bounds = SegmentHelper.get_content_bounds(segments)
+
         # Convert all lines to segments
-        lines = [element for element, element in enumerate(lines_in) if element.is_horizontal()]
+        lines = [element for element, element in enumerate(lines_in) if
+                 element.is_horizontal() and 500 < element.y1 < (bounds[3] - 500)]
+
         for line in lines:
             segments.append(self.__convert_line_to_segment(line))
 
@@ -65,20 +69,21 @@ class SegmentGrouper:
         next(following_segments)
 
         for seg in following_segments:
-            if seg.y2 < splitting_line.y1:
-                # The segment is below the line
-                continue
+            print("line")
+            # if seg.type == "line" or seg.y1 > splitting_line.y2:
+            #     # The segment is below the line
+            #     continue
+            #
+            # if splitting_line.x1 > (seg.x2 - ((seg.x2 - seg.x1) / 2)) > splitting_line.x2:
+            #     # The segment is to the right of the line
+            #     break
+            #
+            # # The segment is above the line and within the x1 and x2 coordinates of the line
+            # # ToDo: There might be a need to add a new article if a header is encountered
+            #group_handler.add_segment(seg)
+            #segments_added.append(seg)
 
-            if (seg.x2 - ((seg.x2 - seg.x1) / 2)) > splitting_line.x2:
-                # The segment is to the right of the line
-                break
-
-            # The segment is above the line and within the x1 and x2 coordinates of the line
-            # ToDo: There might be a need to add a new article if a header is encountered
-            group_handler.add_segment(seg)
-            segments_added.append(seg)
-
-        [segments_to_check.remove(seg) for seg in segments_added]
+        #[segments_to_check.remove(seg) for seg in segments_added]
 
     def __convert_line_to_segment(self, line):
         segment = Segment()

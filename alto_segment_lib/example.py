@@ -135,7 +135,7 @@ def run_file(file_path):
     plt.savefig(file_path + "-grouped.png", dpi=600, bbox_inches='tight')
     plt.gca().clear()
 
-    display_segments(lines, file_path, "linesgi")
+    display_segments(lines, file_path, "lines")
     display_segments(segments, file_path, "paragrphs")
     display_segments(header_as_segment, file_path, "headers")
 
