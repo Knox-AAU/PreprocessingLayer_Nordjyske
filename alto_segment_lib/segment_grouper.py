@@ -54,7 +54,7 @@ class SegmentGrouper:
 
     def __finish_article_based_on_line(self, group_handler: SegmentGroupHandler, line: Segment, segments_to_check: list[Segment]):
         # The ghost_header is used as a line to only handled articles within the bound of it and the encountered line
-        ghost_header = group_handler.get_header_segment()
+        # ghost_header = group_handler.get_header_segment()
 
         # The line is used to limit the article
         splitting_line = line
@@ -65,16 +65,11 @@ class SegmentGrouper:
         next(following_segments)
 
         for seg in following_segments:
-            if ghost_header is not None and \
-                    (seg.x1 < ghost_header.x1 or seg.x2 > ghost_header.x2 or seg.y2 < ghost_header.y2):
-                # The segment is not below or is not within x1 and x2 of the ghost header
-                continue
-
             if seg.y2 < splitting_line.y1:
                 # The segment is below the line
                 continue
 
-            if seg.x2 - (seg.x2 - seg.x1) > splitting_line.x2:
+            if (seg.x2 - ((seg.x2 - seg.x1) / 2)) > splitting_line.x2:
                 # The segment is to the right of the line
                 break
 
