@@ -7,10 +7,8 @@ from pytesseract import pytesseract
 
 from alto_segment_lib.segment_module import SegmentModule
 from ocr.tesseract import TesseractModule
-
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 import cv2
-
 
 class OCRRunner:
 
@@ -49,6 +47,11 @@ class OCRRunner:
                 subhead = TesseractModule.from_file(cropped_image).to_paragraphs()
                 if len(subhead) > 0:
                     article.subhead = subhead[0].value
+
+            if segment.type == "lead":
+                lead = TesseractModule.from_file(cropped_image).to_paragraphs()
+                if len(lead) > 0:
+                    article.lead = lead[0].value
 
         if article.page == 0:
             article.page = self.find_page_number(file.path)
