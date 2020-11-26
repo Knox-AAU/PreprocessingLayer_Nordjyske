@@ -135,6 +135,9 @@ def run_file(file_path):
     plt.savefig(file_path + "-grouped.png", dpi=600, bbox_inches='tight')
     plt.gca().clear()
 
+    lines = [element for element, element in enumerate(lines) if
+             element.is_horizontal() and 621 < element.y1 < (6218 - 621)]
+
     display_segments(lines, file_path, "lines")
     display_segments(segments, file_path, "paragrphs")
     display_segments(header_as_segment, file_path, "headers")

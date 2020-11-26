@@ -15,12 +15,19 @@ class SegmentGrouper:
         segments.extend(headers_in)
 
         bounds = SegmentHelper.get_content_bounds(segments)
+        print(bounds)
+
+        # remove all lines in the first and last 10% of the page height
+        line_bound = (bounds[3]*0.1)
 
         # Convert all lines to segments
         lines = [element for element, element in enumerate(lines_in) if
-                 element.is_horizontal() and 500 < element.y1 < (bounds[3] - 500)]
+                 element.is_horizontal() and line_bound < element.y1 < (bounds[3] - line_bound)]
 
         for line in lines:
+            length = line.width()
+            line.x1 = line.x1 + (length * 0.05)
+            line.x2 = line.x2 - (length * 0.05)
             segments.append(self.__convert_line_to_segment(line))
 
         # Sort headers and paragraphs by lowest x, lowest y.
@@ -32,7 +39,7 @@ class SegmentGrouper:
 
         for segment in segments:
             # Skip all segments that should not be checked
-            if not segments_to_check.__contains__(segment):
+            if segment not in segments_to_check:
                 continue
 
             if segment.type == "heading":
@@ -69,21 +76,20 @@ class SegmentGrouper:
         next(following_segments)
 
         for seg in following_segments:
-            print("line")
-            # if seg.type == "line" or seg.y1 > splitting_line.y2:
-            #     # The segment is below the line
-            #     continue
-            #
-            # if splitting_line.x1 > (seg.x2 - ((seg.x2 - seg.x1) / 2)) > splitting_line.x2:
-            #     # The segment is to the right of the line
-            #     break
-            #
-            # # The segment is above the line and within the x1 and x2 coordinates of the line
-            # # ToDo: There might be a need to add a new article if a header is encountered
-            #group_handler.add_segment(seg)
-            #segments_added.append(seg)
+            if seg.type == "line" or seg.y1 > splitting_line.y2:
+                # The segment is below the line
+                continue
 
-        #[segments_to_check.remove(seg) for seg in segments_added]
+            if splitting_line.x1 > (seg.x2 - ((seg.x2 - seg.x1) / 2)) > splitting_line.x2:
+                # The segment is to the right of the line
+                break
+
+            # The segment is above the line and within the x1 and x2 coordinates of the line
+            # ToDo: There might be a need to add a new article if a header is encountered
+            group_handler.add_segment(seg)
+            segments_added.append(seg)
+
+        [segments_to_check.remove(seg) for seg in segments_added]
 
     def __convert_line_to_segment(self, line):
         segment = Segment()
@@ -99,7 +105,7 @@ class SegmentGrouper:
         # Run through each group and sort by y1
         # Merge groups into collective list
         segments_grouped = []
-        threshold = 100  # ToDo: Make smarter
+        threshold = 300  # ToDo: Make smarter
 
         # Go through each segment
         for segment in segments:
