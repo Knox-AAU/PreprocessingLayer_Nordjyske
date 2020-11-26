@@ -22,7 +22,7 @@ class SegmentGroupHandler:
         if self.current_group is not None:
             if segment.type == SegmentType.heading:
                 self.current_group.headers = segment.lines
-                # ToDo: remove; Option to add more headers to heading list[self.current_group.headers.append(sub_head) for sub_head in segment.lines]
+                # ToDo: remove or use; Option to add more headers to heading list[self.current_group.headers.append(sub_head) for sub_head in segment.lines]
             elif segment.type == SegmentType.paragraph:
                 self.current_group.paragraphs.append(segment)
         else:

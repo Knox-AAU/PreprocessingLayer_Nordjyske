@@ -118,7 +118,9 @@ class SegmentGrouper:
         # Go through each segment
         for segment in segments:
             segment_added = False
-            threshold = segment.get_center()[0] / 2
+
+            # Set the threshold to an eighth of the segments width
+            threshold = segment.get_center()[0] / 4
 
             # Find the associated group
             for segment_group in segments_grouped:
