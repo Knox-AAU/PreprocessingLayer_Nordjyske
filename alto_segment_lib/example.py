@@ -1,6 +1,7 @@
 import argparse
 import os
 from alto_segment_lib.repair_segments import RepairSegments
+from alto_segment_lib.segment import Segment, SegmentType
 from alto_segment_lib.segment_grouper import SegmentGrouper
 from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
 import matplotlib.pyplot as plt
@@ -93,8 +94,8 @@ def run_file(file_path):
 
     print(len(header_as_segment))
 
-    headers = [segment for segment in segments if segment.type == "header"]
-    paragraphs = [segment for segment in segments if segment.type == "paragraph"]
+    headers = [segment for segment in segments if segment.type == SegmentType.heading]
+    paragraphs = [segment for segment in segments if segment.type == SegmentType.paragraph]
     repair = RepairSegments(paragraphs, 30)
     rep_rows_segments2 = repair.repair_rows()
 

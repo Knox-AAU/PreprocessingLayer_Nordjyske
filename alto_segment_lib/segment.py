@@ -1,15 +1,24 @@
 import math
+from enum import Enum
+
+
+class SegmentType(Enum):
+    paragraph = 1
+    heading = 2
+    line = 3
+    unknown = 4
 
 
 class Segment:
-    type: str
+    type: SegmentType
     x1: int
     y1: int
     x2: int
     y2: int
+
     lines: list
 
-    def __init__(self, coord: list = None, seg_type: str = "unknown"):
+    def __init__(self, coord: list = None, seg_type: SegmentType = SegmentType.unknown):
         self.lines = []
 
         if coord is None:

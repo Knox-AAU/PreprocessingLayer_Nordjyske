@@ -1,4 +1,4 @@
-from alto_segment_lib.segment import SegmentGroup, Segment
+from alto_segment_lib.segment import SegmentGroup, Segment, SegmentType
 from alto_segment_lib.segment_helper import SegmentHelper
 
 
@@ -20,16 +20,16 @@ class SegmentGroupHandler:
 
     def add_segment(self, segment: Segment):
         if self.current_group is not None:
-            if segment.type == "heading":
+            if segment.type == SegmentType.heading:
                 self.current_group.headers = segment.lines
                 # ToDo: remove; Option to add more headers to heading list[self.current_group.headers.append(sub_head) for sub_head in segment.lines]
-            elif segment.type == "paragraph":
+            elif segment.type == SegmentType.paragraph:
                 self.current_group.paragraphs.append(segment)
         else:
             if self.unfinished_group is not None:
-                if segment.type == "heading":
+                if segment.type == SegmentType.heading:
                     self.unfinished_group.headers.append(segment)
-                elif segment.type == "paragraph":
+                elif segment.type == SegmentType.paragraph:
                     self.unfinished_group.paragraphs.append(segment)
 
     def end_group(self):

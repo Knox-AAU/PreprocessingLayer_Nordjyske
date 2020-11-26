@@ -1,6 +1,6 @@
 import statistics
 from os import environ
-from alto_segment_lib.segment import Segment, Line, SegmentGroup
+from alto_segment_lib.segment import Segment, Line, SegmentGroup, SegmentType
 from alto_segment_lib.segment_group_handler import SegmentGroupHandler
 from alto_segment_lib.segment_helper import SegmentHelper
 from alto_segment_lib.line_extractor.extractor import LineExtractor
@@ -44,7 +44,7 @@ class SegmentGrouper:
             if segment not in segments_to_check:
                 continue
 
-            if segment.type == "heading":
+            if segment.type == SegmentType.heading:
                 # End the current group, if the encountered header is beneath the previous segment
                 if segment.y1 > previous_lowest_y:
                     group_handler.end_group()
@@ -52,7 +52,7 @@ class SegmentGrouper:
                 # Start a new group and add all lines of the header to the article
                 group_handler.start_group()
                 group_handler.add_segment(segment)
-            elif segment.type == "line":
+            elif segment.type == SegmentType.line:
                 self.__finish_article_based_on_line(group_handler, segment, segments_to_check)
             else:
                 group_handler.add_segment(segment)
@@ -79,7 +79,7 @@ class SegmentGrouper:
         next(following_segments)
 
         for seg in following_segments:
-            if seg.type == "line" or seg.y1 > splitting_line.y2:
+            if seg.type == SegmentType.line or seg.y1 > splitting_line.y2:
                 # We encountered another line or the segment is below the line
                 continue
 
@@ -87,7 +87,7 @@ class SegmentGrouper:
                 # The segment is to the right of the line
                 break
 
-            if seg.type == "heading":
+            if seg.type == SegmentType.heading:
                 # A header has been encountered above the line
                 group_handler.end_group()
                 group_handler.start_group()
@@ -102,7 +102,7 @@ class SegmentGrouper:
 
     def __convert_line_to_segment(self, line):
         segment = Segment()
-        segment.type = "line"
+        segment.type = SegmentType.line
         segment.x1 = line.x1
         segment.x2 = line.x2
         segment.y1 = line.y1

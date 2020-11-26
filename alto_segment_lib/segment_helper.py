@@ -2,7 +2,7 @@ import statistics
 import math
 
 from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
-from alto_segment_lib.segment import Segment, Line
+from alto_segment_lib.segment import Segment, Line, SegmentType
 
 
 class SegmentHelper:
@@ -137,7 +137,7 @@ class SegmentHelper:
         for group in segment_groups:
             if len(group) > 0:
                 new_segment = self.make_box_around_lines(group)
-                new_segment.type = "paragraph"
+                new_segment.type = SegmentType.paragraph
                 segments.append(new_segment)
         return segments
 
@@ -374,7 +374,7 @@ class SegmentHelper:
                     header_segments.append(segment)
 
                 segment = Segment()
-                segment.type = "heading"
+                segment.type = SegmentType.heading
                 segment.add_line(line)
 
             x = line.x1

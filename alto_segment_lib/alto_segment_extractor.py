@@ -1,7 +1,7 @@
 from xml.dom import minidom
 import operator
 import enum
-from alto_segment_lib.segment import Segment
+from alto_segment_lib.segment import Segment, SegmentType
 from alto_segment_lib.segment import Line
 import statistics
 import re
@@ -147,11 +147,11 @@ class AltoSegmentExtractor:
             style = determine_most_frequent_list_element(text_line_fonts)
 
             if style in self.__para_fonts:
-                segment.type = "paragraph"
+                segment.type = SegmentType.paragraph
             elif style in self.__head_fonts:
-                segment.type = "headline"
+                segment.type = SegmentType.heading
             else:
-                segment.type = "unknown"
+                segment.type = SegmentType.unknown
 
             segments.append(segment)
 
