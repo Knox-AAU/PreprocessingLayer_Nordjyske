@@ -4,7 +4,6 @@ from alto_segment_lib.segment import Segment, Line, SegmentGroup
 from alto_segment_lib.segment_group_handler import SegmentGroupHandler
 from alto_segment_lib.segment_helper import SegmentHelper
 from alto_segment_lib.line_extractor.extractor import LineExtractor
-
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 
 
@@ -15,10 +14,9 @@ class SegmentGrouper:
         segments.extend(headers_in)
 
         bounds = SegmentHelper.get_content_bounds(segments)
-        print(bounds)
 
         # remove all lines in the first and last 10% of the page height
-        line_bound = (bounds[3]*0.1)
+        line_bound = (bounds[3] * 0.1)
 
         # Convert all lines to segments
         lines = [element for element, element in enumerate(lines_in) if
@@ -26,9 +24,13 @@ class SegmentGrouper:
 
         for line in lines:
             length = line.width()
-            line.x1 = line.x1 + (length * 0.05)
-            line.x2 = line.x2 - (length * 0.05)
+            # We shorten all lines by 5% in both ends to prevent column overlap
+            line.x1 = line.x1 * 1.05
+            line.x2 = line.x2 * 0.95
             segments.append(self.__convert_line_to_segment(line))
+
+        # segments = [element for element, element in enumerate(segments) if
+        #            line_bound < element.y1 < (bounds[3] - line_bound)]
 
         # Sort headers and paragraphs by lowest x, lowest y.
         segments = self.__order_segments_by_x1_y1(segments)
@@ -63,7 +65,8 @@ class SegmentGrouper:
         group_handler.finalize()
         return group_handler.groups
 
-    def __finish_article_based_on_line(self, group_handler: SegmentGroupHandler, line: Segment, segments_to_check: list[Segment]):
+    def __finish_article_based_on_line(self, group_handler: SegmentGroupHandler, line: Segment,
+                                       segments_to_check: list[Segment]):
         # The ghost_header is used as a line to only handled articles within the bound of it and the encountered line
         # ghost_header = group_handler.get_header_segment()
 
