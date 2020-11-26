@@ -77,15 +77,21 @@ class SegmentGrouper:
 
         for seg in following_segments:
             if seg.type == "line" or seg.y1 > splitting_line.y2:
-                # The segment is below the line
+                # We encountered another line or the segment is below the line
                 continue
 
-            if splitting_line.x1 > (seg.x2 - ((seg.x2 - seg.x1) / 2)) > splitting_line.x2:
+            if splitting_line.x1 > seg.get_center()[0] or seg.get_center()[0] > splitting_line.x2:
                 # The segment is to the right of the line
                 break
 
+            if seg.type == "heading":
+                # A header has been encountered above the line
+                group_handler.end_group()
+                group_handler.start_group()
+                group_handler.add_segment(seg)
+                continue
+
             # The segment is above the line and within the x1 and x2 coordinates of the line
-            # ToDo: There might be a need to add a new article if a header is encountered
             group_handler.add_segment(seg)
             segments_added.append(seg)
 
@@ -105,11 +111,11 @@ class SegmentGrouper:
         # Run through each group and sort by y1
         # Merge groups into collective list
         segments_grouped = []
-        threshold = 300  # ToDo: Make smarter
 
         # Go through each segment
         for segment in segments:
             segment_added = False
+            threshold = segment.get_center()[0] / 2
 
             # Find the associated group
             for segment_group in segments_grouped:
@@ -127,4 +133,4 @@ class SegmentGrouper:
         segments_grouped = [sorted(group, key=lambda s: s.y1) for group in segments_grouped]
 
         # Return the segments as a 1-dimensional list
-        return [group for segment in segments_grouped for group in segment]
+        return [segment for group in segments_grouped for segment in group]
