@@ -28,7 +28,7 @@ def display_segments(segments_for_display, file_path, name):
         plt.gca().add_patch(
             Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.3,
                       edgecolor='r', facecolor='none'))
-        # plt.text(segment.x1+25, segment.y1+30, "["+str(counter)+"]", horizontalalignment='left', verticalalignment='top')
+        plt.text(segment.x1+25, segment.y1+30, "["+str(counter)+"]", horizontalalignment='left', verticalalignment='top')
         # plt.text(seg[0]+45, seg[1] + 200, str((seg[2]-seg[0])), horizontalalignment='left', verticalalignment='top')
         counter += 1
 
@@ -71,7 +71,8 @@ def run_multiple_files(basepath):
 
 
 def run_file(file_path):
-    lines = LineExtractor().extract_lines_via_path(file_path + ".jp2")
+    line_extractor = LineExtractor()
+    lines = line_extractor.extract_lines_via_path(file_path + ".jp2")
     # display_lines([], lines, file_path, "streger")
 
     altoExtractor = AltoSegmentExtractor(file_path + ".alto.xml")
@@ -95,16 +96,18 @@ def run_file(file_path):
     rep_rows_segments2 = repair.repair_rows()
 
     segments_para = rep_rows_segments2
-    #display_segments(segments_para, file_path, "repaired")
+    display_segments(segments_para, file_path, "repaired")
     lines = [element for element, element in enumerate(lines) if element.is_horizontal()]
 
-    grouper = SegmentGrouper()
-    groups = grouper.group_segments_in_order(header_segments, paragraphs, lines)
-    print("Groups: "+str(len((groups))))
+    line_extractor.find_missing_lines(segments_para, file_path + ".jp2")
+
+    #grouper = SegmentGrouper()
+    #groups = grouper.group_segments_in_order(header_segments, paragraphs, lines)
+    #print("Groups: "+str(len((groups))))
 
     #display_segments(lines, file_path, "grouped")
     #display_segments(segments_para, file_path, "paragrphs")
-    #display_segments(header_segments, file_path, "headers")
+    #display_segments(header_segments, file_path, "segments")
 
 
     paragraphs.clear()

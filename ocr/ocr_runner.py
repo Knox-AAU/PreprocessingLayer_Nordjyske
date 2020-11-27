@@ -10,6 +10,7 @@ from ocr.tesseract import TesseractModule
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 import cv2
 
+
 class OCRRunner:
 
     def run_ocr(self, file, language='dan', tesseract_path=None):
@@ -20,7 +21,6 @@ class OCRRunner:
 
         article = Article()
         articles = []
-
         for segment in segments:
             if segment.y1 <= segment.y2 and segment.x1 <= segment.x2:
                 cropped_image = image[segment.y1:segment.y2+1, segment.x1:segment.x2+1]
@@ -38,6 +38,7 @@ class OCRRunner:
 
             if segment.type == "paragraph":
                 paragraphs = TesseractModule.from_file(cropped_image).to_paragraphs()
+                paragraphs = self.remove_advertisement_and_images(paragraphs)
                 if len(paragraphs) > 0:
                     [article.add_paragraph(p) for p in paragraphs]
                     article.add_extracted_from(file.path)
@@ -58,11 +59,11 @@ class OCRRunner:
 
         articles.append(article)
 
-        publication = self.convert_articles_into_publication(articles, file)
+        publication = self.__convert_articles_into_publication(articles, file)
 
         return publication
 
-    def convert_articles_into_publication(self, articles, file):
+    def __convert_articles_into_publication(self, articles, file):
         publication = TesseractModule.from_articles_to_publication(articles)
         publication.publication = self.find_publication(file.name)
         publication = self.set_publisher("Nordjyske Medier", publication)
@@ -108,3 +109,21 @@ class OCRRunner:
         if re.match(pattern, result):
             return datetime(year=int(result[0:4]), month=int(result[5:7]), day=int(result[8:10]), tzinfo=timezone.utc)\
                 .isoformat()
+
+    @staticmethod
+    def remove_advertisement_and_images(paragraphs):
+        # if text contains a lot of numbers it might be a TV guide or "aktier"
+        num_counter = 0
+        special_char_counter = 0
+        total_char_count = 0
+        for paragraph in paragraphs:
+            total_char_count += len(paragraph.value.strip())
+            words = paragraph.value.split(" ")
+            num_counter += sum(char.isdigit() for char in words)
+            special_char_counter += sum(char.isalpha() for char in words)
+
+        if special_char_counter > total_char_count/2 or num_counter > total_char_count/2:
+            for paragraph in paragraphs:
+                paragraph.value = ""
+
+        return paragraphs

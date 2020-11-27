@@ -13,6 +13,7 @@ environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 class LineExtractor:
 
     def __init__(self):
+        self.old_lines = []
         self.config = configparser.ConfigParser()
         self.config.read('config.ini')
 
@@ -34,17 +35,19 @@ class LineExtractor:
         image = cv2.imread(image_path, cv2.CV_8UC1)
 
         lines = self.extract_lines_via_image(image)
-        #corrected_lines = self.correct_lines(lines)
+        # corrected_lines = self.correct_lines(lines)
         extended_lines = self.extend_lines_vertically(lines, image)
-        self.show_lines_on_image(image, extended_lines)
+
         final_lines = self.remove_outline_lines(extended_lines, image)
+        self.show_lines_on_image(image, final_lines)
         return final_lines
 
     def extract_lines_via_image(self, image: object):
         enhanced_image = self.enhance_lines(image)
         return self.get_lines_from_binary_image(enhanced_image)
 
-    def remove_outline_lines(self, lines, image: object):
+    @staticmethod
+    def remove_outline_lines(lines, image: object):
         outline_stop = 100
         max_x, max_y = image.shape
         lines_to_remove = []
@@ -70,6 +73,9 @@ class LineExtractor:
         image_thresh = cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY,
                                              self.adaptive_threshold[0],
                                              self.adaptive_threshold[1])
+
+        cv2.imwrite("/home/knox17/Desktop/years/2004-treshed.png", image_thresh)
+
         # saves the thresholding image for later use
         image_horizontal = image_thresh
         image_vertical = image_thresh
@@ -101,6 +107,8 @@ class LineExtractor:
 
         line_objects = [Line.from_array(line[0]) for line in lines]
 
+        self.old_lines = line_objects
+
         lines_groups = HoughBundler().process_lines(line_objects)
 
         return self.filter_by_angle_diversion_from_horizontal_and_vertical(lines_groups)
@@ -111,6 +119,7 @@ class LineExtractor:
         min_vertical_angle = 90 - self.diversion
         max_vertical_angle = 90 + self.diversion
         filtered_lines = []
+
         for line in lines_groups:
             angle = atan2(line.y2 - line.y1, line.x2 - line.x1) * 180.0 / math.pi
             if min_vertical_angle < angle < max_vertical_angle or min_horizontal_angle < angle < max_horizontal_angle:
@@ -128,7 +137,7 @@ class LineExtractor:
 
         lines_edges = cv2.addWeighted(image_in_color, 0.5, line_image, 1, 0)
 
-        # cv2.imwrite("1919-stregerne.png", lines_edges)
+        cv2.imwrite("/home/knox17/Desktop/years/2004-stregerne.png", lines_edges)
         # print("done")
         # cv2.namedWindow("image", cv2.WINDOW_NORMAL)
         # cv2.imshow("image", lines_edges)
@@ -158,7 +167,7 @@ class LineExtractor:
                     line.x1 = line.x2
                     line.x2 = temp
 
-                median = int((line.x1 - line.x2)/2)
+                median = int((line.x1 - line.x2) / 2)
                 line.x1 -= median
                 line.x2 += median
             else:
@@ -167,7 +176,7 @@ class LineExtractor:
                     line.y1 = line.y2
                     line.y2 = temp
 
-                median = int((line.y1 - line.y2)/2)
+                median = int((line.y1 - line.y2) / 2)
                 line.y1 -= median
                 line.y2 += median
 
@@ -175,3 +184,27 @@ class LineExtractor:
 
         return new_lines
 
+    def find_missing_lines(self, segments, filepath):
+        # check if a line crosses into a segment. If it does then remove it and if it doesnt it might be a missing line
+        new_lines = []
+        image = cv2.imread(filepath, cv2.CV_8UC1)
+
+        for segment in segments:
+            # Finds 5% of the width as a buffer to avoid false positives due to crooked lines
+            width_5_percent = (segment.x2 - segment.x1) * 0.05
+
+            for line in self.old_lines:
+
+                if line.is_horizontal():
+                    # Checks if the line horizontally intersects the segment
+                    if not self.does_line_intersect_segment(segment, line):
+                        # if not (segment.x1 < line.x1 < segment.x2 or segment.x1):
+                        new_lines.append(line)
+
+        self.show_lines_on_image(image, new_lines)
+        i = 0
+
+    def does_line_intersect_segment(self, segment, line):
+        if ((segment.y1 < line.y1 < segment.y2)
+                and (segment.x1 < line.x1 < segment.y2)):
+            return True
