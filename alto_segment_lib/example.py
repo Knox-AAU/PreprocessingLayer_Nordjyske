@@ -106,12 +106,15 @@ def run_file(file_path):
     grouper = SegmentGrouper()
     groups = grouper.group_segments_in_order(header_as_segment, paragraphs, lines)
 
-    plt.imshow(Image.open(file_path + filetype))
+    image = Image.open(file_path + filetype)
+    image.putalpha(128)
+
+    plt.imshow(image)
     plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
     counter = 0
     color_counter = 0
 
-    colors = ['red', 'green', 'blue', 'violet', 'orange', 'pink', 'white']
+    colors = ['magenta', 'blue', 'green', 'brown', 'purple', 'yellow', 'orange']
 
 
     for group in groups:

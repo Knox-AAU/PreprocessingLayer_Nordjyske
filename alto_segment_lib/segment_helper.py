@@ -359,14 +359,18 @@ class SegmentHelper:
         header_segments = []
         segment = None
 
-        x = 0
-        y = 0
+        x1 = x2 = y1 = y2 = 0
         radius = 0
+        threshold = 100  # ToDo: make smart
 
         for line in header_lines:
             print("Line: "+str(line.x1)+", "+str(line.y1)+" - "+str(line.height()))
 
-            if radius > 0 and SegmentHelper.__isInsideCircle(x, y, radius, line.x1, line.y1):
+            if radius > 0 and SegmentHelper.__isInsideCircle(x1, y1, radius, line.x1, line.y1):
+                # The line is within the circle of the header
+                segment.add_line(line)
+            elif abs(line.x1 - x2) < threshold and abs(line.y1 - y1) < threshold:
+                # The line is right next to the header
                 segment.add_line(line)
             else:
                 if segment is not None:
@@ -377,8 +381,10 @@ class SegmentHelper:
                 segment.type = SegmentType.heading
                 segment.add_line(line)
 
-            x = line.x1
-            y = line.y1
+            x1 = line.x1
+            y1 = line.y1
+            x2 = line.x2
+            y2 = line.y2
             radius = line.height()+400
 
         if segment is not None:

@@ -120,7 +120,7 @@ class SegmentGrouper:
             segment_added = False
 
             # Set the threshold to an eighth of the segments width
-            threshold = segment.get_center()[0] / 4
+            threshold = 200
 
             # Find the associated group
             for segment_group in segments_grouped:
