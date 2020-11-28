@@ -5,10 +5,10 @@ from alto_segment_lib.line_extractor.hough_bundler import HoughBundler
 def test_split_lines_into_horizontal_and_vertical():
     # arrange
     lines = [
-        Line(0, 1, 0, 0),  # vertical
-        Line(1, 0, 0, 0),  # horizontal
-        Line(1, 1, 0, 0),  # 45
-        Line(2031, -3412, 35, -200)  # random ass angle
+        Line([0, 1, 0, 0]),  # vertical
+        Line([1, 0, 0, 0]),  # horizontal
+        Line([1, 1, 0, 0]),  # 45
+        Line([2031, -3412, 35, -200])  # random ass angle
     ]
 
     # act
@@ -25,48 +25,48 @@ def test_vertical_merge_group_into_line():
     # arrange
     # 3 vertical lines:
     lines = [
-        Line(10, 0, 11, 15),
-        Line(14, 21, 16, 51),
-        Line(13, 20, 13, 40),
+        Line([10, 0, 11, 15]),
+        Line([14, 21, 16, 51]),
+        Line([13, 20, 13, 40]),
     ]
 
     # act
     line_result = HoughBundler().merge_group_into_line(lines)
 
     # assert
-    assert line_result == Line(10, 0, 16, 51)
+    assert line_result == Line([10, 0, 16, 51])
 
 
 def test_horizontal_merge_group_into_line():
     # arrange
     # 3 vertical lines:
     lines = [
-        Line(0, 10, 15, 11),
-        Line(21, 14, 51, 16),
-        Line(20, 13, 40, 13),
+        Line([0, 10, 15, 11]),
+        Line([21, 14, 51, 16]),
+        Line([20, 13, 40, 13]),
     ]
 
     # act
     line_result = HoughBundler().merge_group_into_line(lines)
 
     # assert
-    assert line_result == Line(0, 10, 51, 16)
+    assert line_result == Line([0, 10, 51, 16])
 
 
 def test_single_line_merge_group_into_line():
     # arrange
-    lines = [Line(0, 1, 0, 0)]
+    lines = [Line([0, 1, 0, 0])]
 
     # act
     line_result = HoughBundler().merge_group_into_line(lines)
 
     # assert
-    assert line_result == Line(0, 1, 0, 0)
+    assert line_result == Line([0, 1, 0, 0])
 
 
 def test_simple_distance_point_to_line():
     # arrange
-    line = Line(0, 0, 0, 10)
+    line = Line([0, 0, 0, 10])
     point = [5, 5]
 
     # act
@@ -78,7 +78,7 @@ def test_simple_distance_point_to_line():
 
 def test_closest_to_corner_distance_point_to_line():
     # arrange
-    line = Line(0, 0, 0, 10)
+    line = Line([0, 0, 0, 10])
     point_a = [5, -5]
     point_b = [5, 15]
 
@@ -93,7 +93,7 @@ def test_closest_to_corner_distance_point_to_line():
 
 def test_small_line_distance_point_to_line():
     # arrange
-    line = Line(0, 0, 0, 0)
+    line = Line([0, 0, 0, 0])
     point_a = [100, 100]
 
     # act
@@ -105,8 +105,8 @@ def test_small_line_distance_point_to_line():
 
 def test_distance_in_limit_check_is_line_different():
     # arrange
-    groups = [[Line(0, 0, 0, 10)]]
-    line = Line(0, 11, 0, 21)
+    groups = [[Line([0, 0, 0, 10])]]
+    line = Line([0, 11, 0, 21])
 
     hb = HoughBundler()
     hb.max_angle_to_merge = 0
@@ -121,8 +121,8 @@ def test_distance_in_limit_check_is_line_different():
 
 def test_distance_out_of_limit_check_is_line_different():
     # arrange
-    groups = [[Line(0, 0, 0, 10)]]
-    line = Line(0, 15, 0, 22)
+    groups = [[Line([0, 0, 0, 10])]]
+    line = Line([0, 15, 0, 22])
 
     hb = HoughBundler()
     hb.max_angle_to_merge = 0
@@ -137,8 +137,8 @@ def test_distance_out_of_limit_check_is_line_different():
 
 def test_angle_in_limit_check_is_line_different():
     # arrange
-    groups = [[Line(0, 0, 0, 10)]]
-    line = Line(0, 0, 2, 90)
+    groups = [[Line([0, 0, 0, 10])]]
+    line = Line([0, 0, 2, 90])
 
     hb = HoughBundler()
     hb.max_angle_to_merge = 5
@@ -153,8 +153,8 @@ def test_angle_in_limit_check_is_line_different():
 
 def test_angle_out_of_limit_check_is_line_different():
     # arrange
-    groups = [[Line(0, 0, 0, 10)]]
-    line = Line(0, 0, 8, 90)
+    groups = [[Line([0, 0, 0, 10])]]
+    line = Line([0, 0, 8, 90])
 
     hb = HoughBundler()
     hb.max_angle_to_merge = 5
