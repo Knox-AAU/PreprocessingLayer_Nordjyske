@@ -99,8 +99,6 @@ def run_file(file_path):
     display_segments(segments_para, file_path, "repaired")
     lines = [element for element, element in enumerate(lines) if element.is_horizontal()]
 
-    line_extractor.find_missing_lines(segments_para, file_path + ".jp2")
-
     #grouper = SegmentGrouper()
     #groups = grouper.group_segments_in_order(header_segments, paragraphs, lines)
     #print("Groups: "+str(len((groups))))

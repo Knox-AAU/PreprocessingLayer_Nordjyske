@@ -183,28 +183,3 @@ class LineExtractor:
             new_lines.append(line)
 
         return new_lines
-
-    def find_missing_lines(self, segments, filepath):
-        # check if a line crosses into a segment. If it does then remove it and if it doesnt it might be a missing line
-        new_lines = []
-        image = cv2.imread(filepath, cv2.CV_8UC1)
-
-        for segment in segments:
-            # Finds 5% of the width as a buffer to avoid false positives due to crooked lines
-            width_5_percent = (segment.x2 - segment.x1) * 0.05
-
-            for line in self.old_lines:
-
-                if line.is_horizontal():
-                    # Checks if the line horizontally intersects the segment
-                    if not self.does_line_intersect_segment(segment, line):
-                        # if not (segment.x1 < line.x1 < segment.x2 or segment.x1):
-                        new_lines.append(line)
-
-        self.show_lines_on_image(image, new_lines)
-        i = 0
-
-    def does_line_intersect_segment(self, segment, line):
-        if ((segment.y1 < line.y1 < segment.y2)
-                and (segment.x1 < line.x1 < segment.y2)):
-            return True
