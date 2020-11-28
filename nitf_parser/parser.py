@@ -140,7 +140,7 @@ class NitfParser:
         # body content contains the paragraphs and subheaders
         self.__parse_body_content(body_element.getElementsByTagName("nitf:body.content")[0])
 
-    def parse(self, article_path):
+    def parse(self, article_path): # todo rewrite into a text driven method
         self.article = Article()
         self.article.add_extracted_from(article_path)
         xml_doc = minidom.parse(article_path)
