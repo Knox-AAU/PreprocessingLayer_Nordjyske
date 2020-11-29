@@ -119,8 +119,9 @@ class OCRRunner:
         for paragraph in paragraphs:
             total_char_count += len(paragraph.value.strip())
             words = paragraph.value.split(" ")
-            num_counter += sum(char.isdigit() for char in words)
-            special_char_counter += sum(char.isalpha() for char in words)
+            for word in words:
+                num_counter += sum(char.isdigit() for char in word)
+                special_char_counter += sum(char.isalpha() for char in word)
 
         if special_char_counter > total_char_count/2 or num_counter > total_char_count/2:
             for paragraph in paragraphs:
