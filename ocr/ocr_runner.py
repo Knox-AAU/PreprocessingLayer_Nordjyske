@@ -1,3 +1,4 @@
+import string
 from datetime import datetime, timezone
 from os import environ
 from xml.dom import minidom
@@ -22,6 +23,9 @@ class OCRRunner:
         article = Article()
         articles = []
         for segment in segments:
+            if len(segments) > 300:
+                break
+
             if segment.y1 <= segment.y2 and segment.x1 <= segment.x2:
                 cropped_image = image[segment.y1:segment.y2+1, segment.x1:segment.x2+1]
             else:
@@ -68,6 +72,7 @@ class OCRRunner:
         publication.publication = self.find_publication(file.name)
         publication = self.set_publisher("Nordjyske Medier", publication)
         publication.published_at = self.find_published_at(file.path)
+        publication = self.remove_empty_paragraphs(publication)
 
         return publication
 
@@ -113,18 +118,36 @@ class OCRRunner:
     @staticmethod
     def remove_advertisement_and_images(paragraphs):
         # if text contains a lot of numbers it might be a TV guide or "aktier"
-        num_counter = 0
-        special_char_counter = 0
-        total_char_count = 0
+        ok_paragraphs = []
+
+        special_chars = set(string.punctuation.replace("_", ""))
         for paragraph in paragraphs:
+            num_counter = 0
+            special_char_counter = 0
+            total_char_count = 0
+
             total_char_count += len(paragraph.value.strip())
             words = paragraph.value.split(" ")
             for word in words:
                 num_counter += sum(char.isdigit() for char in word)
-                special_char_counter += sum(char.isalpha() for char in word)
+                special_char_counter += sum(char in special_chars for char in word)
 
-        if special_char_counter > total_char_count/2 or num_counter > total_char_count/2:
+            if not (special_char_counter > total_char_count/4 or num_counter > total_char_count/2
+                    or special_char_counter + num_counter > total_char_count/3):
+                ok_paragraphs.append(paragraph)
+
+        return ok_paragraphs
+
+    @staticmethod
+    def remove_empty_paragraphs(publication):
+        correct_paragraphs = []
+        for article in publication.articles:
+            paragraphs = article.paragraphs
+
             for paragraph in paragraphs:
-                paragraph.value = ""
+                if len(paragraph.value) > 0:
+                    correct_paragraphs.append(paragraph)
 
-        return paragraphs
+            article.paragraphs = correct_paragraphs
+
+        return publication

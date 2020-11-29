@@ -27,6 +27,6 @@ class SegmentModule:
         rep_rows_segments = repair.repair_rows()
         paragraphs.clear()
         segments_para = rep_rows_segments
-        #display_segments(segments_para, file_path, "repaired")
+        display_segments(segments_para, file_path, "repaired")
 
         return segments_para
