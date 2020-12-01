@@ -365,7 +365,7 @@ class SegmentHelper:
             if radius > 0 and SegmentHelper.__isInsideCircle(x1, y1, radius, line.x1, line.y1):
                 # The line is within the circle of the header
                 segment.add_line(line)
-            elif abs(line.x1 - x2) < threshold and abs(line.y1 - y1) < threshold:
+            elif x1 != x2 != y1 != y2 != 0 and abs(line.x1 - x2) < threshold and abs(line.y1 - y1) < threshold:
                 # The line is right next to the header
                 segment.add_line(line)
             else:
