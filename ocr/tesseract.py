@@ -44,15 +44,20 @@ class TesseractModule:
         b_str = ""
         for t in text:
             if t == "":
-                if len(b_str) > 0 and b_str[-1] == "\n":
+                if len(b_str) > 1 and (b_str[-1] == "\n" or b_str[-1] == "\r"):
+                    # if last char was new line as well, then split into paragraph
                     paragraphs.append(b_str.strip())
                     b_str = ""
                 else:
-                    b_str += "\n"
+                    # empty string = new line
+                    b_str += "\n\r"
             else:
                 b_str += f"{t} "
+        if b_str != "":
+            paragraphs.append(b_str)
 
-        paragraphs = [p for p in paragraphs if p != '']
+        #remove empty paragraphs
+        paragraphs = [p.strip() for p in paragraphs if p != '']
 
         # Remove new lines and hyphens across them.
         paragraphs = [self.remove_hyphens_and_nl(p) for p in paragraphs]
@@ -71,16 +76,10 @@ class TesseractModule:
     @staticmethod
     def remove_hyphens_and_nl(p):
         p = p.replace("- \n", "")
+        p = p.replace("- \r", "")
         p = p.replace("\n", "")
+        p = p.replace("\r", "")
         return p
-
-    def text_from_tesseract_data(self):
-        # todo handle newlines.
-        pattern = re.compile(r'\s+')
-        out_str = ""
-        for text in self.data['text']:
-            out_str += re.sub(pattern, '', text) + " "
-        return out_str
 
     def text_conf_matches_from_tesseract_data(self):
         return [[text, conf] for text, conf in zip(self.data['text'], self.data['conf']) if conf != "-1"]
