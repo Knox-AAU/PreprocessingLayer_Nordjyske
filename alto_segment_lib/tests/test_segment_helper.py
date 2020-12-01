@@ -97,3 +97,21 @@ class TestSegmentHelper:
         result = segment_helper.repair_text_lines(text_line, line)
 
         assert len(result) == 1 and result == text_line
+
+    def test_group_headers_into_segments_success(self):
+        header_line1 = Line()
+        header_line1.x1 = 0
+        header_line1.y1 = 0
+        header_line1.x2 = 100
+        header_line1.y2 = 20
+
+        header_line2 = Line()
+        header_line2.x1 = 5
+        header_line2.y1 = 25
+        header_line2.x2 = 100
+        header_line2.y2 = 45
+
+        header_lines = [header_line1, header_line2]
+        header_segments = SegmentHelper.group_headers_into_segments(header_lines)
+
+        assert len(header_segments) == 1

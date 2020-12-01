@@ -6,10 +6,6 @@ from alto_segment_lib.segment import Segment, Line, SegmentType
 
 
 class SegmentHelper:
-    __file_path: str
-
-    def __init__(self, file_path: str):
-        self.__file_path = file_path
 
     @staticmethod
     def find_line_height_median(lines: list):
@@ -26,7 +22,7 @@ class SegmentHelper:
         return statistics.median(width)
 
 
-    def group_lines_into_paragraphs_headers(self, lines: list):
+    def group_lines_into_paragraphs_headers(self, lines: list, file_path: str):
         """ Groups headers together in one list and paragraphs in another list
 
         @param lines: a list of text lines
@@ -34,7 +30,7 @@ class SegmentHelper:
         """
         paragraphs = []
         headers = []
-        alto_extractor = AltoSegmentExtractor(self.__file_path)
+        alto_extractor = AltoSegmentExtractor(file_path)
         median = self.find_line_height_median(lines)
         threshold = 1.39
         threshold_increase = 1.1

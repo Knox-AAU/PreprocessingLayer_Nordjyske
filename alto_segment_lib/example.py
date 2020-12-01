@@ -79,12 +79,12 @@ def run_file(file_path):
     altoExtractor.set_dpi(300)
     altoExtractor.set_margin(0)
 
-    segment_helper = SegmentHelper(file_path + ".alto.xml")
+    segment_helper = SegmentHelper()
 
     text_lines = altoExtractor.extract_lines()
 
     text_lines = segment_helper.repair_text_lines(text_lines, lines)
-    lists = segment_helper.group_lines_into_paragraphs_headers(text_lines)
+    lists = segment_helper.group_lines_into_paragraphs_headers(text_lines, file_path + ".alto.xml")
     #display_lines(lists[0], lists[1], "lines", file_path)
     header_lines = lists[0]
     segments = segment_helper.combine_lines_into_segments(lists[1])
