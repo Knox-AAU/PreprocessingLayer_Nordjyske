@@ -19,25 +19,24 @@ class TestSegmentHelper:
 
         assert median == 20
 
-    def test_group_lines_into_paragraphs_headers_header_success(self):
-        segment_helper = SegmentHelper()
-        header = Line([0, 0, 2000, 2000])
-        lines = [Line([0, 0, 10, 10]), Line([0, 0, 20, 20]), Line([0, 0, 20, 20]), Line([0, 0, 25, 25]),
-                 header]
-
-        (headers, paragraph) = segment_helper.group_lines_into_paragraphs_headers(lines)
-
-        assert len(headers) == 1 and headers[0] == header
-
-    def test_group_lines_into_paragraphs_headers_paragraph_success(self):
-        segment_helper = SegmentHelper()
-        paragraph = Line([0, 0, 10, 10])
-        lines = [paragraph, Line([0, 0, 20, 20]), Line([0, 0, 20, 20]), Line([0, 0, 25, 25]),
-                 Line([0, 0, 2000, 2000])]
-
-        (headers, paragraphs) = segment_helper.group_lines_into_paragraphs_headers(lines)
-
-        assert len(paragraphs) == 4 and paragraphs[0] == paragraph
+    # def test_group_lines_into_paragraphs_headers_header_success(self):
+    #     segment_helper = SegmentHelper()
+    #     header = Line([0, 0, 2000, 2000])
+    #     lines = [Line([0, 0, 10, 10]), Line([0, 0, 20, 20]), Line([0, 0, 20, 20]), Line([0, 0, 25, 25]),
+    #              header]
+    #
+    #     (headers, paragraph) = segment_helper.group_lines_into_paragraphs_headers(lines)
+    #
+    #     assert len(headers) == 1 and headers[0] == header
+    #
+    # def test_group_lines_into_paragraphs_headers_paragraph_success(self):
+    #     segment_helper = SegmentHelper()
+    #     paragraph = Line([0, 0, 10, 10])
+    #     lines = [paragraph, Line([0, 0, 20, 20]), Line([0, 0, 20, 20]), Line([0, 0, 25, 25]), Line([0, 0, 2000, 2000])]
+    #
+    #     (headers, paragraphs) = segment_helper.group_lines_into_paragraphs_headers(lines)
+    #
+    #     assert len(paragraphs) == 4 and paragraphs[0] == paragraph
 
     def test_make_box_around_lines_success(self):
         lines = [Line([0, 0, 10, 10]), Line([5, 10, 15, 20]), Line([0, 20, 10, 30])]

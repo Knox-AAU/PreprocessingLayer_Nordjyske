@@ -27,7 +27,8 @@ class AltoSegmentExtractor:
     def __init__(self, alto_path: str = "", dpi: int = 300, margin: int = 0):
         self.__dpi = dpi
         self.__margin = margin
-        self.set_path(alto_path)
+        if alto_path != "":
+            self.set_path(alto_path)
         self.__median_line_width = 0
 
     def set_path(self, path: str):
