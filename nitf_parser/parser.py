@@ -66,7 +66,10 @@ class NitfParser:
 
 
     @staticmethod
-    def __sanitize_spaces(a):
+    def sanitize_spaces(a: str) -> str:
+        """
+        Splits a string by any whitespace, then joins by normal spaces, to remove double-spaces, tabs, newlines etc.
+        """
         if a is None:
             return a
         return " ".join(a.split())
@@ -112,7 +115,7 @@ class NitfParser:
                 if paragraph_kind != "":
                     p.kind = paragraph_kind
 
-                p.value = NitfParser.__sanitize_spaces(paragraph.firstChild.nodeValue)
+                p.value = NitfParser.sanitize_spaces(paragraph.firstChild.nodeValue)
                 self.article.add_paragraph(p)
 
     def __parse_body_head(self, head):
@@ -122,11 +125,11 @@ class NitfParser:
         """
         hl1s = head.getElementsByTagName('nitf:hl1')
         if len(hl1s) > 0:
-            self.article.headline = NitfParser.__sanitize_spaces(hl1s[0].firstChild.nodeValue)
+            self.article.headline = NitfParser.sanitize_spaces(hl1s[0].firstChild.nodeValue)
 
         hl2s = head.getElementsByTagName('nitf:hl2')
         if len(hl2s) > 0:
-            self.article.lead = NitfParser.__sanitize_spaces(hl2s[0].firstChild.nodeValue)
+            self.article.lead = NitfParser.sanitize_spaces(hl2s[0].firstChild.nodeValue)
 
     def __parse_body(self, body_element):
         """Calls the needed methods to extract information from the body, and merges it into one object
@@ -140,7 +143,7 @@ class NitfParser:
         # body content contains the paragraphs and subheaders
         self.__parse_body_content(body_element.getElementsByTagName("nitf:body.content")[0])
 
-    def parse(self, article_path):
+    def parse(self, article_path): # todo rewrite into a text driven method
         self.article = Article()
         self.article.add_extracted_from(article_path)
         xml_doc = minidom.parse(article_path)
