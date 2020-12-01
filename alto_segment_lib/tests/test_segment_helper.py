@@ -97,7 +97,7 @@ class TestSegmentHelper:
 
         assert len(result) == 1 and result == text_line
 
-    def test_group_headers_into_segments_success(self):
+    def test_group_headers_into_segments_single_header_success(self):
         header_line1 = Line()
         header_line1.x1 = 0
         header_line1.y1 = 0
@@ -114,3 +114,35 @@ class TestSegmentHelper:
         header_segments = SegmentHelper.group_headers_into_segments(header_lines)
 
         assert len(header_segments) == 1
+
+    def test_group_headers_into_segments_multiple_header_success(self):
+        # First group of lines for header 1
+        header_line1 = Line()
+        header_line1.x1 = 0
+        header_line1.y1 = 0
+        header_line1.x2 = 100
+        header_line1.y2 = 20
+
+        header_line2 = Line()
+        header_line2.x1 = 0
+        header_line2.y1 = 30
+        header_line2.x2 = 100
+        header_line2.y2 = 50
+
+        # Second group of lines for header 2
+        header_line3 = Line()
+        header_line3.x1 = 0
+        header_line3.y1 = 600
+        header_line3.x2 = 100
+        header_line3.y2 = 620
+
+        header_line4 = Line()
+        header_line4.x1 = 0
+        header_line4.y1 = 630
+        header_line4.x2 = 100
+        header_line4.y2 = 650
+
+        header_lines = [header_line1, header_line2, header_line3, header_line4]
+        header_segments = SegmentHelper.group_headers_into_segments(header_lines)
+
+        assert len(header_segments) == 2

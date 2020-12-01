@@ -360,8 +360,6 @@ class SegmentHelper:
         threshold = 100  # ToDo: make smart
 
         for line in header_lines:
-            print("Line: "+str(line.x1)+", "+str(line.y1)+" - "+str(line.height()))
-
             if radius > 0 and SegmentHelper.__isInsideCircle(x1, y1, radius, line.x1, line.y1):
                 # The line is within the circle of the header
                 segment.add_line(line)
@@ -381,7 +379,7 @@ class SegmentHelper:
             y1 = line.y1
             x2 = line.x2
             y2 = line.y2
-            radius = line.height()+400
+            radius = line.height()+400  # TODO: Make smarter
 
         if segment is not None:
             segment.calculate_coordinates()
