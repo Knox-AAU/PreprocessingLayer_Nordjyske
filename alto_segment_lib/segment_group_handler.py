@@ -22,15 +22,15 @@ class SegmentGroupHandler:
         if self.current_group is not None:
             if segment.type == SegmentType.heading:
                 self.current_group.headers = segment.lines
-                # ToDo: remove or use; Option to add more headers to heading list[self.current_group.headers.append(sub_head) for sub_head in segment.lines]
+                # ToDo: (remove or use) Option to add more headers to heading
+                # list[self.current_group.headers.append(sub_head) for sub_head in segment.lines]
             elif segment.type == SegmentType.paragraph:
                 self.current_group.paragraphs.append(segment)
-        else:
-            if self.unfinished_group is not None:
-                if segment.type == SegmentType.heading:
-                    self.unfinished_group.headers.append(segment)
-                elif segment.type == SegmentType.paragraph:
-                    self.unfinished_group.paragraphs.append(segment)
+        elif self.unfinished_group is not None:
+            if segment.type == SegmentType.heading:
+                self.unfinished_group.headers.append(segment)
+            elif segment.type == SegmentType.paragraph:
+                self.unfinished_group.paragraphs.append(segment)
 
     def end_group(self):
         if self.current_group is not None:
@@ -43,11 +43,7 @@ class SegmentGroupHandler:
             self.groups.append(self.unfinished_group)
             self.unfinished_group = None
 
-        if self.current_group is not None:
+        if self.current_group is not None and (
+                len(self.current_group.headers) > 0 or len(self.current_group.paragraphs) > 0):
             self.groups.append(self.current_group)
             self.current_group = None
-
-    def get_header_segment(self):
-        if self.current_group is not None:
-            return SegmentHelper.make_box_around_lines(self.current_group.headers)
-        return None
