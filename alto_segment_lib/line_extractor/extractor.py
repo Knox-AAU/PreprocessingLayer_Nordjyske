@@ -99,6 +99,8 @@ class LineExtractor:
 
         merged_image = cv2.addWeighted(image_horizontal, 1, image_vertical, 1, 0)
 
+        cv2.imwrite("/home/jakob/Desktop/years/2004-thresh.png", merged_image)
+
         return merged_image
 
     def get_lines_from_binary_image(self, image):
@@ -137,7 +139,7 @@ class LineExtractor:
 
         lines_edges = cv2.addWeighted(image_in_color, 0.5, line_image, 1, 0)
 
-        cv2.imwrite("/home/knox17/Desktop/years/2004-stregerne.png", lines_edges)
+        cv2.imwrite("/home/jakob/Desktop/years/2004-stregerne.png", lines_edges)
         # print("done")
         # cv2.namedWindow("image", cv2.WINDOW_NORMAL)
         # cv2.imshow("image", lines_edges)

@@ -21,17 +21,16 @@ class TesseractModule:
         #self.data = pytesseract.image_to_data(image, lang=language, output_type='dict', config="")
 
     @classmethod
-    def from_file(cls, file: File):
+    def from_file(cls, file: File, tessdata: str):
         # todo do preprocessing methods instead of loading file
         #img = cv2.imread(file.path)
 
-        tm = cls(file)
+        tm = cls(file, tessdata)
 
         return tm
 
     @staticmethod
     def from_articles_to_publication(articles):
-        # todo find publication, published, publisher, and page count.
         pub = Publication()
         pub.publication = ""
         pub.published_at = datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
@@ -40,7 +39,6 @@ class TesseractModule:
         return pub
 
     def to_publication(self):
-        #todo find publication, published, publisher, and page count.
         pub = Publication()
         pub.publication = ""
         pub.published_at = datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
@@ -49,7 +47,7 @@ class TesseractModule:
         return pub
 
     def to_article(self):
-        # todo find byline, confidence, extracted_from, headline, lead, publication
+        # todo find byline, confidence
         article = Article()
         [article.add_paragraph(p) for p in self.to_paragraphs()]
         return article

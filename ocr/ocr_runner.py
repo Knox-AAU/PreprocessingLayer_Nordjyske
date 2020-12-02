@@ -5,7 +5,6 @@ from xml.dom import minidom
 import re
 from knox_source_data_io.models.publication import Article
 from pytesseract import pytesseract
-
 from alto_segment_lib.segment_module import SegmentModule
 from ocr.tesseract import TesseractModule
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
@@ -19,6 +18,18 @@ class OCRRunner:
         image = cv2.imread(file.path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         segments = SegmentModule.run_segmentation(file.path.split(".")[0])
+
+        tessdata = "dan"
+
+        pattern = re.compile("\\d\\d\\d\\d-\\d\\d-\\d\\d")
+        result = pattern.search(file.name)
+        file_date = result.group(0)
+        file_date = file_date.replace("-", "")
+
+        #file_date = file.name.split("-")[1]
+
+        if int(file_date) < 19280517:
+            tessdata = "dan_best_gothic_fine_tune"
 
         article = Article()
         articles = []
@@ -35,31 +46,31 @@ class OCRRunner:
                 # todo implement when ordering is done
                 articles.append(article)
                 article = Article()
-                article.page = self.find_page_number(file.path)
-                headline = TesseractModule.from_file(cropped_image).to_paragraphs()
+                article.page = self.__find_page_number(file.path)
+                headline = TesseractModule.from_file(cropped_image, tessdata).to_paragraphs()
                 if len(headline) > 0:
                     article.headline = headline[0].value
 
             if segment.type == "paragraph":
-                paragraphs = TesseractModule.from_file(cropped_image).to_paragraphs()
-                paragraphs = self.remove_advertisement_and_images(paragraphs)
+                paragraphs = TesseractModule.from_file(cropped_image, tessdata).to_paragraphs()
+                paragraphs = self.__remove_advertisement_and_images(paragraphs)
                 if len(paragraphs) > 0:
                     [article.add_paragraph(p) for p in paragraphs]
                     article.add_extracted_from(file.path)
 
             if segment.type == "subhead":
                 # todo implement when ordering is done
-                subhead = TesseractModule.from_file(cropped_image).to_paragraphs()
+                subhead = TesseractModule.from_file(cropped_image, tessdata).to_paragraphs()
                 if len(subhead) > 0:
                     article.subhead = subhead[0].value
 
             if segment.type == "lead":
-                lead = TesseractModule.from_file(cropped_image).to_paragraphs()
+                lead = TesseractModule.from_file(cropped_image, tessdata).to_paragraphs()
                 if len(lead) > 0:
                     article.lead = lead[0].value
 
         if article.page == 0:
-            article.page = self.find_page_number(file.path)
+            article.page = self.__find_page_number(file.path)
 
         articles.append(article)
 
@@ -69,20 +80,20 @@ class OCRRunner:
 
     def __convert_articles_into_publication(self, articles, file):
         publication = TesseractModule.from_articles_to_publication(articles)
-        publication.publication = self.find_publication(file.name)
-        publication = self.set_publisher("Nordjyske Medier", publication)
-        publication.published_at = self.find_published_at(file.path)
-        publication = self.remove_empty_paragraphs(publication)
+        publication.publication = self.__find_publication(file.name)
+        publication = self.__set_publisher("Nordjyske Medier", publication)
+        publication.published_at = self.__find_published_at(file.path)
+        publication = self.__remove_empty_paragraphs(publication)
 
         return publication
 
     @staticmethod
-    def set_publisher(publisher, publication):
+    def __set_publisher(publisher, publication):
         publication.publisher = publisher
         return publication
 
     @staticmethod
-    def find_publication(file_name):
+    def __find_publication(file_name):
         """
         Finds publisher name from file name
         @param file_name: name of file
@@ -92,7 +103,7 @@ class OCRRunner:
         return file_name.split("-")[0].title()
 
     @staticmethod
-    def find_page_number(file_path):
+    def __find_page_number(file_path):
         """
         Finds page number from alto.xml file
         @param file_path: name of file
@@ -103,7 +114,7 @@ class OCRRunner:
         return int(page_elements[0].attributes['PHYSICAL_IMG_NR'].value)
 
     @staticmethod
-    def find_published_at(file_path):
+    def __find_published_at(file_path):
         published_at = minidom.parse(file_path.split('.')[0] + ".alto.xml").\
             getElementsByTagName("fileName")[0].firstChild.data
 
@@ -116,7 +127,7 @@ class OCRRunner:
                 .isoformat()
 
     @staticmethod
-    def remove_advertisement_and_images(paragraphs):
+    def __remove_advertisement_and_images(paragraphs):
         # if text contains a lot of numbers it might be a TV guide or "aktier"
         ok_paragraphs = []
 
@@ -139,7 +150,7 @@ class OCRRunner:
         return ok_paragraphs
 
     @staticmethod
-    def remove_empty_paragraphs(publication):
+    def __remove_empty_paragraphs(publication):
         correct_paragraphs = []
         for article in publication.articles:
             paragraphs = article.paragraphs
