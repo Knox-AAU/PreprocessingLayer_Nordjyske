@@ -141,7 +141,7 @@ class AltoSegmentExtractor:
             for text_line in text_lines:
                 text_line_coordinates = self.__extract_coordinates(text_line)
                 line = Line(text_line_coordinates)
-                if segment.between_x_coords(line.x1 + 10) and segment.between_x_coords(line.x2 - 10):
+                if segment.between_x_coordinates(line.x1 + 10) and segment.between_x_coordinates(line.x2 - 10):
                     text_line_fonts.append(text_line.attributes['STYLEREFS'].value)
                     segment.lines.append(line)
 
