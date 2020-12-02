@@ -70,10 +70,10 @@ class SegmentHelper:
         updated_paragraphs = paragraphs.copy()
         for header in headers:
             for paragraph in paragraphs:
-                if header.between_y_coords(paragraph.y1) \
-                        and header.between_y_coords(paragraph.y2) \
-                        and header.between_x_coords(paragraph.x1) \
-                        and header.between_x_coords(paragraph.x2) \
+                if header.between_y_coordinates(paragraph.y1) \
+                        and header.between_y_coordinates(paragraph.y2) \
+                        and header.between_x_coordinates(paragraph.x1) \
+                        and header.between_x_coordinates(paragraph.x2) \
                         and paragraph in updated_paragraphs:
                     updated_paragraphs.remove(paragraph)
 
@@ -92,8 +92,8 @@ class SegmentHelper:
 
         for paragraph in paragraphs:
             for header in headers:
-                if (paragraph.between_x_coords(header.x1 + margin) and paragraph.between_y_coords(header.y1 - margin)) \
-                        or (paragraph.between_x_coords(header.x2 - margin) and paragraph.between_y_coords(header.y2 + margin)):
+                if (paragraph.between_x_coordinates(header.x1 + margin) and paragraph.between_y_coordinates(header.y1 - margin)) \
+                        or (paragraph.between_x_coordinates(header.x2 - margin) and paragraph.between_y_coordinates(header.y2 + margin)):
                     new_paragraphs.append(header)
                     if header in new_headers:
                         new_headers.remove(header)
@@ -368,7 +368,7 @@ class SegmentHelper:
                 segment.add_line(line)
             else:
                 if segment is not None:
-                    segment.calculate_coordinates()
+                    segment.update_coordinates_based_on_lines()
                     header_segments.append(segment)
 
                 segment = Segment()
@@ -382,7 +382,7 @@ class SegmentHelper:
             radius = line.height()+400  # TODO: Make smarter
 
         if segment is not None:
-            segment.calculate_coordinates()
+            segment.update_coordinates_based_on_lines()
             header_segments.append(segment)
 
         return header_segments
