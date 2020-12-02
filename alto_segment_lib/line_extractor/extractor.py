@@ -5,9 +5,9 @@ from os import environ
 import numpy as np
 from alto_segment_lib.line_extractor.hough_bundler import HoughBundler
 from alto_segment_lib.segment import Line
+environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 from cv2 import cv2
 
-environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 
 
 class LineExtractor:
