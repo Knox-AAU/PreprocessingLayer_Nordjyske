@@ -9,7 +9,6 @@ environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 from cv2 import cv2
 
 
-
 class LineExtractor:
 
     def __init__(self):
