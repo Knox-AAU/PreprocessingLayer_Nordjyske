@@ -142,9 +142,14 @@ def run_file(file_path):
     lines = [element for element, element in enumerate(lines) if
              element.is_horizontal() and 621 < element.y1 < (6218 - 621)]
 
-    display_segments(lines, file_path, "lines")
+    #display_segments(lines, file_path, "lines")
+
+    print("Segments before: " + str(len(segments)))
+    segments = repair.merge_segments(segments)
+    print("Segments after : " + str(len(segments)))
+
     display_segments(segments, file_path, "paragrphs")
-    display_segments(header_as_segment, file_path, "headers")
+    #display_segments(header_as_segment, file_path, "headers")
 
     paragraphs.clear()
 

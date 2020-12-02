@@ -360,7 +360,7 @@ class SegmentHelper:
         threshold = 100  # ToDo: make smart
 
         for line in header_lines:
-            if radius > 0 and SegmentHelper.__isInsideCircle(x1, y1, radius, line.x1, line.y1):
+            if radius > 0 and SegmentHelper.isInsideCircle(x1, y1, radius, line.x1, line.y1):
                 # The line is within the circle of the header
                 segment.add_line(line)
             elif x1 != x2 != y1 != y2 != 0 and abs(line.x1 - x2) < threshold and abs(line.y1 - y1) < threshold:
@@ -389,9 +389,21 @@ class SegmentHelper:
 
     # https://www.geeksforgeeks.org/find-if-a-point-lies-inside-or-on-circle/
     @staticmethod
-    def __isInsideCircle(circle_x, circle_y, rad, x, y):
+    def isInsideCircle(circle_x, circle_y, rad, x, y):
 
         # Compare radius of circle
         # with distance of its center
         # from given point
         return (x - circle_x) * (x - circle_x) + (y - circle_y) * (y - circle_y) <= rad * rad
+
+    @staticmethod
+    def inside_box(box_coords: list, x: int, y: int):
+        if len(box_coords) == 4:
+            return box_coords[0] <= x <= box_coords[2] and box_coords[1] <= y <= box_coords[2]
+        return False
+
+    @staticmethod
+    def distance_between_coordinates(x1, y1, x2, y2):
+        dx = x1 - x2
+        dy = y1 - y2
+        return math.sqrt(dx ** 2 + dy ** 2)

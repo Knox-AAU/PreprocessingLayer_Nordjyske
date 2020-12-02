@@ -33,7 +33,7 @@ class SegmentGrouper:
         #            line_bound < element.y1 < (bounds[3] - line_bound)]
 
         # Sort headers and paragraphs by lowest x, lowest y.
-        segments = self.__order_segments_by_x1_y1(segments)
+        segments = self.order_segments_by_x1_y1(segments)
 
         segments_to_check = segments.copy()
         group_handler = SegmentGroupHandler()
@@ -109,7 +109,7 @@ class SegmentGrouper:
         segment.y2 = line.y2
         return segment
 
-    def __order_segments_by_x1_y1(self, segments: list[Segment]):
+    def order_segments_by_x1_y1(self, segments: list[Segment]):
         # Group segments by x1, if segment.x1 is within range of the first element of an existing group, else create new group
         # Run through each group and sort by y1
         # Merge groups into collective list
