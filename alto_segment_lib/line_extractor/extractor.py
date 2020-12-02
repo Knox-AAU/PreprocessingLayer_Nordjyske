@@ -35,11 +35,10 @@ class LineExtractor:
         image = cv2.imread(image_path, cv2.CV_8UC1)
 
         lines = self.extract_lines_via_image(image)
-        # corrected_lines = self.correct_lines(lines)
         extended_lines = self.extend_lines_vertically(lines, image)
 
         final_lines = self.remove_outline_lines(extended_lines, image)
-        self.show_lines_on_image(image, final_lines)
+        #self.show_lines_on_image(image, final_lines)
         return final_lines
 
     def extract_lines_via_image(self, image: object):
@@ -55,10 +54,9 @@ class LineExtractor:
         for line in lines:
             if 0 < line.x1 < outline_stop and 0 < line.x2 < outline_stop or max_x - outline_stop < line.x1 < max_x and max_x - outline_stop < line.x2 < max_x:
                 lines_to_remove.append(line)
-                # lines.remove(line)
+
             elif 0 < line.y1 < outline_stop and 0 < line.y2 < outline_stop or max_y - outline_stop < line.y1 < max_y and max_y - outline_stop < line.y2 < max_y:
                 lines_to_remove.append(line)
-                # lines.remove(line)
 
         lines_to_remove.reverse()
 
@@ -73,8 +71,6 @@ class LineExtractor:
         image_thresh = cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY,
                                              self.adaptive_threshold[0],
                                              self.adaptive_threshold[1])
-
-        cv2.imwrite("/home/knox17/Desktop/years/2004-treshed.png", image_thresh)
 
         # saves the thresholding image for later use
         image_horizontal = image_thresh
@@ -98,8 +94,6 @@ class LineExtractor:
         image_vertical = cv2.dilate(image_vertical, vertical_structure, kernel)
 
         merged_image = cv2.addWeighted(image_horizontal, 1, image_vertical, 1, 0)
-
-        cv2.imwrite("/home/jakob/Desktop/years/2004-thresh.png", merged_image)
 
         return merged_image
 
@@ -140,7 +134,6 @@ class LineExtractor:
         lines_edges = cv2.addWeighted(image_in_color, 0.5, line_image, 1, 0)
 
         cv2.imwrite("/home/jakob/Desktop/years/2004-stregerne.png", lines_edges)
-        # print("done")
         # cv2.namedWindow("image", cv2.WINDOW_NORMAL)
         # cv2.imshow("image", lines_edges)
         # cv2.waitKey(0)
