@@ -34,20 +34,26 @@ class SegmentHelper:
         paragraphs = []
         headers = []
         alto_extractor = AltoSegmentExtractor(self.__file_path)
-        median = self.find_line_height_median(lines)
-        threshold = 1.39
-        threshold_increase = 1.1
+        median = self.find_line_height_median(lines)  # todo thrower exception hvis ingen linjer findes.
+        threshold = 1.25 # 1.25 1.39
+        threshold_increase = 1.05
 
         paragraph_list = alto_extractor.find_paragraphs()
         header_list = alto_extractor.find_headlines()
 
         for line in lines:
+            height = line.height()
+            if line.block_segment is not None and line.block_segment.line_count > 2:
+                height = sum([x.height() for x in line.block_segment.lines])/line.block_segment.line_count
+
             # Checks if line height or font size indicates that the line is a paragraph
-            if line.height() < (median * threshold) \
-                    and [line.x1, line.y1, line.x2, line.y2] in paragraph_list \
-                    and [line.x1, line.y1, line.x2, line.y2] not in header_list:
+            if line.height() > height*1.50:
+                headers.append(line)
+            elif height < (median * threshold):
+                    # and [line.x1, line.y1, line.x2, line.y2] in paragraph_list \
+                    # and [line.x1, line.y1, line.x2, line.y2] not in header_list:
                 paragraphs.append(line)
-            elif line.height() > (median * threshold * threshold_increase):
+            elif height > (median * threshold * threshold_increase):
                 headers.append(line)
             else:
                 paragraphs.append(line)
@@ -56,31 +62,29 @@ class SegmentHelper:
             (headers, new_paragraphs) = self.__repair_header_clusters(headers)
             paragraphs.extend(new_paragraphs)
 
-            (headers, new_paragraphs) = self.__repair_headers_in_paragraphs(headers, paragraphs)
-            paragraphs.extend(new_paragraphs)
-
-            paragraphs = self.__remove_paragraphs_within_headers(headers, paragraphs)
+            # (headers, new_paragraphs) = self.__repair_headers_in_paragraphs(headers, paragraphs)
+            # paragraphs.extend(new_paragraphs)
 
         return headers, paragraphs
 
-    def __remove_paragraphs_within_headers(self, headers, paragraphs):
-        """ Removes paragraphs that are completely within a header
+    def remove_segments_within_segments(self, outer_segs, inner_segs):
+        """ Removes paragraphs that are completely within a header or headers within paragraphs
 
-        @param headers: a list of headers
-        @param paragraphs: a list of paragraphs
+        @param outer_segs: a list of segments
+        @param inner_segs: a list of segments
         @return: updated_paragraphs: a list of paragraphs
         """
-        updated_paragraphs = paragraphs.copy()
-        for header in headers:
-            for paragraph in paragraphs:
-                if header.between_y_coords(paragraph.y1) \
-                        and header.between_y_coords(paragraph.y2) \
-                        and header.between_x_coords(paragraph.x1) \
-                        and header.between_x_coords(paragraph.x2) \
-                        and paragraph in updated_paragraphs:
-                    updated_paragraphs.remove(paragraph)
+        updated_segs = inner_segs.copy()
+        for outer_seg in outer_segs:
+            for inner_seg in inner_segs:
+                if outer_seg.between_y_coords(inner_seg.y1) \
+                        and outer_seg.between_y_coords(inner_seg.y2) \
+                        and outer_seg.between_x_coords(inner_seg.x1) \
+                        and outer_seg.between_x_coords(inner_seg.x2) \
+                        and inner_seg in updated_segs:
+                    updated_segs.remove(inner_seg)
 
-        return updated_paragraphs
+        return updated_segs
 
     def __repair_headers_in_paragraphs(self, headers, paragraphs):
         """ Determines headers as paragraphs instead if it overlaps with a paragraph
@@ -95,8 +99,10 @@ class SegmentHelper:
 
         for paragraph in paragraphs:
             for header in headers:
-                if (paragraph.between_x_coords(header.x1 + margin) and paragraph.between_y_coords(header.y1 - margin)) \
-                        or (paragraph.between_x_coords(header.x2 - margin) and paragraph.between_y_coords(header.y2 + margin)):
+                if (paragraph.between_x_coords(header.x1 + margin) and paragraph.between_y_coords(
+                        header.y1 - margin)) \
+                        or (paragraph.between_x_coords(
+                    header.x2 - margin) and paragraph.between_y_coords(header.y2 + margin)):
                     new_paragraphs.append(header)
                     if header in new_headers:
                         new_headers.remove(header)
@@ -114,6 +120,7 @@ class SegmentHelper:
         new_paragraphs = []
         new_headers = []
         min_cluster_size = 3
+
 
         for grouped_headers in header_segment_groups:
             if len(grouped_headers) > min_cluster_size:
@@ -187,7 +194,7 @@ class SegmentHelper:
 
         for group in column_groups:
             group = sorted(group, key=lambda sorted_group: sorted_group.y1)
-            median = self.find_line_height_median(group) * (3 if ignore_width else 1)
+            median = self.find_line_height_median(group)
             previous_line = None
 
             for text_line in group:
@@ -196,12 +203,21 @@ class SegmentHelper:
                     temp = [text_line]
                     continue
 
+                x1_diff = text_line.x1 - previous_line.x1
+                x2_diff = text_line.x2 - previous_line.x2
                 line_diff = text_line.width() - previous_line.width()
-                max_diff = 100
+                max_diff = 100  # todo Måske mere dynamisk, men ved ikke hvad den skal afhænge af
+
+                margin = 100  # todo
+
+                #                        (ignore_width or line_diff in range(-max_diff, max_diff) or x1_diff in range(-max_diff, max_diff)) and \
 
                 # Checks if the current and previous lines are in the same segment
-                if text_line.y1 - previous_line.y2 < median and (ignore_width or line_diff in range(-max_diff, max_diff)):
+                if text_line.y1 - previous_line.y2 < median * \
+                        (ignore_width or x1_diff in range(-max_diff, max_diff)) and \
+                        not (x1_diff < -margin or x2_diff > margin):
                     temp.append(text_line)
+                # Makes a new segment and adds the first text line
                 else:
                     segment_groups.append(temp)
                     temp = [text_line]
@@ -252,7 +268,7 @@ class SegmentHelper:
 
         return segment
 
-    def repair_text_lines(self, text_lines: list, lines: list):
+    def split_segments_by_lines(self, text_lines: list, lines: list):
         """ Splits text lines spanning over several columns into smaller lines
 
         @param text_lines: list of text lines
@@ -263,14 +279,18 @@ class SegmentHelper:
         for text_line in text_lines:
             if text_line.is_box_horizontal():
                 # Gets whether the text line is intersected and which lines intersect it
-                (does_line_intersect, intersecting_lines) = self.__does_line_intersect_text_line(text_line, lines)
+                (does_line_intersect, intersecting_lines) = self.__does_line_intersect_text_line(
+                    text_line, lines)
                 if does_line_intersect:
+                    intersecting_lines.sort(key=lambda line: line.x1)
+                    line_rest = Line(text_line.to_array())
                     for line in intersecting_lines:
                         split_x_coord = int(self.__find_split_x_coord(text_line, line))
-                        coords = [split_x_coord, text_line.y1, text_line.x2, text_line.y2]
 
-                        new_text_lines.append(Line([text_line.x1, text_line.y1, split_x_coord, text_line.y2]))
-                        new_text_lines.append(Line(coords))
+                        new_text_lines.append(
+                            Line([line_rest.x1, line_rest.y1, split_x_coord, line_rest.y2]))
+                        line_rest.x1 = split_x_coord
+                    new_text_lines.append(line_rest)
                 else:
                     new_text_lines.append(text_line)
 
@@ -320,5 +340,6 @@ class SegmentHelper:
         # Calculate a, which is the distance from the line to the
         dist_text_to_line = line_height_from_text / math.sin(other_angle) * math.sin(line_degree)
         # The x-coordinate for B where the line and text_line intersect
-        split_x_coord = (line.x1 + dist_text_to_line) if line.x1 < line.x2 else (line.x1 - dist_text_to_line)
+        split_x_coord = (line.x1 + dist_text_to_line) if line.x1 < line.x2 else (
+                    line.x1 - dist_text_to_line)
         return split_x_coord

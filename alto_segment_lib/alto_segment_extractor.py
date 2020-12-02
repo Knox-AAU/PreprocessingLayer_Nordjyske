@@ -159,16 +159,19 @@ class AltoSegmentExtractor:
 
     def extract_lines(self):
         lines = []
-        text_lines = self.__xmldoc.getElementsByTagName('TextLine')
 
-        for text_line in text_lines:
-            text_line_coordinates = self.__extract_coordinates(text_line)
-            font = self.__extract_font(text_line)
-            line = Line(text_line_coordinates, font)
-
-            lines.append(line)
-
+        text_blocks = self.__xmldoc.getElementsByTagName('TextBlock')
+        for text_block in text_blocks:
+            text_block_segment = Segment(self.__extract_coordinates(text_block))
+            text_lines = text_block.getElementsByTagName('TextLine')
+            text_block_segment.line_count = len(text_lines)
+            text_block_segment.lines = [
+                Line(self.__extract_coordinates(text_line), self.__extract_font(text_line), text_block_segment)
+                for text_line in text_lines
+            ]
+            lines.extend(text_block_segment.lines)
         return lines
+
 
     def __analyze_coordinates(self, lines):
         all_para = []

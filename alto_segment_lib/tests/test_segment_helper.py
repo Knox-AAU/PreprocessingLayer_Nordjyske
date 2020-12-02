@@ -75,7 +75,7 @@ class TestSegmentHelper:
         text_line = [Line([0, 50, 100, 100])]
         line = [Line([50, 0, 50, 100])]
 
-        result = segment_helper.repair_text_lines(text_line, line)
+        result = segment_helper.split_segments_by_lines(text_line, line)
         expected_first = Segment([0, 50, 50, 100])
         expected_second = Segment([50, 50, 100, 100])
 
@@ -94,6 +94,6 @@ class TestSegmentHelper:
         text_line = [Line([0, 50, 100, 100])]
         line = [Line([200, 0, 200, 100])]
 
-        result = segment_helper.repair_text_lines(text_line, line)
+        result = segment_helper.split_segments_by_lines(text_line, line)
 
         assert len(result) == 1 and result == text_line

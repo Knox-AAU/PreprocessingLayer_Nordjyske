@@ -32,7 +32,7 @@ class Segment:
     def between_x_coords(self, coord: int, margin: float = 0.0):
         return (self.x1 * (1 - margin)) <= coord <= (self.x2 * (1 + margin))
 
-    def between_y_coords(self, coord: int, margin: int = 0):
+    def between_y_coords(self, coord: int, margin: float = 0.0):
         return (self.y1 * (1 - margin)) <= coord <= (self.y2 * (1 + margin))
 
     def width(self):
@@ -48,8 +48,9 @@ class Line:
     x2: int
     y2: int
     font: float
+    block_segment: Segment
 
-    def __init__(self, coord: list = None, font: float = None):
+    def __init__(self, coord: list = None, font: float = None, block_segment: Segment = None):
         if coord is None:
             coord = []
 
@@ -62,6 +63,7 @@ class Line:
             self.orientation = self.get_orientation()
 
         self.font = font
+        self.block_segment = block_segment
 
     def width(self):
         return self.x2 - self.x1
@@ -72,6 +74,9 @@ class Line:
     def is_box_horizontal(self):
         if (self.x2 - self.x1) > (self.y2 - self.y1):
             return True
+
+    def to_array(self):
+        return [self.x1, self.y1, self.x2, self.y2]
 
     @classmethod
     def from_array(cls, array):
