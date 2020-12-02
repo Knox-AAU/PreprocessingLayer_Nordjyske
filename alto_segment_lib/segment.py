@@ -1,5 +1,6 @@
 import math
 from enum import Enum
+from typing import List
 
 
 class SegmentType(Enum):
@@ -158,8 +159,8 @@ class Line:
 
 
 class SegmentGroup:
-    headers: list[Line]
-    paragraphs: list[Segment]
+    headers: List[Line]
+    paragraphs: List[Segment]
 
     def __init__(self):
         self.headers = []

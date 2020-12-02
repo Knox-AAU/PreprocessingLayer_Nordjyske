@@ -25,7 +25,7 @@ class TesseractModule:
     def to_publication(self):
         #todo find publication, published, publisher, and page count.
         pub = Publication()
-        pub.publication = "hej"
+        pub.publication = ""
         pub.published_at = datetime.now().isoformat()
         pub.add_article(self.to_article())
 
