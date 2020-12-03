@@ -1,56 +1,70 @@
+import os
 import statistics
 import math
 
 from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
+from alto_segment_lib.line_extractor.extractor import LineExtractor
+from alto_segment_lib.repair_segments import RepairSegments
 from alto_segment_lib.segment import Segment, Line, SegmentType
 
 
 class SegmentHelper:
+    """Provides helper methods for the Segment class"""
+    def segment_page(self, file_path: str, image=None) -> [list, list]:
+        """
+        Segments the page into headers and paragraphs
+        @param file_path: The path to the file we are segmentibng
+        @param image: The image we are segmenting
+        @return: headers, paragraphs: a tuple including a list of headers and a list of paragraphs
+        """
+        assert file_path.endswith(".jp2")
 
-    @staticmethod
-    def find_line_height_median(lines: list):
-        height = []
-        for line in lines:
-            height.append(line.height())
-        return statistics.median(height)
+        image_file_path = file_path
+        alto_file_path = f"{file_path.split('.jp2')[0]}.alto.xml"
 
-    @staticmethod
-    def find_line_width_median(lines: list):
-        width = []
-        for line in lines:
-            width.append(line.width())
-        return statistics.median(width)
+        assert os.path.isfile(image_file_path)
+        assert os.path.isfile(alto_file_path)
 
+        # Find the text-lines from Alto-xml
+        alto_extractor = AltoSegmentExtractor(alto_file_path)
+        alto_extractor.dpi = 300
+        alto_extractor.margin = 0
+        text_lines = alto_extractor.extract_lines()
 
-    def group_lines_into_paragraphs_headers(self, lines: list, file_path: str):
+        (headers, paragraphs) = self.group_lines_into_paragraphs_headers(text_lines)
+
+        # Find lines in image, then split segments that cross those lines.
+        lines = LineExtractor().extract_lines_via_path(image_file_path) \
+            if image is None else LineExtractor().extract_lines_via_image(image)
+        paragraphs = self.split_segments_by_lines(paragraphs, lines)
+
+        # Combine closely related text lines into actual paragraphs.
+        paragraphs = self.combine_lines_into_segments(paragraphs)
+
+        # Remove segments that are completely within other segments,
+        paragraphs = RepairSegments(paragraphs, 30).repair_rows()
+
+        paragraphs = self.remove_segments_within_segments(headers, paragraphs)
+        headers = self.remove_segments_within_segments(paragraphs, headers)
+        return headers, paragraphs
+
+    def group_lines_into_paragraphs_headers(self, lines: list):
         """ Groups headers together in one list and paragraphs in another list
-
         @param lines: a list of text lines
         @return: headers, paragraphs: a tuple including a list of headers and a list of paragraphs
         """
         paragraphs = []
         headers = []
-        alto_extractor = AltoSegmentExtractor(file_path)
-        median = self.find_line_height_median(lines) # todo thrower exception hvis ingen linjer findes.
-        threshold = 1.39
-        threshold_increase = 1.1
-
-        paragraph_list = alto_extractor.find_paragraphs()
-        header_list = alto_extractor.find_headlines()
+        median = statistics.median([line.height() for line in lines])
+        threshold = 1.48  # 1.529
 
         for line in lines:
             height = line.height()
             if line.block_segment is not None and line.block_segment.line_count > 2:
-                height = sum([x.height() for x in line.block_segment.lines])/line.block_segment.line_count
+                height = sum([x.height() for x in line.block_segment.lines]) / line.block_segment.line_count
 
-            # Checks if line height or font size indicates that the line is a paragraph
-            if line.height() > height*1.50:
-                headers.append(line)
-            elif height < (median * threshold):
-                    # and [line.x1, line.y1, line.x2, line.y2] in paragraph_list \
-                    # and [line.x1, line.y1, line.x2, line.y2] not in header_list:
-                paragraphs.append(line)
-            elif height > (median * threshold * threshold_increase):
+            # Checks if line height indicates that the line is a paragraph
+            if line.height() > height * 1.50 or height > median * threshold:
                 headers.append(line)
             else:
                 paragraphs.append(line)
@@ -58,13 +72,10 @@ class SegmentHelper:
         if len(headers) > 0:
             (headers, new_paragraphs) = self.__repair_header_clusters(headers)
             paragraphs.extend(new_paragraphs)
-
-            # (headers, new_paragraphs) = self.__repair_headers_in_paragraphs(headers, paragraphs)
-            # paragraphs.extend(new_paragraphs)
-
         return headers, paragraphs
 
-    def remove_segments_within_segments(self, outer_segs, inner_segs):
+    @staticmethod
+    def remove_segments_within_segments(outer_segs, inner_segs):
         """ Removes paragraphs that are completely within a header or headers within paragraphs
 
         @param outer_segs: a list of segments
@@ -74,49 +85,26 @@ class SegmentHelper:
         updated_segs = inner_segs.copy()
         for outer_seg in outer_segs:
             for inner_seg in inner_segs:
-                if outer_seg.between_y_coords(inner_seg.y1) \
-                        and outer_seg.between_y_coords(inner_seg.y2) \
-                        and outer_seg.between_x_coords(inner_seg.x1) \
-                        and outer_seg.between_x_coords(inner_seg.x2) \
+                if outer_seg.between_y_coordinates(inner_seg.y1) \
+                        and outer_seg.between_y_coordinates(inner_seg.y2) \
+                        and outer_seg.between_x_coordinates(inner_seg.x1) \
+                        and outer_seg.between_x_coordinates(inner_seg.x2) \
                         and inner_seg in updated_segs:
                     updated_segs.remove(inner_seg)
 
         return updated_segs
 
-    def __repair_headers_in_paragraphs(self, headers, paragraphs):
-        """ Determines headers as paragraphs instead if it overlaps with a paragraph
-
-        @param headers: a list of headers
-        @param paragraphs: a list of paragraphs
-        @return: new_headers, new_paragraphs: a tuple with a lists of new headers and new pararaphc
-        """
-        new_headers = headers.copy()
-        new_paragraphs = []
-        margin = 2
-
-        for paragraph in paragraphs:
-            for header in headers:
-                if (paragraph.between_x_coords(header.x1 + margin) and paragraph.between_y_coords(
-                        header.y1 - margin)) \
-                        or (paragraph.between_x_coords(header.x2 - margin) and paragraph.between_y_coords(header.y2 + margin)):
-                    new_paragraphs.append(header)
-                    if header in new_headers:
-                        new_headers.remove(header)
-
-        return new_headers, new_paragraphs
-
     def __repair_header_clusters(self, headers):
         """ Finds headers that are clustered together and turns them into paragraphs
 
         @param headers: list of headers
-        @return: list of headers and paragraphs
+        @return: new_headers, new_paragraphs: a tuple including a list of headers and a list of paragraphs
         """
         header_column_groups = self.__group_same_column(headers)
         header_segment_groups = self.__group_same_segment(header_column_groups, True)
         new_paragraphs = []
         new_headers = []
         min_cluster_size = 3
-
 
         for grouped_headers in header_segment_groups:
             if len(grouped_headers) >= min_cluster_size:
@@ -143,7 +131,8 @@ class SegmentHelper:
                 segments.append(new_segment)
         return segments
 
-    def __group_same_column(self, text_lines):
+    @staticmethod
+    def __group_same_column(text_lines):
         """ Groups text lines into columns
 
         @param text_lines: list of text lines
@@ -153,7 +142,7 @@ class SegmentHelper:
         temp = []
         column_groups = []
         margin = 0.4
-        median = self.find_line_width_median(text_lines) * margin
+        median = statistics.median([line.width() for line in text_lines]) * margin
 
         # Sorts the list in an ascending order based on x1
         text_lines = sorted(text_lines, key=lambda sorted_line: sorted_line.x1)
@@ -178,7 +167,8 @@ class SegmentHelper:
 
         return column_groups
 
-    def __group_same_segment(self, column_groups, ignore_width):
+    @staticmethod
+    def __group_same_segment(column_groups, ignore_width):
         """ Groups text lines within columns into segments
 
         @param column_groups: list of lists containing lines
@@ -190,7 +180,7 @@ class SegmentHelper:
 
         for group in column_groups:
             group = sorted(group, key=lambda sorted_group: sorted_group.y1)
-            median = self.find_line_height_median(group) * (0.2 if ignore_width else 1) #todo documentation xD
+            median = statistics.median([line.height() for line in group]) * (0.2 if ignore_width else 1)
             previous_line = None
 
             for text_line in group:
@@ -222,9 +212,11 @@ class SegmentHelper:
         return segment_groups
 
     @staticmethod
-    def make_box_around_lines(text_lines: list, return_coordiantes=False):
+    def make_box_around_lines(text_lines: list, return_coordinates=False):
         """ Finds the coordinates for the segment containing the lines and creates the segment
-
+        # todo Lau: Kan vi ikke bare kalde .to_array() istedet for at lave metoden til at returnere array?
+        # todo : 16 linjer duplikeret kode længere nede i get_content_bounds()
+        @param return_coordinates:
         @param text_lines: list of text lines
         @return: segment
         """
@@ -254,7 +246,7 @@ class SegmentHelper:
             if line.y2 > y2:
                 y2 = line.y2
 
-        if return_coordiantes:
+        if return_coordinates:
             return x1, y1, x2, y2
 
         segment = Segment([x1, y1, x2, y2])
@@ -290,7 +282,8 @@ class SegmentHelper:
 
         return new_text_lines
 
-    def __does_line_intersect_text_line(self, text_line, lines: list):
+    @staticmethod
+    def __does_line_intersect_text_line(text_line, lines: list):
         """ Checks whether a vertical line intersects the text_line
 
         @param text_line: list of text lines
@@ -312,11 +305,15 @@ class SegmentHelper:
 
         if len(new_lines) != 0:
             return True, new_lines
-        else:
-            return False, None
+        return False, None
 
     @staticmethod
     def get_content_bounds(segments: list):
+        """
+        todo
+        @param segments:
+        @return:
+        """
         # x1 and y1 need to be reduced to lowest possible value, we start at high value (10000).
         x1 = y1 = 10000
         x2 = y2 = 0
@@ -340,8 +337,8 @@ class SegmentHelper:
 
         return x1, y1, x2, y2
 
-
-    def __find_split_x_coord(self, text_line, line):
+    @staticmethod
+    def __find_split_x_coord(text_line, line):
         """ Finds the x-coordinate where the line intersects with text line
 
         @param text_line: the text line that should be split
@@ -366,6 +363,11 @@ class SegmentHelper:
 
     @staticmethod
     def group_headers_into_segments(header_lines):
+        """
+        todo
+        @param header_lines:
+        @return:
+        """
         header_segments = []
         segment = None
 
@@ -374,7 +376,7 @@ class SegmentHelper:
         threshold = 100  # ToDo: make smart
 
         for line in header_lines:
-            if radius > 0 and SegmentHelper.__isInsideCircle(x1, y1, radius, line.x1, line.y1):
+            if radius > 0 and SegmentHelper.__is_inside_circle(x1, y1, radius, line.x1, line.y1):
                 # The line is within the circle of the header
                 segment.add_line(line)
             elif x1 != x2 != y1 != y2 != 0 and abs(line.x1 - x2) < threshold and abs(line.y1 - y1) < threshold:
@@ -393,7 +395,7 @@ class SegmentHelper:
             y1 = line.y1
             x2 = line.x2
             y2 = line.y2
-            radius = line.height()+400  # TODO: Make smarter
+            radius = line.height() + 400  # TODO: Make smarter
 
         if segment is not None:
             segment.update_coordinates_based_on_lines()
@@ -401,10 +403,9 @@ class SegmentHelper:
 
         return header_segments
 
-    # https://www.geeksforgeeks.org/find-if-a-point-lies-inside-or-on-circle/
     @staticmethod
-    def __isInsideCircle(circle_x, circle_y, rad, x, y):
-
+    def __is_inside_circle(circle_x, circle_y, rad, x, y):
+        # https://www.geeksforgeeks.org/find-if-a-point-lies-inside-or-on-circle/
         # Compare radius of circle
         # with distance of its center
         # from given point

@@ -3,6 +3,7 @@ from enum import Enum
 
 
 class SegmentType(Enum):
+    """The types a segment can be."""
     paragraph = 1
     heading = 2
     line = 3
@@ -10,6 +11,9 @@ class SegmentType(Enum):
 
 
 class Segment:
+    """
+    todo
+    """
     type: SegmentType
     x1: int
     y1: int
@@ -106,7 +110,7 @@ class Segment:
         @return: void
         """
         if len(self.lines) == 0:
-            return None
+            return
 
         self.x1 = self.lines[0].x1
         self.x2 = self.lines[0].x2
@@ -133,6 +137,9 @@ class Segment:
 
 
 class Line:
+    """
+    todo
+    """
     x1: int
     y1: int
     x2: int
@@ -179,7 +186,11 @@ class Line:
         """
         return self.x2 - self.x1 > self.y2 - self.y1
 
-    def to_array(self):
+    def to_array(self) -> list:
+        """
+        Returns the coordinates of the line as an array
+        @return: list
+        """
         return [self.x1, self.y1, self.x2, self.y2]
 
     @classmethod
@@ -254,6 +265,9 @@ class Line:
 
 
 class SegmentGroup:
+    """
+    todo
+    """
     headers: list[Line]
     paragraphs: list[Segment]
 

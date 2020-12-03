@@ -8,8 +8,18 @@ environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 
 
 class SegmentGrouper:
+    """
+    todo
+    """
 
     def group_segments_in_order(self, headers_in: list[Segment], paragraphs_in: list[Segment], lines_in: list[Line]):
+        """
+        todo
+        @param headers_in:
+        @param paragraphs_in:
+        @param lines_in:
+        @return:
+        """
         segments = paragraphs_in.copy()
         segments.extend(headers_in)
 

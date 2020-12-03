@@ -1,4 +1,7 @@
 class SegmentGroup:
+    """
+    todo
+    """
     type: str
     x1: int
     y1: int
