@@ -90,7 +90,7 @@ def display_lines(headers_for_display, paragraphs_for_display, file_path, name):
 
 
 def run_multiple_files(basepath):
-    Parallel(n_jobs=8, prefer="threads")(
+    Parallel(n_jobs=16, prefer="threads")(
         delayed(run_mt)(file_name, basepath)
         for file_name in os.listdir(basepath))
 

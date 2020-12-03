@@ -123,7 +123,7 @@ class SegmentHelper:
 
 
         for grouped_headers in header_segment_groups:
-            if len(grouped_headers) > min_cluster_size:
+            if len(grouped_headers) >= min_cluster_size:
                 new_paragraphs.extend(grouped_headers)
             else:
                 new_headers.extend(grouped_headers)
@@ -194,7 +194,7 @@ class SegmentHelper:
 
         for group in column_groups:
             group = sorted(group, key=lambda sorted_group: sorted_group.y1)
-            median = self.find_line_height_median(group)
+            median = self.find_line_height_median(group) * (0.2 if ignore_width else 1) #todo documentation xD
             previous_line = None
 
             for text_line in group:
@@ -205,17 +205,12 @@ class SegmentHelper:
 
                 x1_diff = text_line.x1 - previous_line.x1
                 x2_diff = text_line.x2 - previous_line.x2
-                line_diff = text_line.width() - previous_line.width()
-                max_diff = 100  # todo Måske mere dynamisk, men ved ikke hvad den skal afhænge af
 
                 margin = 100  # todo
 
-                #                        (ignore_width or line_diff in range(-max_diff, max_diff) or x1_diff in range(-max_diff, max_diff)) and \
-
                 # Checks if the current and previous lines are in the same segment
-                if text_line.y1 - previous_line.y2 < median * \
-                        (ignore_width or x1_diff in range(-max_diff, max_diff)) and \
-                        not (x1_diff < -margin or x2_diff > margin):
+                if text_line.y1 - previous_line.y2 < median and \
+                        (ignore_width or not (x1_diff < -margin or x2_diff > margin)):
                     temp.append(text_line)
                 # Makes a new segment and adds the first text line
                 else:
