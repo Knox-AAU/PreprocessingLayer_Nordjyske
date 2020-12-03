@@ -65,12 +65,17 @@ class RepairSegments:
     def merge_segments(self, segments: list):
         grouper = SegmentGrouper()
         segments_ordered = grouper.order_segments_by_x1_y1(segments)
-
         sub_segment_list = segments_ordered.copy()
 
         already_merged = []
-        merge_distance_threshold = 200  # in px
+        merge_distance_threshold = 60  # in px
         merged_segments = []
+
+        # Counters
+        last_segment_count = 0
+        current_segment_count = len(segments_ordered)
+
+        #while last_segment_count != current_segment_count:
 
         for segment in segments_ordered:
             if segment in already_merged:
@@ -79,24 +84,16 @@ class RepairSegments:
             # segment_center = segment.get_center()
             lower_left_circle_x = segment.x1
             lower_left_circle_y = segment.y2
-            lower_right_circle_x = segment.x2
-            lower_right_circle_y = segment.y2
             segment_width = segment.width()
             sub_segment_list.remove(segment)
 
             for sub_segment in sub_segment_list:
 
-                # Skip segments that are not in same column
-                if sub_segment in merged_segments or sub_segment.x2 < segment.x1 or sub_segment.x1 > segment.x1 or sub_segment.x1 > segment.x1 or sub_segment.y2 < segment.y2:
-                    continue
-
                 sub_segment_width = sub_segment.width()
                 merged = False
 
                 # Check left first
-                #if SegmentHelper.inside_box([segment.x1 - merge_distance_threshold, segment.y1 - merge_distance_threshold, segment.x2 + merge_distance_threshold, segment.y2 + merge_distance_threshold], sub_segment.x1, sub_segment.y1):
                 if SegmentHelper.distance_between_coordinates(lower_left_circle_x, lower_left_circle_y, sub_segment.x1, sub_segment.y1) <= merge_distance_threshold:
-                #if SegmentHelper.isInsideCircle(, merge_distance_threshold, sub_segment.x1, sub_segment.y1):
 
                     if segment_width > sub_segment_width:
                         ghost_box = [sub_segment.x2, sub_segment.y1, segment.x2, sub_segment.y2]
@@ -119,7 +116,6 @@ class RepairSegments:
                         segment.x2 = max(segment.x2, sub_segment.x2)
                         segment.x1 = min(segment.x1, sub_segment.x1)
                         segment.y1 = min(segment.y1, sub_segment.y1)
-                        lower_right_circle_y = segment.y2
                         merged = True
 
                 # Check right after

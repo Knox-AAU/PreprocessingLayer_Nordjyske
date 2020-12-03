@@ -144,9 +144,13 @@ def run_file(file_path):
 
     #display_segments(lines, file_path, "lines")
 
-    print("Segments before: " + str(len(segments)))
-    segments = repair.merge_segments(segments)
-    print("Segments after : " + str(len(segments)))
+    rounds = 10
+    counter = 1
+
+    while counter <= rounds:
+        print("Segments before "+str(counter)+": " + str(len(segments)))
+        segments = repair.merge_segments(segments)
+        counter += 1
 
     display_segments(segments, file_path, "paragrphs")
     #display_segments(header_as_segment, file_path, "headers")
