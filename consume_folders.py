@@ -3,7 +3,6 @@ from queue import Queue
 from multiprocessing import Process, Queue
 from joblib import Parallel, delayed
 from crawler.crawl import Crawler
-
 # https://asyncio.readthedocs.io/en/latest/producer_consumer.html
 from crawler.file_types import FileType
 from ocr.ocr_runner import OCRRunner
