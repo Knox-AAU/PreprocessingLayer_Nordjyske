@@ -13,7 +13,6 @@ environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 class LineExtractor:
 
     def __init__(self):
-        self.old_lines = []
         self.config = configparser.ConfigParser()
         self.config.read('config.ini')
 
@@ -103,8 +102,6 @@ class LineExtractor:
 
         line_objects = [Line.from_array(line[0]) for line in lines]
 
-        self.old_lines = line_objects
-
         lines_groups = HoughBundler().process_lines(line_objects)
 
         return self.filter_by_angle_diversion_from_horizontal_and_vertical(lines_groups)
@@ -133,7 +130,7 @@ class LineExtractor:
 
         lines_edges = cv2.addWeighted(image_in_color, 0.5, line_image, 1, 0)
 
-        cv2.imwrite("/home/jakob/Desktop/years/2004-stregerne.png", lines_edges)
+        # cv2.imwrite("2004-stregerne.png", lines_edges)
         # cv2.namedWindow("image", cv2.WINDOW_NORMAL)
         # cv2.imshow("image", lines_edges)
         # cv2.waitKey(0)

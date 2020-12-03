@@ -1,8 +1,6 @@
 import statistics
 from os import environ
-
 from typing import List
-
 from alto_segment_lib.segment import Segment, Line, SegmentGroup
 from alto_segment_lib.segment_group_handler import SegmentGroupHandler
 from alto_segment_lib.segment_helper import SegmentHelper

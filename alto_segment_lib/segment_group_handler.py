@@ -1,5 +1,4 @@
 from typing import List
-
 from alto_segment_lib.segment import SegmentGroup, Segment
 from alto_segment_lib.segment_helper import SegmentHelper
 

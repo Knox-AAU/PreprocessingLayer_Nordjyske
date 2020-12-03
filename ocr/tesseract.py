@@ -18,8 +18,6 @@ class TesseractModule:
     @classmethod
     def from_file(cls, image, tessdata: str):
         # todo do preprocessing methods instead of loading file
-        #img = cv2.imread(file.path)
-
         tm = cls(image, tessdata)
 
         return tm
@@ -75,7 +73,6 @@ class TesseractModule:
         paragraphs = [self.str_to_paragraph(p) for p in paragraphs]
 
         return paragraphs
-
 
     @staticmethod
     def str_to_paragraph(p):
