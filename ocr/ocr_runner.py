@@ -159,7 +159,7 @@ class OCRRunner:
         @param paragraphs: paragraphs to search through
         @return: paragraphs that does not contain junk
         """
-        # if text contains a lot of numbers it might be a TV guide or "aktier"
+        # If text contains a lot of numbers it might be a TV guide or "aktier"
         ok_paragraphs = []
         special_chars = set(string.punctuation.replace("_", ""))
 

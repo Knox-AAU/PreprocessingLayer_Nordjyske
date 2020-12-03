@@ -15,17 +15,12 @@ class TesseractModule:
 
         self.data = pytesseract.image_to_data(image, lang=language, output_type='dict', config="")
 
-
-
-
-        #self.data = pytesseract.image_to_data(image, lang=language, output_type='dict', config="")
-
     @classmethod
-    def from_file(cls, file: File, tessdata: str):
+    def from_file(cls, image, tessdata: str):
         # todo do preprocessing methods instead of loading file
         #img = cv2.imread(file.path)
 
-        tm = cls(file, tessdata)
+        tm = cls(image, tessdata)
 
         return tm
 
@@ -60,18 +55,18 @@ class TesseractModule:
         for t in text:
             if t == "":
                 if len(b_str) > 1 and (b_str[-1] == "\n" or b_str[-1] == "\r"):
-                    # if last char was new line as well, then split into paragraph
+                    # If last char was new line as well, then split into paragraph
                     paragraphs.append(b_str.strip())
                     b_str = ""
                 else:
-                    # empty string = new line
+                    # Empty string = new line
                     b_str += "\n\r"
             else:
                 b_str += f"{t} "
         if b_str != "":
             paragraphs.append(b_str)
 
-        #remove empty paragraphs
+        # Remove empty paragraphs
         paragraphs = [p.strip() for p in paragraphs if p != '']
 
         # Remove new lines and hyphens across them.
