@@ -19,8 +19,8 @@ class SegmentModule:
 
         text_lines = alto_extractor.extract_lines()
         text_lines = segment_helper.repair_text_lines(text_lines, lines)
-        lists = segment_helper.group_lines_into_paragraphs_headers(text_lines)
-        segments = segment_helper.combine_lines_into_segments(lists[1])
+        (headers, paragraphs) = segment_helper.group_lines_into_paragraphs_headers(text_lines)
+        segments = segment_helper.combine_lines_into_segments(paragraphs)
 
         paragraphs = [segment for segment in segments if segment.type == "paragraph"]
         repair = RepairSegments(paragraphs, 30)
