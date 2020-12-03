@@ -5,9 +5,10 @@ from threading import Lock
 from joblib import Parallel, delayed
 
 from alto_segment_lib.repair_segments import RepairSegments
+from alto_segment_lib.segment import Segment, SegmentType
+from alto_segment_lib.segment_grouper import SegmentGrouper
 from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
 import matplotlib.pyplot as plt
-
 from alto_segment_lib.segment_helper import SegmentHelper
 from matplotlib.patches import Rectangle
 from PIL import Image
@@ -22,7 +23,7 @@ filetype = ".jp2"
 lock = Lock()
 
 
-def display_segments(segments_for_display, file_path, name):
+def display_segments(segments_for_display, file_path, name, color='r'):
     plt.imshow(Image.open(file_path + filetype))
     plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
 
@@ -33,9 +34,8 @@ def display_segments(segments_for_display, file_path, name):
 
     for segment in segments_for_display:
         plt.gca().add_patch(
-            Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1),
-                      (segment.y2 - segment.y1), linewidth=0.3,
-                      edgecolor='r', facecolor='none'))
+            Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.3,
+                      edgecolor=color, facecolor='none'))
         # plt.text(segment.x1+25, segment.y1+30, "["+str(counter)+"]", horizontalalignment='left', verticalalignment='top')
         # plt.text(seg[0]+45, seg[1] + 200, str((seg[2]-seg[0])), horizontalalignment='left', verticalalignment='top')
         counter += 1
@@ -73,15 +73,13 @@ def display_lines(headers_for_display, paragraphs_for_display, file_path, name):
 
     for segment in headers_for_display:
         plt.gca().add_patch(
-            Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1),
-                      (segment.y2 - segment.y1), linewidth=0.3,
+            Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.3,
                       edgecolor='b', facecolor='none'))
         # plt.text(segment.x1+25, segment.y1+30, "["+str(segment.font)+"]", horizontalalignment='left', verticalalignment='top')
 
     for segment in paragraphs_for_display:
         plt.gca().add_patch(
-            Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1),
-                      (segment.y2 - segment.y1), linewidth=0.3,
+            Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.3,
                       edgecolor='r', facecolor='none'))
         # plt.text(segment.x1+25, segment.y1+30, "["+str(segment.font)+"]", horizontalalignment='left', verticalalignment='top')
 
@@ -113,7 +111,7 @@ def run_file(file_path):
     altoExtractor.set_dpi(300)
     altoExtractor.set_margin(0)
 
-    segment_helper = SegmentHelper(file_path + ".alto.xml")
+    segment_helper = SegmentHelper()
 
     text_lines = altoExtractor.extract_lines()
     (headers, text_lines) = segment_helper.group_lines_into_paragraphs_headers(text_lines)
@@ -145,5 +143,5 @@ if __name__ == '__main__':
     filename = args.filename
     filepath = base_path + filename
 
-    #run_multiple_files(base_path)
-    run_file(filepath)
+    run_multiple_files(base_path)
+    # run_file(filepath)

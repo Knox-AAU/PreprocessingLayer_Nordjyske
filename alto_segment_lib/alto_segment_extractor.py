@@ -1,7 +1,7 @@
 from xml.dom import minidom
 import operator
 import enum
-from alto_segment_lib.segment import Segment
+from alto_segment_lib.segment import Segment, SegmentType
 from alto_segment_lib.segment import Line
 import statistics
 import re
@@ -27,7 +27,8 @@ class AltoSegmentExtractor:
     def __init__(self, alto_path: str = "", dpi: int = 300, margin: int = 0):
         self.__dpi = dpi
         self.__margin = margin
-        self.set_path(alto_path)
+        if alto_path != "":
+            self.set_path(alto_path)
         self.__median_line_width = 0
 
     def set_path(self, path: str):
@@ -140,18 +141,18 @@ class AltoSegmentExtractor:
             for text_line in text_lines:
                 text_line_coordinates = self.__extract_coordinates(text_line)
                 line = Line(text_line_coordinates)
-                if segment.between_x_coords(line.x1 + 10) and segment.between_x_coords(line.x2 - 10):
+                if segment.between_x_coordinates(line.x1 + 10) and segment.between_x_coordinates(line.x2 - 10):
                     text_line_fonts.append(text_line.attributes['STYLEREFS'].value)
                     segment.lines.append(line)
 
             style = determine_most_frequent_list_element(text_line_fonts)
 
             if style in self.__para_fonts:
-                segment.type = "paragraph"
+                segment.type = SegmentType.paragraph
             elif style in self.__head_fonts:
-                segment.type = "headline"
+                segment.type = SegmentType.heading
             else:
-                segment.type = "unknown"
+                segment.type = SegmentType.unknown
 
             segments.append(segment)
 

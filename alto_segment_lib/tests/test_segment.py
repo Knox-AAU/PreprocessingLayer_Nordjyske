@@ -30,7 +30,7 @@ class TestSegment:
     def test_between_x_coords_is_between(self):
         segment_one = Segment([200, 400, 400, 600])
 
-        if segment_one.between_x_coords(300):
+        if segment_one.between_x_coordinates(300):
             assert True
         else:
             assert False
@@ -38,7 +38,7 @@ class TestSegment:
     def test_between_x_coords_not_between(self):
         segment_one = Segment([200, 400, 400, 600])
 
-        if not segment_one.between_x_coords(405):
+        if not segment_one.between_x_coordinates(405):
             assert True
         else:
             assert False
@@ -46,7 +46,7 @@ class TestSegment:
     def test_between_y_coords_is_between(self):
         segment_one = Segment([200, 400, 400, 600])
 
-        if segment_one.between_y_coords(500):
+        if segment_one.between_y_coordinates(500):
             assert True
         else:
             assert False
@@ -54,7 +54,7 @@ class TestSegment:
     def test_between_y_coords_not_between(self):
         segment_one = Segment([200, 400, 400, 600])
 
-        if not segment_one.between_y_coords(350):
+        if not segment_one.between_y_coordinates(350):
             assert True
         else:
             assert False

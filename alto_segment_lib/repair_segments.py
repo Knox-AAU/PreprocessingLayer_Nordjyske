@@ -38,22 +38,21 @@ class RepairSegments:
                         subsegment_index = return_segments.index(subsegment)
                     else:
                         continue
-
                     # Checks if the subsegment is entirely within the segment
-                    if segment.between_y_coords(subsegment.y1 + thresh_within) \
-                            and segment.between_y_coords(subsegment.y2 - thresh_within) \
-                            and segment.between_x_coords(subsegment.x1 + thresh_within) \
-                            and segment.between_x_coords(subsegment.x2 - thresh_within):
+                    if segment.between_y_coordinates(subsegment.y1 + thresh_within) \
+                            and segment.between_y_coordinates(subsegment.y2 - thresh_within) \
+                            and segment.between_x_coordinates(subsegment.x1 + thresh_within) \
+                            and segment.between_x_coordinates(subsegment.x2 - thresh_within):
                         return_segments.remove(subsegment)
                     # Checks if subsegment's x-coords are close to segment
-                    elif segment.between_x_coords(subsegment.x1 + thresh_close_to) \
-                            and segment.between_x_coords(subsegment.x2 - thresh_close_to):
+                    elif segment.between_x_coordinates(subsegment.x1 + thresh_close_to) \
+                            and segment.between_x_coordinates(subsegment.x2 - thresh_close_to):
                         # Checks if the upper y-coordinate for subsegment is withing segment
-                        if segment.between_y_coords(subsegment.y1):
+                        if segment.between_y_coordinates(subsegment.y1):
                             # Move y-coordinate to be beside segment
                             return_segments[subsegment_index].y1 = segment.y2
                         # Checks if the lower y-coordinate for subsegment is within segment
-                        elif segment.between_y_coords(subsegment.y2):
+                        elif segment.between_y_coordinates(subsegment.y2):
                             # Move y-coordinate to be beside segment
                             return_segments[subsegment_index].y2 = segment.y1
 
