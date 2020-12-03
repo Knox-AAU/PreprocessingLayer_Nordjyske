@@ -2,6 +2,7 @@ from os import environ
 from typing import List
 
 from alto_segment_lib.line_extractor.extractor import LineExtractor
+from alto_segment_lib.line_extractor.hough_bundler import HoughBundler
 from alto_segment_lib.segment import Line
 from alto_segment_lib.segment_helper import SegmentHelper
 
@@ -24,14 +25,15 @@ class SegmentLines:
         content_bound = SegmentHelper().get_content_bounds(segments)
 
         segments = sorted(segments, key=lambda segment: segment.x1)
+        image = cv2.imread(filepath, cv2.CV_8UC1)
 
         lines = self.__create_vertical_lines_for_each_segment(segments)
 
+        LineExtractor().show_lines_on_image(image, lines, "beforeMerge")
+
         lines = self.__merge_vertical_lines(lines, segments)
 
-        image = cv2.imread(filepath, cv2.CV_8UC1)
-
-        LineExtractor().show_lines_on_image(image, lines)
+        LineExtractor().show_lines_on_image(image, lines, "afterMerge")
 
     def __create_vertical_lines_for_each_segment(self, segments):
         """
@@ -53,10 +55,13 @@ class SegmentLines:
         # Finds similar lines 
         lines_to_be_merged = [[]]
         merged_lines = []
+        merged_lines.clear()
+
+        content_bound = SegmentHelper().get_content_bounds(segments)
+
         for line in vertical_lines:
-            for group in lines_to_be_merged:
-                if group.__contains__(line):
-                    continue
+            if self.__is_line_in_groups(lines_to_be_merged, line):
+                continue
             
             found_lines = []
 
@@ -67,12 +72,12 @@ class SegmentLines:
 
             lines_to_be_merged.append(found_lines)
 
-        i = 0
+        test = 0
         # Merges lines
         # Find statistics for line groups
         for line_group in lines_to_be_merged:
             sum_x = 0
-            min_y = 0
+            min_y = 100000
             max_y = 0
 
             if len(line_group) == 0:
@@ -83,7 +88,7 @@ class SegmentLines:
             for line in line_group:
                 sum_x += line.x1
                 
-                if line.y1 > min_y:
+                if line.y1 < min_y:
                     min_y = line.y1
                 
                 if line.y2 > max_y:
@@ -96,16 +101,38 @@ class SegmentLines:
             affected_segments.clear()
 
             for segment in segments:
-                if segment.x1 < average_x < segment.x2:
+                if segment.x1 < average_x < segment.x2\
+                        and segment.y1 > min_y\
+                        and segment.y2 < max_y:
                     affected_segments.append(segment)
 
             if len(affected_segments) == 0:
                 merged_lines.append(Line([average_x, min_y, average_x, max_y]))
+
+
             else:
                 # dont merge lines that intersect the segment
-                i += 1
+                i = 0
+                affected_segments = sorted(affected_segments, key=lambda segment: segment.y1)
+                for segment in affected_segments:
+                    if i == 0:
+                        merged_lines.append(Line([average_x, content_bound[1], average_x, segment.y1]))
+                    elif i < len(affected_segments):
+                        previous_segment = affected_segments[i - 1]
+                        if previous_segment.y2 - segment.y1 > 150:
+                            merged_lines.append(Line([average_x, previous_segment.y2, average_x, segment.y1]))
+                    else:
+                        merged_lines.append(Line([average_x, segment.y2, average_x, content_bound[3]]))
+
+                    i += 1
 
         return merged_lines
+
+    @staticmethod
+    def __is_line_in_groups(lines_to_be_merged, line):
+        for group in lines_to_be_merged:
+            if group.__contains__(line):
+                return True
 
 
 

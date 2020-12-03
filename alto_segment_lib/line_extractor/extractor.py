@@ -54,7 +54,8 @@ class LineExtractor:
         enhanced_image = self.clarify_lines(image)
         return self.get_lines_from_binary_image(enhanced_image)
 
-    def remove_outline_lines(self, lines, image: object):
+    @staticmethod
+    def remove_outline_lines(lines, image: object):
         """
         Removes the lines constituting the outline of the image
 
@@ -153,7 +154,7 @@ class LineExtractor:
         return filtered_lines
 
     @staticmethod
-    def show_lines_on_image(image, lines):
+    def show_lines_on_image(image, lines, name):
         """
         Displays the lines on hte image
 
@@ -170,13 +171,14 @@ class LineExtractor:
 
         lines_edges = cv2.addWeighted(image_in_color, 0.5, line_image, 1, 0)
 
-        cv2.imwrite("/home/jakob/Desktop/2015-01-01-01/2000-01-01-01/segment_lines.png", lines_edges)
+        cv2.imwrite("E:\\Nordjyske\\2015-01-01-01\\" + name + ".png", lines_edges)
         # print("done")
         # cv2.namedWindow("image", cv2.WINDOW_NORMAL)
         # cv2.imshow("image", lines_edges)
         # cv2.waitKey(0)
 
-    def extend_lines_vertically(self, lines, image):
+    @staticmethod
+    def extend_lines_vertically(lines, image):
         """
         Extends the lines vertically by decreasing y1 and increasing y2 of the lines
 
@@ -193,7 +195,8 @@ class LineExtractor:
 
         return lines
 
-    def correct_lines(self, lines):
+    @staticmethod
+    def correct_lines(lines):
         """
         ToDo: Add this!!!
 

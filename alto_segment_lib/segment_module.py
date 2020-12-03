@@ -42,11 +42,12 @@ class SegmentModule:
 
         segments_para = rep_rows_segments
 
-        vertical_segment_lines = SegmentLines().find_vertical_lines(segments_para, file_path + ".jp2")
+        vertical_segment_lines = SegmentLines().find_vertical_lines(segments_para + header_lines, file_path + ".jp2")
 
         lines = [element for element, element in enumerate(lines) if element.is_horizontal()]
 
-        grouper = SegmentGrouper()
-        groups = grouper.group_segments_in_order(header_as_segment, paragraphs, lines)
+        #grouper = SegmentGrouper()
 
-        return groups
+        #groups = grouper.group_segments_in_order(header_as_segment, paragraphs, lines)
+
+        #return groups
