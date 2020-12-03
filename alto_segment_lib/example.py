@@ -19,8 +19,7 @@ filetype = ".jp2"
 
 def display_segments(segments_for_display, file_path, name):
     image = cv2.imread(file_path + filetype)
-    cv2.imwrite(file_path + ".tiff", image)
-    plt.imshow(Image.open(file_path + ".tiff"))
+    plt.imshow(Image.fromarray(image))
     plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
 
     counter = 1
