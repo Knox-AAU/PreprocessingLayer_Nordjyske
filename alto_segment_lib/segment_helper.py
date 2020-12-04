@@ -1,5 +1,6 @@
 import statistics
 import math
+from typing import List
 
 from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
 from alto_segment_lib.segment import Segment, Line, SegmentType

@@ -4,6 +4,8 @@ from datetime import datetime, timezone
 from os import environ
 from xml.dom import minidom
 import re
+
+from alto_segment_lib.segment import SegmentType
 from crawler.file import File
 from knox_source_data_io.models.publication import Article
 from pytesseract import pytesseract
@@ -49,7 +51,7 @@ class OCRRunner:
             else:
                 continue
 
-            if segment.type == "headline":
+            if segment.type == SegmentType.heading:
                 # When there is a headline we know that its the start of a new article
                 # So we save the old article and create a new one
                 articles.append(article)
@@ -59,7 +61,7 @@ class OCRRunner:
                 if len(headline) > 0:
                     article.headline = headline[0].value
 
-            if segment.type == "paragraph":
+            if segment.type == SegmentType.paragraph:
                 # If the segment is a paragraph we will extract text with tesseract, remove adverts
                 # and add file path to the article
                 paragraphs = TesseractModule.from_file(cropped_image, tessdata).to_paragraphs()

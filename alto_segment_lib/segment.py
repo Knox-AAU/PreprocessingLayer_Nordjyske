@@ -249,6 +249,15 @@ class Line:
         """
         return (self.y1 * (1 - margin)) <= value <= (self.y2 * (1 + margin))
 
+    def to_segment(self, segment_type: SegmentType):
+        """
+        Converts the line to a segment
+
+        @param segment_type: The type of the resulting segment
+        @return: The line as a segment
+        """
+        return Segment([self.x1, self.y1, self.x2, self.y2], segment_type)
+
 
 class SegmentGroup:
     headers: List[Segment]

@@ -10,7 +10,7 @@ environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 
 class SegmentGrouper:
 
-    def group_segments_in_order(self, headers_in: List[Line], paragraphs_in: List[Segment], lines_in: List[Line]):
+    def order_segments(self, headers_in: List[Segment], paragraphs_in: List[Segment], lines_in: List[Line]):
         segments = paragraphs_in.copy()
         segments.extend(headers_in)
 
@@ -64,7 +64,13 @@ class SegmentGrouper:
             segments_to_check.remove(segment)
 
         group_handler.finalize()
-        return group_handler.groups
+        segments = []
+
+        for group in group_handler.groups:
+            [segments.append(head.to_segment(SegmentType.heading)) for head in group.headers]
+            [segments.append(paragraph) for paragraph in group.paragraphs]
+
+        return segments
 
     def __finish_article_based_on_line(self, group_handler: SegmentGroupHandler, line: Segment,
                                        segments_to_check: List[Segment]):

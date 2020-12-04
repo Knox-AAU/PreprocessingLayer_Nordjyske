@@ -1,5 +1,7 @@
 import argparse
 import os
+
+
 os.environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 import cv2
 import matplotlib.pyplot as plt
@@ -108,7 +110,9 @@ def run_file(file_path):
     lines = [element for element, element in enumerate(lines) if element.is_horizontal()]
 
     grouper = SegmentGrouper()
-    groups = grouper.group_segments_in_order(header_as_segment, paragraphs, lines)
+    ordered_segments = grouper.order_segments(header_as_segment, paragraphs, lines)
+
+
 
     image = Image.open(file_path + filetype)
     image.putalpha(128)
