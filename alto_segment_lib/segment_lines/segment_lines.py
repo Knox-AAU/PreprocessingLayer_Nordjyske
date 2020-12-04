@@ -72,7 +72,6 @@ class SegmentLines:
 
             lines_to_be_merged.append(found_lines)
 
-        test = 0
         # Merges lines
         # Find statistics for line groups
         for line_group in lines_to_be_merged:
