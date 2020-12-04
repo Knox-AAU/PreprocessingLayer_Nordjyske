@@ -390,7 +390,6 @@ class SegmentHelper:
     # https://www.geeksforgeeks.org/find-if-a-point-lies-inside-or-on-circle/
     @staticmethod
     def isInsideCircle(circle_x, circle_y, rad, x, y):
-
         # Compare radius of circle
         # with distance of its center
         # from given point

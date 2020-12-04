@@ -144,7 +144,7 @@ def run_file(file_path):
 
     #display_segments(lines, file_path, "lines")
 
-    rounds = 10
+    rounds = 9
     counter = 1
 
     while counter <= rounds:

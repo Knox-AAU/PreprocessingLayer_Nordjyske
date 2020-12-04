@@ -66,24 +66,18 @@ class RepairSegments:
         grouper = SegmentGrouper()
         segments_ordered = grouper.order_segments_by_x1_y1(segments)
         sub_segment_list = segments_ordered.copy()
-
         already_merged = []
-        merge_distance_threshold = 60  # in px
+        merge_distance_threshold = 80  # in px
         merged_segments = []
-
-        # Counters
-        last_segment_count = 0
-        current_segment_count = len(segments_ordered)
-
-        #while last_segment_count != current_segment_count:
 
         for segment in segments_ordered:
             if segment in already_merged:
                 continue
 
-            # segment_center = segment.get_center()
-            lower_left_circle_x = segment.x1
-            lower_left_circle_y = segment.y2
+            # for merged_segment in merged_segments:
+            #     if SegmentHelper.inside_box([merged_segment.x1, merged_segment.y1, merged_segment.x2, merged_segment.y2], segment.x1, segment.y1):
+            #         continue
+
             segment_width = segment.width()
             sub_segment_list.remove(segment)
 
@@ -92,36 +86,35 @@ class RepairSegments:
                 sub_segment_width = sub_segment.width()
                 merged = False
 
-                # Check left first
-                if SegmentHelper.distance_between_coordinates(lower_left_circle_x, lower_left_circle_y, sub_segment.x1, sub_segment.y1) <= merge_distance_threshold:
+                # Check from current segments lower left corner if any segments are within threshold distance.
+                if SegmentHelper.distance_between_coordinates(segment.x1, segment.y2, sub_segment.x1, sub_segment.y1) <= merge_distance_threshold:
 
+                    # Generate coordinates equal to the empty space on the right or left, to check if
+                    # we will overlap existing elements by merging
                     if segment_width > sub_segment_width:
                         ghost_box = [sub_segment.x2, sub_segment.y1, segment.x2, sub_segment.y2]
                     elif segment_width < sub_segment_width:
                         ghost_box = [segment.x2, segment.y1, sub_segment.x2, segment.y2]
                     else:
+                        # It is possibel that the segment and sub_segment have same lenght then dont
+                        # check for conflicts.
                         ghost_box = None
 
                     # Fill empty space
-                    conflicting_segment = False
+                    conflicting_segments = False
 
                     if ghost_box is not None:
                         for other_segment in segments:
                             if SegmentHelper.inside_box(ghost_box, other_segment.x1, other_segment.y1):
-                                conflicting_segment = True
+                                conflicting_segments = True
                                 break
 
-                    if not conflicting_segment:
+                    if not conflicting_segments:
                         segment.y2 = max(segment.y2, sub_segment.y2)
                         segment.x2 = max(segment.x2, sub_segment.x2)
                         segment.x1 = min(segment.x1, sub_segment.x1)
                         segment.y1 = min(segment.y1, sub_segment.y1)
                         merged = True
-
-                # Check right after
-                # if merged is False and SegmentHelper.isInsideCircle(lower_right_circle_x, lower_right_circle_y, merge_distance_threshold, sub_segment.x2, sub_segment.y1):
-                #     segment.y2 = sub_segment.y2
-                #     merged = True
 
                 if merged:
                     already_merged.append(sub_segment)
@@ -129,5 +122,3 @@ class RepairSegments:
             merged_segments.append(segment)
 
         return merged_segments
-
-
