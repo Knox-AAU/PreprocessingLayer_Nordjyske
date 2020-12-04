@@ -1,14 +1,16 @@
 import argparse
 import os
+os.environ["OPENCV_IO_ENABLE_JASPER"] = "true"
+import cv2
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 from alto_segment_lib.repair_segments import RepairSegments
 from alto_segment_lib.segment import Segment, SegmentType
 from alto_segment_lib.segment_grouper import SegmentGrouper
 from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
-import matplotlib.pyplot as plt
-from alto_segment_lib.segment_helper import SegmentHelper
-from matplotlib.patches import Rectangle
-from PIL import Image
 from alto_segment_lib.line_extractor.extractor import LineExtractor
+from alto_segment_lib.segment_helper import SegmentHelper
+from PIL import Image
 
 base_path: str
 filename: str
@@ -16,8 +18,9 @@ filepath: str
 filetype = ".jp2"
 
 
-def display_segments(segments_for_display, file_path, name, color='r'):
-    plt.imshow(Image.open(file_path + filetype))
+def display_segments(segments_for_display, file_path, name):
+    image = cv2.imread(file_path + filetype)
+    plt.imshow(Image.fromarray(image))
     plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
 
     counter = 1
@@ -72,7 +75,8 @@ def run_multiple_files(basepath):
 
 
 def run_file(file_path):
-    lines = LineExtractor().extract_lines_via_path(file_path + ".jp2")
+    line_extractor = LineExtractor()
+    lines = line_extractor.extract_lines_via_path(file_path + ".jp2")
     # display_lines([], lines, file_path, "streger")
 
     altoExtractor = AltoSegmentExtractor(file_path + ".alto.xml")

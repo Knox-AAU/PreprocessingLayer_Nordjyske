@@ -21,8 +21,7 @@ class SegmentHelper:
             width.append(line.width())
         return statistics.median(width)
 
-
-    def group_lines_into_paragraphs_headers(self, lines: list, file_path: str):
+    def group_lines_into_paragraphs_headers(self, lines: List, file_path: str):
         """ Groups headers together in one list and paragraphs in another list
 
         @param lines: a list of text lines
