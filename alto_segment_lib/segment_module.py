@@ -15,11 +15,11 @@ class SegmentModule:
         alto_extractor.set_dpi(300)
         alto_extractor.set_margin(0)
 
-        segment_helper = SegmentHelper(file_path + ".alto.xml")
+        segment_helper = SegmentHelper()
 
         text_lines = alto_extractor.extract_lines()
         text_lines = segment_helper.repair_text_lines(text_lines, lines)
-        (headers, paragraphs) = segment_helper.group_lines_into_paragraphs_headers(text_lines)
+        (headers, paragraphs) = segment_helper.group_lines_into_paragraphs_headers(text_lines, file_path + ".alto.xml")
         segments = segment_helper.combine_lines_into_segments(paragraphs)
 
         paragraphs = [segment for segment in segments if segment.type == "paragraph"]
