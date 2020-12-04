@@ -11,7 +11,6 @@ environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 
 
 class LineExtractor:
-
     def __init__(self):
         self.config = configparser.ConfigParser()
         self.config.read('config.ini')
@@ -31,6 +30,12 @@ class LineExtractor:
         self.horizontal_size = int(self.config['line_enhancement']['horizontal_size'])
 
     def extract_lines_via_path(self, image_path: str):
+        """
+        Executes line extraction on the image located at the given image_path
+
+        @param image_path: The path to the image from which the lines should be extracted
+        @return: List of extracted lines
+        """
         image = cv2.imread(image_path, cv2.CV_8UC1)
 
         lines = self.extract_lines_via_image(image)
@@ -41,11 +46,23 @@ class LineExtractor:
         return final_lines
 
     def extract_lines_via_image(self, image: object):
-        enhanced_image = self.enhance_lines(image)
+        """
+        Extracts lines from the image
+
+        @param image: The CV2 image object from which the lines should be extracted
+        @return: List of extracted lines
+        """
+        enhanced_image = self.clarify_lines(image)
         return self.get_lines_from_binary_image(enhanced_image)
 
-    @staticmethod
-    def remove_outline_lines(lines, image: object):
+    def remove_outline_lines(self, lines, image: object):
+        """
+        Removes the lines constituting the outline of the image
+
+        @param lines: List of lines from which the outline lines should be removed
+        @param image: The image from which the lines were extracted
+        @return: List of lines with the outline lines removed
+        """
         outline_stop = 100
         max_x, max_y = image.shape
         lines_to_remove = []
@@ -64,7 +81,13 @@ class LineExtractor:
 
         return lines
 
-    def enhance_lines(self, image):
+    def clarify_lines(self, image):
+        """
+        Turns the vertical and horizontal lines in the image white and everything else black
+
+        @param image: The image on which the processing should be performed
+        @return: The image with only the lines visible
+        """
 
         # apply mean tresholding to bring out lines
         image_thresh = cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY,
@@ -97,6 +120,12 @@ class LineExtractor:
         return merged_image
 
     def get_lines_from_binary_image(self, image):
+        """
+        Extract the lines from a binary image
+
+        @param image: The CV2 image form which the lines should be extracted
+        @return: List of extracted lines
+        """
         lines = cv2.HoughLinesP(image, self.rho, self.theta, self.threshold, np.array([]),
                                 self.min_line_length, self.max_line_gap)
 
@@ -107,6 +136,12 @@ class LineExtractor:
         return self.filter_by_angle_diversion_from_horizontal_and_vertical(lines_groups)
 
     def filter_by_angle_diversion_from_horizontal_and_vertical(self, lines_groups):
+        """
+        Removes lines that are not horizontal nor vertical
+
+        @param lines_groups: List of lines to filter
+        @return: List of filtered lines
+        """
         min_horizontal_angle = -self.diversion
         max_horizontal_angle = self.diversion
         min_vertical_angle = 90 - self.diversion
@@ -121,6 +156,13 @@ class LineExtractor:
 
     @staticmethod
     def show_lines_on_image(image, lines):
+        """
+        Displays the lines on hte image
+
+        @param image: The image to display the lines on
+        @param lines: The lines to display
+        @return: void
+        """
         line_image = np.copy(image) * 0  # creating a blank to draw lines on
         line_image = cv2.cvtColor(line_image, cv2.COLOR_GRAY2RGB)
         for line in lines:
@@ -136,6 +178,13 @@ class LineExtractor:
         # cv2.waitKey(0)
 
     def extend_lines_vertically(self, lines, image):
+        """
+        Extends the lines vertically by decreasing y1 and increasing y2 of the lines
+
+        @param lines: The lines to extend
+        @param image: The image from which the lines are extracted
+        @return: List of updated lines
+        """
         horizontal_size, vertical_size = image.shape
 
         for line in lines:
@@ -146,7 +195,12 @@ class LineExtractor:
         return lines
 
     def correct_lines(self, lines):
+        """
+        ToDo: Add this!!!
 
+        @param lines:
+        @return:
+        """
         new_lines = []
 
         for line in lines:

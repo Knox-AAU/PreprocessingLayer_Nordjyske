@@ -2,6 +2,7 @@ import configparser
 import os
 import re
 import xml
+from datetime import datetime
 from queue import Queue
 from xml.dom import minidom
 from crawler.file import File
@@ -28,7 +29,15 @@ class Crawler:
         self.blacklist = config['structure']['blacklist'].split(",")
         self.whitelist = config['structure']['whitelist'].split(",")
 
-    def crawl_folders(self, q: Queue, directory, from_date, to_date):
+    def crawl_folders(self, q: Queue, directory: str, from_date: datetime, to_date: datetime):
+        """
+        Crawl a directory recursively to find target directories, configured by the config file.
+        Will only find files in a defined interval of dates.
+        @param q: The queue to add directories to
+        @param directory: The current folder path to search in
+        @param from_date: The interval from_date
+        @param to_date: The interval to_date
+        """
         for entry in os.scandir(directory):
             if not entry.is_dir():
                 continue
@@ -45,7 +54,7 @@ class Crawler:
                 if not (from_date <= folder.get_datetime() <= to_date):
                     # only consume if within date
                     continue
-                self.__crawl_for_files_in_folders(folder, entry.path)
+                self.crawl_for_files_in_folders(folder, entry.path)
                 print(f"Produced {entry.path}")
                 q.put(folder)
 
@@ -53,31 +62,36 @@ class Crawler:
                 # Current dir is NOT a target dir. Let's search that dir for target-dirs.
                 self.crawl_folders(q, entry.path, from_date, to_date)
 
-    def __crawl_for_files_in_folders(self, folder, directory: str):
+    def crawl_for_files_in_folders(self, folder, directory: str):
+        """
+        Finds valid files in a folder and adds it to a folder type.
+        @param folder: The folder to add the found files to.
+        @param directory: The path to search
+        """
         for entry in os.scandir(directory):
             if not entry.is_dir():
                 # entry is file
-                if self.__is_string_in_list(entry.name, self.blacklist) or not \
-                        self.__is_string_in_list(entry.name, self.whitelist):
+                if self.is_string_in_list(entry.name, self.blacklist) or not \
+                        self.is_string_in_list(entry.name, self.whitelist):
                     continue
 
-                if ".xml" in entry.name and self.__is_file_valid_nitf(entry.path):
+                if ".xml" in entry.name and self.is_file_valid_nitf(entry.path):
                     folder.add_file(File(entry.path, FileType.NITF, name=entry.name))
                 if ".jp2" in entry.name:
                     folder.add_file(File(entry.path, FileType.JP2, name=entry.name))
 
             else:
                 # entry is folder, search recursively:
-                self.__crawl_for_files_in_folders(folder, entry.path)
+                self.crawl_for_files_in_folders(folder, entry.path)
 
         folder.sort()
 
     @staticmethod
-    def __is_file_valid_nitf(xml_path):
-        """ Checks if the XML file given has the nitf:nitf tag
-
-        :param xml_path: Path to the XML file
-        :return: True or False, depending on whether it is a nitf file or not
+    def is_file_valid_nitf(xml_path) -> bool:
+        """
+        Determines if a given file_path is a valid NITF file.
+        @param xml_path:
+        @return: bool
         """
         try:
             xml_doc = minidom.parse(xml_path)
@@ -91,7 +105,7 @@ class Crawler:
         return False
 
     @staticmethod
-    def __is_string_in_list(string, checklist):
+    def is_string_in_list(string, checklist):
         """ Checks if the string contains any words in the list (useful for black- and whitelisting)
 
         :param string: String to be checked

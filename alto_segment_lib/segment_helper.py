@@ -2,7 +2,7 @@ import statistics
 import math
 
 from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
-from alto_segment_lib.segment import Segment, Line
+from alto_segment_lib.segment import Segment, Line, SegmentType
 
 
 class SegmentHelper:
@@ -21,7 +21,7 @@ class SegmentHelper:
             width.append(line.width())
         return statistics.median(width)
 
-    def group_lines_into_paragraphs_headers(self, lines: list, file_path: str):
+    def group_lines_into_paragraphs_headers(self, lines: List, file_path: str):
         """ Groups headers together in one list and paragraphs in another list
 
         @param lines: a list of text lines
@@ -69,10 +69,10 @@ class SegmentHelper:
         updated_paragraphs = paragraphs.copy()
         for header in headers:
             for paragraph in paragraphs:
-                if header.between_y_coords(paragraph.y1) \
-                        and header.between_y_coords(paragraph.y2) \
-                        and header.between_x_coords(paragraph.x1) \
-                        and header.between_x_coords(paragraph.x2) \
+                if header.between_y_coordinates(paragraph.y1) \
+                        and header.between_y_coordinates(paragraph.y2) \
+                        and header.between_x_coordinates(paragraph.x1) \
+                        and header.between_x_coordinates(paragraph.x2) \
                         and paragraph in updated_paragraphs:
                     updated_paragraphs.remove(paragraph)
 
@@ -91,8 +91,8 @@ class SegmentHelper:
 
         for paragraph in paragraphs:
             for header in headers:
-                if (paragraph.between_x_coords(header.x1 + margin) and paragraph.between_y_coords(header.y1 - margin)) \
-                        or (paragraph.between_x_coords(header.x2 - margin) and paragraph.between_y_coords(header.y2 + margin)):
+                if (paragraph.between_x_coordinates(header.x1 + margin) and paragraph.between_y_coordinates(header.y1 - margin)) \
+                        or (paragraph.between_x_coordinates(header.x2 - margin) and paragraph.between_y_coordinates(header.y2 + margin)):
                     new_paragraphs.append(header)
                     if header in new_headers:
                         new_headers.remove(header)
@@ -109,7 +109,7 @@ class SegmentHelper:
         header_segment_groups = self.__group_same_segment(header_column_groups, True)
         new_paragraphs = []
         new_headers = []
-        min_cluster_size = 3
+        min_cluster_size = 6
 
         for grouped_headers in header_segment_groups:
             if len(grouped_headers) > min_cluster_size:
@@ -132,7 +132,7 @@ class SegmentHelper:
         for group in segment_groups:
             if len(group) > 0:
                 new_segment = self.make_box_around_lines(group)
-                new_segment.type = "paragraph"
+                new_segment.type = SegmentType.paragraph
                 segments.append(new_segment)
         return segments
 
@@ -211,7 +211,7 @@ class SegmentHelper:
         return segment_groups
 
     @staticmethod
-    def make_box_around_lines(text_lines: list):
+    def make_box_around_lines(text_lines: list, return_coordiantes=False):
         """ Finds the coordinates for the segment containing the lines and creates the segment
 
         @param text_lines: list of text lines
@@ -242,6 +242,9 @@ class SegmentHelper:
             # Find y-coordinate lower right corner
             if line.y2 > y2:
                 y2 = line.y2
+
+        if return_coordiantes:
+            return x1, y1, x2, y2
 
         segment = Segment([x1, y1, x2, y2])
         segment.lines = text_lines
@@ -345,3 +348,49 @@ class SegmentHelper:
         split_x_coord = (line.x1 + dist_text_to_line) if line.x1 < line.x2 else (line.x1 - dist_text_to_line)
 
         return split_x_coord
+
+    @staticmethod
+    def group_headers_into_segments(header_lines):
+        header_segments = []
+        segment = None
+
+        x1 = x2 = y1 = y2 = 0
+        radius = 0
+        threshold = 100  # ToDo: make smart
+
+        for line in header_lines:
+            if radius > 0 and SegmentHelper.__isInsideCircle(x1, y1, radius, line.x1, line.y1):
+                # The line is within the circle of the header
+                segment.add_line(line)
+            elif x1 != x2 != y1 != y2 != 0 and abs(line.x1 - x2) < threshold and abs(line.y1 - y1) < threshold:
+                # The line is right next to the header
+                segment.add_line(line)
+            else:
+                if segment is not None:
+                    segment.update_coordinates_based_on_lines()
+                    header_segments.append(segment)
+
+                segment = Segment()
+                segment.type = SegmentType.heading
+                segment.add_line(line)
+
+            x1 = line.x1
+            y1 = line.y1
+            x2 = line.x2
+            y2 = line.y2
+            radius = line.height()+400  # TODO: Make smarter
+
+        if segment is not None:
+            segment.update_coordinates_based_on_lines()
+            header_segments.append(segment)
+
+        return header_segments
+
+    # https://www.geeksforgeeks.org/find-if-a-point-lies-inside-or-on-circle/
+    @staticmethod
+    def __isInsideCircle(circle_x, circle_y, rad, x, y):
+
+        # Compare radius of circle
+        # with distance of its center
+        # from given point
+        return (x - circle_x) * (x - circle_x) + (y - circle_y) * (y - circle_y) <= rad * rad

@@ -84,17 +84,10 @@ class TesseractModule:
     @staticmethod
     def remove_hyphens_and_nl_cr(p):
         p = p.replace("- \n", "")
+        p = p.replace("- \r", "")
         p = p.replace("\n", "")
         p = p.replace("\r", "")
         return p
-
-    def text_from_tesseract_data(self):
-        # todo handle newlines.
-        pattern = re.compile(r'\s+')
-        out_str = ""
-        for text in self.data['text']:
-            out_str += re.sub(pattern, '', text) + " "
-        return out_str
 
     def text_conf_matches_from_tesseract_data(self):
         return [[text, conf] for text, conf in zip(self.data['text'], self.data['conf']) if conf != "-1"]
