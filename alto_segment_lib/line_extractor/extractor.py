@@ -171,7 +171,8 @@ class LineExtractor:
 
         lines_edges = cv2.addWeighted(image_in_color, 0.5, line_image, 1, 0)
 
-        cv2.imwrite("E:\\Nordjyske\\2015-01-01-01\\" + name + ".png", lines_edges)
+        # cv2.imwrite("E:\\Nordjyske\\2015-01-01-01\\" + name + ".png", lines_edges)
+        cv2.imwrite("C:\\Users\\Alexi\\Desktop\\KnoxTing\\5\\2015-01-01-01\\" + name + ".png", lines_edges)
         # print("done")
         # cv2.namedWindow("image", cv2.WINDOW_NORMAL)
         # cv2.imshow("image", lines_edges)
