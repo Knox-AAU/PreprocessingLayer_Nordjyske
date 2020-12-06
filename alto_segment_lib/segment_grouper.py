@@ -1,5 +1,6 @@
 import statistics
 from os import environ
+from typing import List
 from alto_segment_lib.segment import Segment, Line, SegmentGroup, SegmentType
 from alto_segment_lib.segment_group_handler import SegmentGroupHandler
 from alto_segment_lib.segment_helper import SegmentHelper
@@ -12,7 +13,7 @@ class SegmentGrouper:
     todo
     """
 
-    def group_segments_in_order(self, headers_in: list[Segment], paragraphs_in: list[Segment], lines_in: list[Line]):
+    def order_segments(self, headers_in: List[Segment], paragraphs_in: List[Segment], lines_in: List[Line]):
         """
         todo
         @param headers_in:
@@ -73,16 +74,22 @@ class SegmentGrouper:
             segments_to_check.remove(segment)
 
         group_handler.finalize()
-        return group_handler.groups
+        segments = []
+
+        for group in group_handler.groups:
+            [segments.append(head.to_segment(SegmentType.heading)) for head in group.headers]
+            [segments.append(paragraph) for paragraph in group.paragraphs]
+
+        return segments
 
     def __finish_article_based_on_line(self, group_handler: SegmentGroupHandler, line: Segment,
-                                       segments_to_check: list[Segment]):
+                                       segments_to_check: List[Segment]):
         # The ghost_header is used as a line to only handled articles within the bound of it and the encountered line
         # ghost_header = group_handler.get_header_segment()
 
         # The line is used to limit the article
         splitting_line = line
-        segments_added: list[Segment] = []
+        segments_added: List[Segment] = []
 
         # Get a new list of segments starting from the segment following the line, to avoid handling the line
         following_segments = iter(segments_to_check)
@@ -119,7 +126,7 @@ class SegmentGrouper:
         segment.y2 = line.y2
         return segment
 
-    def __order_segments_by_x1_y1(self, segments: list[Segment]):
+    def __order_segments_by_x1_y1(self, segments: List[Segment]):
         # Group segments by x1, if segment.x1 is within range of the first element of an existing group, else create new group
         # Run through each group and sort by y1
         # Merge groups into collective list

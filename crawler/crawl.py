@@ -84,6 +84,8 @@ class Crawler:
                 # entry is folder, search recursively:
                 self.crawl_for_files_in_folders(folder, entry.path)
 
+        folder.sort()
+
     @staticmethod
     def is_file_valid_nitf(xml_path) -> bool:
         """

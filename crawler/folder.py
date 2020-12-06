@@ -14,4 +14,7 @@ class Folder:
         self.files.append(file)
 
     def get_datetime(self):
-        return datetime(year=self.year,month=self.month,day=self.day,tzinfo=timezone.utc)
+        return datetime(year=self.year, month=self.month, day=self.day, tzinfo=timezone.utc)
+
+    def sort(self):
+        self.files.sort(key=lambda x: x.name)

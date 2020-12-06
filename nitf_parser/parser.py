@@ -64,7 +64,6 @@ class NitfParser:
             else:
                 self.article.id = None
 
-
     @staticmethod
     def sanitize_spaces(a: str) -> str:
         """

@@ -1,6 +1,7 @@
 import os
 import statistics
 import math
+from typing import List
 
 from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
 from alto_segment_lib.line_extractor.extractor import LineExtractor
@@ -48,7 +49,7 @@ class SegmentHelper:
         headers = self.remove_segments_within_segments(paragraphs, headers)
         return headers, paragraphs
 
-    def group_lines_into_paragraphs_headers(self, lines: list):
+    def group_lines_into_paragraphs_headers(self, lines: List):
         """ Groups headers together in one list and paragraphs in another list
         @param lines: a list of text lines
         @return: headers, paragraphs: a tuple including a list of headers and a list of paragraphs
