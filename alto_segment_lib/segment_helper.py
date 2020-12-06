@@ -28,8 +28,6 @@ class SegmentHelper:
 
         # Find the text-lines from Alto-xml
         alto_extractor = AltoSegmentExtractor(alto_file_path)
-        alto_extractor.dpi = 300
-        alto_extractor.margin = 0
         text_lines = alto_extractor.extract_lines()
 
         (headers, paragraphs) = self.group_lines_into_paragraphs_headers(text_lines)
