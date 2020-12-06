@@ -1,21 +1,8 @@
 from alto_segment_lib.repair_segments import *
+from alto_segment_lib.segment import Segment
 
 
 class TestRepairSegments:
-
-
-    def test_add_segment_success(self):
-        segments = []
-        add_segment(segments, [200, 400, 400, 800], [], "Paragraph")
-
-        assert len(segments) == 1
-
-    def test_add_segment_failed(self):
-        segments = []
-        add_segment(segments, [200, 400, 400, 800], [], "Paragraph")
-
-        assert not len(segments) != 1
-
     def test_repair_rows_segment_within_success(self):
         big_segment = Segment([0, 0, 100, 100])
         small_segment = Segment([10, 10, 50, 50])
