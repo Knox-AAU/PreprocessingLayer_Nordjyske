@@ -3,8 +3,6 @@ from datetime import datetime, timezone
 import cv2
 import pytesseract
 from knox_source_data_io.models.publication import Publication, Article, Paragraph
-from alto_segment_lib.segment_module import SegmentModule
-from crawler.file import File
 
 
 class TesseractModule:

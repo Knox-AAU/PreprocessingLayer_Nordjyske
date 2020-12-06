@@ -1,5 +1,5 @@
 --extra-index-url https://repos.knox.cs.aau.dk/
-numpy==1.19.4
+numpy==1.19.3
 opencv-python==4.4.0.46
 Pillow==8.0.1
 pytesseract==0.3.6
