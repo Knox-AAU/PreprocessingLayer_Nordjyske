@@ -1,3 +1,4 @@
+import configparser
 import os
 import statistics
 import math
@@ -11,6 +12,18 @@ from alto_segment_lib.segment import Segment, Line, SegmentType
 
 class SegmentHelper:
     """Provides helper methods for the Segment class"""
+
+    def __init__(self):
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+
+        self.__threshold_block_header_to_paragraph = float(config['page_segmentation']['threshold_block_header_to_paragraph'])
+        self.__threshold_line_header_to_paragraph = float(config['page_segmentation']['threshold_line_header_to_paragraph'])
+        self.__min_lines_to_compare_block_height_instead_of_line_height = int(config['page_segmentation']['min_lines_to_compare_block_height_instead_of_line_height'])
+        self.__group_same_column_margin = float(config['page_segmentation']['group_same_column_margin'])
+        self.__group_same_segment_margin_px = float(config['page_segmentation']['group_same_segment_margin_px'])
+        self.__min_cluster_size = int(config['page_segmentation']['min_cluster_size'])
+
     def segment_page(self, file_path: str, image=None) -> [list, list]:
         """
         Segments the page into headers and paragraphs
@@ -41,7 +54,7 @@ class SegmentHelper:
         paragraphs = self.combine_lines_into_segments(paragraphs)
 
         # Remove segments that are completely within other segments,
-        paragraphs = RepairSegments(paragraphs, 30).repair_rows()
+        paragraphs = RepairSegments(paragraphs).repair_rows()
 
         paragraphs = self.remove_segments_within_segments(headers, paragraphs)
         headers = self.remove_segments_within_segments(paragraphs, headers)
@@ -55,15 +68,16 @@ class SegmentHelper:
         paragraphs = []
         headers = []
         median = statistics.median([line.height() for line in lines])
-        threshold = 1.48  # 1.529
 
         for line in lines:
             height = line.height()
-            if line.block_segment is not None and line.block_segment.line_count > 2:
+            if line.block_segment is not None and line.block_segment.line_count >= \
+                    self.__min_lines_to_compare_block_height_instead_of_line_height:
                 height = sum([x.height() for x in line.block_segment.lines]) / line.block_segment.line_count
 
             # Checks if line height indicates that the line is a paragraph
-            if line.height() > height * 1.50 or height > median * threshold:
+            if line.height() > height * self.__threshold_line_header_to_paragraph or\
+                    height > median * self.__threshold_block_header_to_paragraph:
                 headers.append(line)
             else:
                 paragraphs.append(line)
@@ -103,10 +117,9 @@ class SegmentHelper:
         header_segment_groups = self.__group_same_segment(header_column_groups, True)
         new_paragraphs = []
         new_headers = []
-        min_cluster_size = 3
 
         for grouped_headers in header_segment_groups:
-            if len(grouped_headers) >= min_cluster_size:
+            if len(grouped_headers) >= self.__min_cluster_size:
                 new_paragraphs.extend(grouped_headers)
             else:
                 new_headers.extend(grouped_headers)
@@ -130,8 +143,7 @@ class SegmentHelper:
                 segments.append(new_segment)
         return segments
 
-    @staticmethod
-    def __group_same_column(text_lines):
+    def __group_same_column(self, text_lines):
         """ Groups text lines into columns
 
         @param text_lines: list of text lines
@@ -140,8 +152,7 @@ class SegmentHelper:
         previous_line = None
         temp = []
         column_groups = []
-        margin = 0.4
-        median = statistics.median([line.width() for line in text_lines]) * margin
+        median = statistics.median([line.width() for line in text_lines]) * self.__group_same_column_margin
 
         # Sorts the list in an ascending order based on x1
         text_lines = sorted(text_lines, key=lambda sorted_line: sorted_line.x1)
@@ -166,8 +177,7 @@ class SegmentHelper:
 
         return column_groups
 
-    @staticmethod
-    def __group_same_segment(column_groups, ignore_width):
+    def __group_same_segment(self, column_groups, ignore_width):
         """ Groups text lines within columns into segments
 
         @param column_groups: list of lists containing lines
@@ -191,7 +201,7 @@ class SegmentHelper:
                 x1_diff = text_line.x1 - previous_line.x1
                 x2_diff = text_line.x2 - previous_line.x2
 
-                margin = 100  # todo
+                margin = self.__group_same_segment_margin_px
 
                 # Checks if the current and previous lines are in the same segment
                 if text_line.y1 - previous_line.y2 < median and \
