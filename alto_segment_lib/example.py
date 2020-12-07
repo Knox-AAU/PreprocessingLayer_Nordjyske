@@ -107,40 +107,37 @@ def run_file(file_path):
     grouper = SegmentGrouper()
     groups = grouper.order_segments(grouped_headers, paragraphs, lines)
 
+    image = Image.open(file_path + filetype)
+    image.putalpha(128)
 
+    plt.imshow(image)
+    plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
+    counter = 0
+    color_counter = 0
 
-    #
-    # image = Image.open(file_path + filetype)
-    # image.putalpha(128)
-    #
-    # plt.imshow(image)
-    # plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
-    # counter = 0
-    # color_counter = 0
-    #
-    # colors = ['magenta', 'blue', 'green', 'brown', 'purple', 'yellow', 'orange']
-    #
-    # for group in groups:
-    #     if color_counter >= len(colors):
-    #         color_counter = 0
-    #     color = colors[color_counter]
-    #     color_counter += 1
-    #
-    #     if len(group.headers) > 0:
-    #         header = group.headers[0]
-    #         plt.rcParams.update({'font.size': 4, 'text.color': color, 'axes.labelcolor': color})
-    #         plt.text(header.x1-30, header.y1+10, "["+str(counter)+"]", horizontalalignment='left', verticalalignment='top')
-    #
-    #     for segment in group.paragraphs:
-    #         plt.gca().add_patch(
-    #             Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.5,
-    #                       edgecolor=color, facecolor='none'))
-    #
-    #         # plt.text(seg[0]+45, seg[1] + 200, str((seg[2]-seg[0])), horizontalalignment='left', verticalalignment='top')
-    #     counter += 1
-    #
-    # plt.savefig(file_path + "-grouped.png", dpi=600, bbox_inches='tight')
-    # plt.gca().clear()
+    colors = ['magenta', 'blue', 'green', 'brown', 'purple', 'yellow', 'orange']
+
+    for group in groups:
+        if color_counter >= len(colors):
+            color_counter = 0
+        color = colors[color_counter]
+        color_counter += 1
+
+        if len(group.headers) > 0:
+            header = group.headers[0]
+            plt.rcParams.update({'font.size': 4, 'text.color': color, 'axes.labelcolor': color})
+            plt.text(header.x1-30, header.y1+10, "["+str(counter)+"]", horizontalalignment='left', verticalalignment='top')
+
+        for segment in group.paragraphs:
+            plt.gca().add_patch(
+                Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.5,
+                          edgecolor=color, facecolor='none'))
+
+            # plt.text(seg[0]+45, seg[1] + 200, str((seg[2]-seg[0])), horizontalalignment='left', verticalalignment='top')
+        counter += 1
+
+    plt.savefig(file_path + "-grouped.png", dpi=600, bbox_inches='tight')
+    plt.gca().clear()
 
     display_segments(lines, file_path, "lines")
     display_segments(paragraphs, file_path, "paragrphs")
