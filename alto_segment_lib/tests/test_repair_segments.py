@@ -1,8 +1,8 @@
 from alto_segment_lib.repair_segments import *
+from alto_segment_lib.segment import *
 
 
 class TestRepairSegments:
-
 
     def test_add_segment_success(self):
         segments = []
@@ -47,3 +47,30 @@ class TestRepairSegments:
         repaired_segments = repair_segments.repair_rows()
 
         assert len(repaired_segments) == 2 and repaired_segments[1].y2 == first_segment.y1
+
+    def test_merge_segments_success(self):
+        segment1 = Segment([0, 0, 100, 100], SegmentType.paragraph)
+        segment2 = Segment([0, 110, 100, 200], SegmentType.paragraph)
+        segments = [segment1, segment2]
+
+        merged_segments = merge_segments(segments)
+
+        assert len(merged_segments) == 1
+
+    def test_merge_segments_success_no_segments_within_distance(self):
+        segment1 = Segment([0, 0, 100, 100], SegmentType.paragraph)
+        segment2 = Segment([0, 190, 100, 300], SegmentType.paragraph)
+        segments = [segment1, segment2]
+
+        merged_segments = merge_segments(segments)
+
+        assert len(merged_segments) == 2
+
+    def test_merge_segments_failed(self):
+        segment1 = Segment([0, 0, 100, 100], SegmentType.paragraph)
+        segment2 = Segment([0, 190, 100, 300], SegmentType.paragraph)
+        segments = [segment1, segment2]
+
+        merged_segments = merge_segments(segments)
+
+        assert not len(merged_segments) == 1

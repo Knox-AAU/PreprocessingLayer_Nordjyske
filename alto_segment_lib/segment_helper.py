@@ -398,7 +398,7 @@ class SegmentHelper:
     @staticmethod
     def inside_box(box_coords: list, x: int, y: int):
         if len(box_coords) == 4:
-            return box_coords[0] <= x <= box_coords[2] and box_coords[1] <= y <= box_coords[2]
+            return box_coords[0] <= x <= box_coords[2] and box_coords[1] <= y <= box_coords[3]
         return False
 
     @staticmethod

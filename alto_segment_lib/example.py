@@ -9,6 +9,7 @@ from alto_segment_lib.segment_helper import SegmentHelper
 from matplotlib.patches import Rectangle
 from PIL import Image
 from alto_segment_lib.line_extractor.extractor import LineExtractor
+from alto_segment_lib.repair_segments import merge_segments
 
 base_path: str
 filename: str
@@ -149,7 +150,7 @@ def run_file(file_path):
 
     while counter <= rounds:
         print("Segments before "+str(counter)+": " + str(len(segments)))
-        segments = repair.merge_segments(segments)
+        segments = merge_segments(segments)
         counter += 1
 
     display_segments(segments, file_path, "paragrphs")
