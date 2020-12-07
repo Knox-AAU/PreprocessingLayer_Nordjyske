@@ -1,3 +1,4 @@
+import configparser
 from xml.dom import minidom
 from alto_segment_lib.segment import Segment
 from alto_segment_lib.segment import Line
@@ -29,9 +30,19 @@ class AltoSegmentExtractor:
         self.__path = path
         self.__xml_doc = minidom.parse(self.path)
 
-    def __init__(self, alto_path: str = "", dpi: int = 300, margin: int = 0):
-        self.dpi = dpi
-        self.margin = margin
+    def __init__(self, alto_path: str = "", dpi: int = None, margin: int = None):
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+
+        if dpi is None:
+            self.dpi = int(config['alto_segment_extractor']['default_dpi'])
+        else:
+            self.dpi = dpi
+        if margin is None:
+            self.margin = int(config['alto_segment_extractor']['default_margin'])
+        else:
+            self.margin = margin
+
         if alto_path != "":
             self.__path = alto_path
             self.__xml_doc = minidom.parse(self.path)
