@@ -12,7 +12,21 @@ import cv2
 
 class SegmentLines:
 
-    def find_vertical_lines(self, segments, filepath):
+    def __init__(self, paragraphs, headers, file_path):
+        self.paragraphs = paragraphs
+        self.headers = headers
+        self.file_path = file_path
+
+
+    def find_horizontal_lines(self):
+        i=0
+        self.__make_line_over_headers()
+
+
+    def __make_line_over_headers(self):
+
+
+    def find_vertical_lines(self):
         # 1) - Find page bounds (Use existing function)
         # 2) - Try to merge as many
         # 2) - Find vertical lines: Loop all paragraphs:
@@ -22,14 +36,15 @@ class SegmentLines:
         #             - merge lines that align based on thres (Check for intersection, should maybe be multiple lines).
         #             - expand lines down and up (Until intersecting or outside page bounds)
         # 3) - Find horizontal lines: Loop all paragraphs.
+        segments = self.paragraphs + self.headers
         content_bound = SegmentHelper().get_content_bounds(segments)
 
         segments.sort(key=lambda segment: segment.x1)
-        image = cv2.imread(filepath, cv2.CV_8UC1)
+        image = cv2.imread(self.file_path, cv2.CV_8UC1)
 
         lines = self.__create_vertical_lines_for_each_segment(segments)
 
-        filename = filepath.split("/")[-1]
+        filename = self.file_path.split("/")[-1]
 
         #LineExtractor().show_lines_on_image(image, lines, "beforeMerge")
 
@@ -275,7 +290,11 @@ class SegmentLines:
 
         return extended_lines
 
+    def __merge_simlar_lines(self):
+        i = 0
 
+    def find_horizontal_lines(self):
+        pass
 
 
 

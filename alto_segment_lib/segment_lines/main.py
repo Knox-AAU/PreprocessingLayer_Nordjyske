@@ -10,5 +10,5 @@ if __name__ == '__main__':
 
     filepath = args.filepath
 
-    SegmentModule().run_segmentation(filepath.split(".")[0])
+    SegmentModule().run_segmentation(filepath)
 
