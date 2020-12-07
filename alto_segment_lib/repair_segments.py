@@ -1,6 +1,6 @@
 from alto_segment_lib.segment import Segment
-from alto_segment_lib.segment_helper import SegmentHelper
 from alto_segment_lib.segment_grouper import SegmentGrouper
+from alto_segment_lib.segment_helper import SegmentHelper
 import statistics
 
 class RepairSegments:

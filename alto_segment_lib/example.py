@@ -73,82 +73,78 @@ def run_multiple_files(basepath):
 
 
 def run_file(file_path):
-    lines = LineExtractor().extract_lines_via_path(file_path + ".jp2")
-    # display_lines([], lines, file_path, "streger")
-
-    altoExtractor = AltoSegmentExtractor(file_path + ".alto.xml")
-    altoExtractor.set_dpi(300)
-    altoExtractor.set_margin(0)
 
     segment_helper = SegmentHelper()
 
-    text_lines = altoExtractor.extract_lines()
+    image_file_path = file_path+".jp2"
+    alto_file_path = file_path+".alto.xml"
 
-    text_lines = segment_helper.repair_text_lines(text_lines, lines)
-    lists = segment_helper.group_lines_into_paragraphs_headers(text_lines, file_path + ".alto.xml")
-    #display_lines(lists[0], lists[1], "lines", file_path)
-    header_lines = lists[0]
-    segments = segment_helper.combine_lines_into_segments(lists[1])
-    #display_segments(segments, file_path, "segments")
+    # Find the text-lines from Alto-xml
+    alto_extractor = AltoSegmentExtractor(alto_file_path)
+    alto_extractor.dpi = 300
+    alto_extractor.margin = 0
+    text_lines = alto_extractor.extract_lines()
 
-    header_as_segment = SegmentHelper.group_headers_into_segments(header_lines)
+    (headers, paragraphs) = segment_helper.group_lines_into_paragraphs_headers(text_lines)
 
-    print(len(header_as_segment))
+    # Find lines in image, then split segments that cross those lines.
+    lines = LineExtractor().extract_lines_via_path(image_file_path)
+    paragraphs = segment_helper.split_segments_by_lines(paragraphs, lines)
 
-    headers = [segment for segment in segments if segment.type == SegmentType.heading]
-    paragraphs = [segment for segment in segments if segment.type == SegmentType.paragraph]
-    repair = RepairSegments(paragraphs, 30)
-    rep_rows_segments2 = repair.repair_rows()
+    # Combine closely related text lines into actual paragraphs.
+    paragraphs = segment_helper.combine_lines_into_segments(paragraphs)
 
-    segments_para = rep_rows_segments2
-    #display_segments(segments_para, file_path, "repaired")
-    lines = [element for element, element in enumerate(lines) if element.is_horizontal()]
+    # Remove segments that are completely within other segments,
+    paragraphs = RepairSegments(paragraphs, 30).repair_rows()
 
+    paragraphs = segment_helper.remove_segments_within_segments(headers, paragraphs)
+    headers = segment_helper.remove_segments_within_segments(paragraphs, headers)
+
+    paragraphs = merge_segments(paragraphs)
+
+    # Grouping
+    grouped_headers = SegmentHelper.group_headers_into_segments(headers)
     grouper = SegmentGrouper()
-    groups = grouper.group_segments_in_order(header_as_segment, paragraphs, lines)
-
-    image = Image.open(file_path + filetype)
-    image.putalpha(128)
-
-    plt.imshow(image)
-    plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
-    counter = 0
-    color_counter = 0
-
-    colors = ['magenta', 'blue', 'green', 'brown', 'purple', 'yellow', 'orange']
+    groups = grouper.order_segments(grouped_headers, paragraphs, lines)
 
 
-    for group in groups:
-        if color_counter >= len(colors):
-            color_counter = 0
-        color = colors[color_counter]
-        color_counter += 1
 
-        if len(group.headers) > 0:
-            header = group.headers[0]
-            plt.rcParams.update({'font.size': 4, 'text.color': color, 'axes.labelcolor': color})
-            plt.text(header.x1-30, header.y1+10, "["+str(counter)+"]", horizontalalignment='left', verticalalignment='top')
+    #
+    # image = Image.open(file_path + filetype)
+    # image.putalpha(128)
+    #
+    # plt.imshow(image)
+    # plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
+    # counter = 0
+    # color_counter = 0
+    #
+    # colors = ['magenta', 'blue', 'green', 'brown', 'purple', 'yellow', 'orange']
+    #
+    # for group in groups:
+    #     if color_counter >= len(colors):
+    #         color_counter = 0
+    #     color = colors[color_counter]
+    #     color_counter += 1
+    #
+    #     if len(group.headers) > 0:
+    #         header = group.headers[0]
+    #         plt.rcParams.update({'font.size': 4, 'text.color': color, 'axes.labelcolor': color})
+    #         plt.text(header.x1-30, header.y1+10, "["+str(counter)+"]", horizontalalignment='left', verticalalignment='top')
+    #
+    #     for segment in group.paragraphs:
+    #         plt.gca().add_patch(
+    #             Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.5,
+    #                       edgecolor=color, facecolor='none'))
+    #
+    #         # plt.text(seg[0]+45, seg[1] + 200, str((seg[2]-seg[0])), horizontalalignment='left', verticalalignment='top')
+    #     counter += 1
+    #
+    # plt.savefig(file_path + "-grouped.png", dpi=600, bbox_inches='tight')
+    # plt.gca().clear()
 
-        for segment in group.paragraphs:
-            plt.gca().add_patch(
-                Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.5,
-                          edgecolor=color, facecolor='none'))
-
-            # plt.text(seg[0]+45, seg[1] + 200, str((seg[2]-seg[0])), horizontalalignment='left', verticalalignment='top')
-        counter += 1
-
-    plt.savefig(file_path + "-grouped.png", dpi=600, bbox_inches='tight')
-    plt.gca().clear()
-
-    lines = [element for element, element in enumerate(lines) if
-             element.is_horizontal() and 621 < element.y1 < (6218 - 621)]
-
-    #display_segments(lines, file_path, "lines")
-
-    segments = merge_segments(segments)
-
-    display_segments(segments, file_path, "paragrphs")
-    #display_segments(header_as_segment, file_path, "headers")
+    display_segments(lines, file_path, "lines")
+    display_segments(paragraphs, file_path, "paragrphs")
+    display_segments(headers, file_path, "headers")
 
     paragraphs.clear()
 

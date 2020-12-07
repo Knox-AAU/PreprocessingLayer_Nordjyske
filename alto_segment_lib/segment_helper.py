@@ -1,53 +1,10 @@
-import os
 import statistics
 import math
 from typing import List
-
-from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
-from alto_segment_lib.line_extractor.extractor import LineExtractor
-from alto_segment_lib.repair_segments import RepairSegments
 from alto_segment_lib.segment import Segment, Line, SegmentType
 
 
 class SegmentHelper:
-    """Provides helper methods for the Segment class"""
-    def segment_page(self, file_path: str, image=None) -> [list, list]:
-        """
-        Segments the page into headers and paragraphs
-        @param file_path: The path to the file we are segmentibng
-        @param image: The image we are segmenting
-        @return: headers, paragraphs: a tuple including a list of headers and a list of paragraphs
-        """
-        assert file_path.endswith(".jp2")
-
-        image_file_path = file_path
-        alto_file_path = f"{file_path.split('.jp2')[0]}.alto.xml"
-
-        assert os.path.isfile(image_file_path)
-        assert os.path.isfile(alto_file_path)
-
-        # Find the text-lines from Alto-xml
-        alto_extractor = AltoSegmentExtractor(alto_file_path)
-        alto_extractor.dpi = 300
-        alto_extractor.margin = 0
-        text_lines = alto_extractor.extract_lines()
-
-        (headers, paragraphs) = self.group_lines_into_paragraphs_headers(text_lines)
-
-        # Find lines in image, then split segments that cross those lines.
-        lines = LineExtractor().extract_lines_via_path(image_file_path) \
-            if image is None else LineExtractor().extract_lines_via_image(image)
-        paragraphs = self.split_segments_by_lines(paragraphs, lines)
-
-        # Combine closely related text lines into actual paragraphs.
-        paragraphs = self.combine_lines_into_segments(paragraphs)
-
-        # Remove segments that are completely within other segments,
-        paragraphs = RepairSegments(paragraphs, 30).repair_rows()
-
-        paragraphs = self.remove_segments_within_segments(headers, paragraphs)
-        headers = self.remove_segments_within_segments(paragraphs, headers)
-        return headers, paragraphs
 
     def group_lines_into_paragraphs_headers(self, lines: List):
         """ Groups headers together in one list and paragraphs in another list
