@@ -38,7 +38,7 @@ class RepairSegments:
         # Iterates through all segments and all other segments
         for segment in self.__segments:
             for subsegment in self.__segments:
-                if not segment.compare(subsegment):
+                if not segment == subsegment:
                     thresh_close_to = subsegment.width() * 0.05
                     if subsegment in return_segments:
                         subsegment_index = return_segments.index(subsegment)

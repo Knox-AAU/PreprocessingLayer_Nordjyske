@@ -77,7 +77,7 @@ class SegmentGrouper:
         segments = []
 
         for group in group_handler.groups:
-            [segments.append(head.to_segment(SegmentType.heading)) for head in group.headers]
+            [segments.append(Segment.from_line(head.to_segment, SegmentType.heading)) for head in group.headers]
             [segments.append(paragraph) for paragraph in group.paragraphs]
 
         return segments
