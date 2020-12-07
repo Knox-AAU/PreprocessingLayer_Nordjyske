@@ -74,7 +74,6 @@ class SegmentLines:
             else:
                 wip_merged_lines = self.__merge_all_lines_not_intersecting_segment(line_group, all_affected_segments)
                 extended_to_bounds_lines = self.__extend_lines(wip_merged_lines, all_affected_segments, content_bound)
-                # extended_lines = extended_to_bounds_lines
                 extended_lines = self.__extend_lines_to_segment_borders(extended_to_bounds_lines, all_affected_segments)
 
                 for line in extended_lines:
