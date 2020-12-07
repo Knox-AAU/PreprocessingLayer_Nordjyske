@@ -71,10 +71,12 @@ class SegmentHelper:
 
         for line in lines:
             height = line.height()
+            # If line belongs to a block_segment, and that block_segment has more than some
+            # minimum amount of lines, we assign the height we compare to the median of the
+            # block_segment rather than the line.
             if line.block_segment is not None and line.block_segment.line_count >= \
                     self.__min_lines_to_compare_block_height_instead_of_line_height:
-                height = sum([x.height() for x in line.block_segment.lines]) / line.block_segment.line_count
-
+                height = statistics.median([x.height() for x in line.block_segment.lines])
             # Checks if line height indicates that the line is a paragraph
             if line.height() > height * self.__threshold_line_header_to_paragraph or\
                     height > median * self.__threshold_block_header_to_paragraph:

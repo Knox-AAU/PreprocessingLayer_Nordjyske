@@ -37,11 +37,11 @@ class AltoSegmentExtractor:
         if dpi is None:
             self.dpi = int(config['alto_segment_extractor']['default_dpi'])
         else:
-            self.margin = margin
+            self.dpi = dpi
         if margin is None:
             self.margin = int(config['alto_segment_extractor']['default_margin'])
         else:
-            self.dpi = dpi
+            self.margin = margin
 
         if alto_path != "":
             self.__path = alto_path
