@@ -110,3 +110,27 @@ class TestSegmentHelper:
         header_segments = SegmentHelper.group_headers_into_segments(header_lines)
 
         assert len(header_segments) == 2
+
+    def test_inside_box_actually_inside_box(self):
+        the_box = [10, 10, 100, 100]
+        assert SegmentHelper.inside_box(the_box, 50, 50)
+
+    def test_inside_box_actually_outside_box(self):
+        the_box = [10, 10, 100, 100]
+        assert not SegmentHelper.inside_box(the_box, 101, 101)
+
+    def test_distance_between_coordinates_success(self):
+        dot1_x = 0
+        dot2_x = 100
+        dot1_y = dot2_y = 0
+
+        distance = SegmentHelper.distance_between_coordinates(dot1_x, dot1_y, dot2_x, dot2_y)
+        assert distance == 100
+
+    def test_distance_between_coordinates_failed(self):
+        dot1_x = 0
+        dot2_x = 400
+        dot1_y = dot2_y = 0
+
+        distance = SegmentHelper.distance_between_coordinates(dot1_x, dot1_y, dot2_x, dot2_y)
+        assert not distance == 500

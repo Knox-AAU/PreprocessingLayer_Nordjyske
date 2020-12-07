@@ -4,6 +4,7 @@ from typing import List
 
 from typing import List
 
+
 class SegmentType(Enum):
     """The types a segment can be."""
     paragraph = 1
