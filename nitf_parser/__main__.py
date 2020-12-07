@@ -1,6 +1,9 @@
 import argparse
 import json
 import codecs
+
+from knox_source_data_io.io_handler import IOHandler, Generator
+
 from nitf_parser.parser import NitfParser
 
 if __name__ == '__main__':
@@ -15,10 +18,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     nitf_parser = NitfParser()
-    parsed = nitf_parser.parse(args.input_file)
+    publication = nitf_parser.parse(args.input_file)
 
     if args.output_dest is not None:
-        with codecs.open(args.output_dest, 'w', encoding="utf-8") as outfile:
-            json.dump(parsed, outfile, indent=4, ensure_ascii=False)
+        handler = IOHandler(Generator(app="NITF Parser", version=1.0), "link/to/schema.json")  # ToDo: insert link
+        with codecs.open(args.output_path, 'w', encoding="utf-8") as outfile:
+            handler.write_json(publication, outfile)
     else:
-        print(parsed)
+        print(publication)

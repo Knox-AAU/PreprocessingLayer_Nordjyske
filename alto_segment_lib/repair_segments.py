@@ -1,3 +1,4 @@
+import configparser
 import statistics
 
 
@@ -5,7 +6,15 @@ class RepairSegments:
     """
     todo documentation and possibly rework
     """
-    def __init__(self, segments, threshold: int = 10):
+    def __init__(self, segments, threshold: int = None):
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+
+        if threshold is None:
+            self.__threshold = int(config['page_segmentation']['repair_segments_threshold'])
+        else:
+            self.__threshold = threshold
+
         self.__segments = segments
         self.__threshold = threshold
         self.__new_segments = []
