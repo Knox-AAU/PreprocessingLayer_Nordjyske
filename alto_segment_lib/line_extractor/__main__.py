@@ -1,3 +1,4 @@
+"""Module for line extraction"""
 import argparse
 
 from alto_segment_lib.line_extractor.extractor import LineExtractor

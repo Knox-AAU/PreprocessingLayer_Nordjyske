@@ -1,8 +1,8 @@
 import configparser
+import numpy as np
 import math
 from math import atan2
 from os import environ
-import numpy as np
 from alto_segment_lib.line_extractor.hough_bundler import HoughBundler
 from alto_segment_lib.segment import Line
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
@@ -38,10 +38,10 @@ class LineExtractor:
         image = cv2.imread(image_path, cv2.CV_8UC1)
 
         lines = self.extract_lines_via_image(image)
-        #corrected_lines = self.correct_lines(lines)
         extended_lines = self.extend_lines_vertically(lines, image)     # Idk hvad den gør, den gør ihvertfald linjerne skæve
         #self.show_lines_on_image(image, extended_lines)
         final_lines = self.remove_outline_lines(extended_lines, image)
+        #self.show_lines_on_image(image, final_lines)
         return final_lines
 
     def extract_lines_via_image(self, image: object):
@@ -70,10 +70,9 @@ class LineExtractor:
         for line in lines:
             if 0 < line.x1 < outline_stop and 0 < line.x2 < outline_stop or max_x - outline_stop < line.x1 < max_x and max_x - outline_stop < line.x2 < max_x:
                 lines_to_remove.append(line)
-                # lines.remove(line)
+
             elif 0 < line.y1 < outline_stop and 0 < line.y2 < outline_stop or max_y - outline_stop < line.y1 < max_y and max_y - outline_stop < line.y2 < max_y:
                 lines_to_remove.append(line)
-                # lines.remove(line)
 
         lines_to_remove.reverse()
 
@@ -94,6 +93,7 @@ class LineExtractor:
         image_thresh = cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY,
                                              self.adaptive_threshold[0],
                                              self.adaptive_threshold[1])
+
         # saves the thresholding image for later use
         image_horizontal = image_thresh
         image_vertical = image_thresh
@@ -147,6 +147,7 @@ class LineExtractor:
         min_vertical_angle = 90 - self.diversion
         max_vertical_angle = 90 + self.diversion
         filtered_lines = []
+
         for line in lines_groups:
             angle = atan2(line.y2 - line.y1, line.x2 - line.x1) * 180.0 / math.pi
             if min_vertical_angle < angle < max_vertical_angle or min_horizontal_angle < angle < max_horizontal_angle:
@@ -217,7 +218,7 @@ class LineExtractor:
                     line.x1 = line.x2
                     line.x2 = temp
 
-                median = int((line.x1 - line.x2)/2)
+                median = int((line.x1 - line.x2) / 2)
                 line.x1 -= median
                 line.x2 += median
             else:
@@ -226,11 +227,10 @@ class LineExtractor:
                     line.y1 = line.y2
                     line.y2 = temp
 
-                median = int((line.y1 - line.y2)/2)
+                median = int((line.y1 - line.y2) / 2)
                 line.y1 -= median
                 line.y2 += median
 
             new_lines.append(line)
 
         return new_lines
-

@@ -1,7 +1,6 @@
 import statistics
 from os import environ
 from typing import List
-
 from alto_segment_lib.segment import Segment, Line, SegmentGroup, SegmentType
 from alto_segment_lib.segment_group_handler import SegmentGroupHandler
 from alto_segment_lib.segment_helper import SegmentHelper
@@ -10,8 +9,18 @@ environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 
 
 class SegmentGrouper:
+    """
+    todo
+    """
 
     def order_segments(self, headers_in: List[Segment], paragraphs_in: List[Segment], lines_in: List[Line]):
+        """
+        todo
+        @param headers_in:
+        @param paragraphs_in:
+        @param lines_in:
+        @return:
+        """
         segments = paragraphs_in.copy()
         segments.extend(headers_in)
 
@@ -68,7 +77,7 @@ class SegmentGrouper:
         segments = []
 
         for group in group_handler.groups:
-            [segments.append(head.to_segment(SegmentType.Heading)) for head in group.headers]
+            [segments.append(head.to_segment(SegmentType.heading)) for head in group.headers]
             [segments.append(paragraph) for paragraph in group.paragraphs]
 
         return segments

@@ -3,9 +3,9 @@ from queue import Queue
 from multiprocessing import Process, Queue
 from joblib import Parallel, delayed
 from crawler.crawl import Crawler
-
 # https://asyncio.readthedocs.io/en/latest/producer_consumer.html
 from crawler.file_types import FileType
+from ocr.ocr_runner import OCRRunner
 from ocr.tesseract import TesseractModule
 from save_to_json import save_to_json
 from nitf_parser.parser import NitfParser
@@ -25,7 +25,7 @@ class MotherRunner:
     def __process_file(file):
         if file.type == FileType.JP2:
             # run OCR
-            return TesseractModule.from_file(file).to_publication()
+            return OCRRunner().run_ocr(file)
         if file.type == FileType.NITF:
             # run NITF parser
             return NitfParser().parse_file(file)
@@ -45,7 +45,6 @@ class MotherRunner:
             publications = Parallel(n_jobs=num_jobs, prefer="threads")(
                 delayed(self.__process_file)(file)
                 for file in item.files)
-
             save_to_json(self.output_dest, publications)
 
             print(f'[Consumer Thread] done with item {item.__dict__}...')

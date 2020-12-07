@@ -1,9 +1,8 @@
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 import cv2
 import pytesseract
 from knox_source_data_io.models.publication import Publication, Article, Paragraph
-from crawler.file import File
 
 
 class TesseractModule:
@@ -15,24 +14,31 @@ class TesseractModule:
         self.data = pytesseract.image_to_data(image, lang=language, output_type='dict', config="")
 
     @classmethod
-    def from_file(cls, file: File):
+    def from_file(cls, image, tessdata: str):
         # todo do preprocessing methods instead of loading file
-        img = cv2.imread(file.path)
-        tm = cls(img)
+        tm = cls(image, tessdata)
 
         return tm
 
-    def to_publication(self):
-        #todo find publication, published, publisher, and page count.
+    @staticmethod
+    def from_articles_to_publication(articles):
         pub = Publication()
         pub.publication = ""
-        pub.published_at = datetime.now().isoformat()
+        pub.published_at = datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+        [pub.add_article(article) for article in articles]
+
+        return pub
+
+    def to_publication(self):
+        pub = Publication()
+        pub.publication = ""
+        pub.published_at = datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
         pub.add_article(self.to_article())
 
         return pub
 
     def to_article(self):
-        # todo find byline, confidence, extracted_from, headline, lead, publication
+        # todo find byline, confidence
         article = Article()
         [article.add_paragraph(p) for p in self.to_paragraphs()]
         return article
@@ -45,22 +51,22 @@ class TesseractModule:
         for t in text:
             if t == "":
                 if len(b_str) > 1 and (b_str[-1] == "\n" or b_str[-1] == "\r"):
-                    # if last char was new line as well, then split into paragraph
+                    # If last char was new line as well, then split into paragraph
                     paragraphs.append(b_str.strip())
                     b_str = ""
                 else:
-                    # empty string = new line
+                    # Empty string = new line
                     b_str += "\n\r"
             else:
                 b_str += f"{t} "
         if b_str != "":
             paragraphs.append(b_str)
 
-        #remove empty paragraphs
+        # Remove empty paragraphs
         paragraphs = [p.strip() for p in paragraphs if p != '']
 
         # Remove new lines and hyphens across them.
-        paragraphs = [self.remove_hyphens_and_nl(p) for p in paragraphs]
+        paragraphs = [self.remove_hyphens_and_nl_cr(p) for p in paragraphs]
 
         paragraphs = [self.str_to_paragraph(p) for p in paragraphs]
 
@@ -74,7 +80,7 @@ class TesseractModule:
         return paragraph
 
     @staticmethod
-    def remove_hyphens_and_nl(p):
+    def remove_hyphens_and_nl_cr(p):
         p = p.replace("- \n", "")
         p = p.replace("- \r", "")
         p = p.replace("\n", "")

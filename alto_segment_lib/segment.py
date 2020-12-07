@@ -2,8 +2,10 @@ import math
 from enum import Enum
 from typing import List
 
+from typing import List
 
 class SegmentType(Enum):
+    """The types a segment can be."""
     paragraph = 1
     heading = 2
     line = 3
@@ -11,12 +13,14 @@ class SegmentType(Enum):
 
 
 class Segment:
+    """
+    todo
+    """
     type: SegmentType
     x1: int
     y1: int
     x2: int
     y2: int
-
     lines: list
 
     def __init__(self, coord: list = None, seg_type: SegmentType = SegmentType.unknown):
@@ -108,7 +112,7 @@ class Segment:
         @return: void
         """
         if len(self.lines) == 0:
-            return None
+            return
 
         self.x1 = self.lines[0].x1
         self.x2 = self.lines[0].x2
@@ -135,13 +139,17 @@ class Segment:
 
 
 class Line:
+    """
+    todo
+    """
     x1: int
     y1: int
     x2: int
     y2: int
     font: float
+    block_segment: Segment
 
-    def __init__(self, coord: list = None, font: float = None):
+    def __init__(self, coord: list = None, font: float = None, block_segment: Segment = None):
         if coord is None:
             coord = []
 
@@ -154,6 +162,7 @@ class Line:
             self.orientation = self.get_orientation()
 
         self.font = font
+        self.block_segment = block_segment
 
     def width(self):
         """
@@ -178,6 +187,13 @@ class Line:
         @return: Boolean (whether the box is horizontal)
         """
         return self.x2 - self.x1 > self.y2 - self.y1
+
+    def to_array(self) -> list:
+        """
+        Returns the coordinates of the line as an array
+        @return: list
+        """
+        return [self.x1, self.y1, self.x2, self.y2]
 
     @classmethod
     def from_array(cls, array):
@@ -260,9 +276,13 @@ class Line:
 
 
 class SegmentGroup:
-    headers: List[Line]
+    """
+    todo
+    """
+    headers: List[Segment]
     paragraphs: List[Segment]
 
     def __init__(self):
         self.headers = []
         self.paragraphs = []
+

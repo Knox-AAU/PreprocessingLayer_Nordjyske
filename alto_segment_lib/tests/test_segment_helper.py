@@ -2,42 +2,6 @@ from alto_segment_lib.segment_helper import *
 
 
 class TestSegmentHelper:
-
-    def test_find_line_width_median_success(self):
-        lines = [Line([0, 0, 10, 10]), Line([0, 0, 20, 20]), Line([0, 0, 20, 20]), Line([0, 0, 2000, 2000]),
-                 Line([0, 0, 2000, 2000])]
-
-        median = SegmentHelper.find_line_width_median(lines)
-
-        assert median == 20
-
-    def test_find_line_height_median_success(self):
-        lines = [Line([0, 0, 10, 10]), Line([0, 0, 20, 20]), Line([0, 0, 20, 20]), Line([0, 0, 2000, 2000]),
-                 Line([0, 0, 2000, 2000])]
-
-        median = SegmentHelper.find_line_height_median(lines)
-
-        assert median == 20
-
-    # def test_group_lines_into_paragraphs_headers_header_success(self):
-    #     segment_helper = SegmentHelper()
-    #     header = Line([0, 0, 2000, 2000])
-    #     lines = [Line([0, 0, 10, 10]), Line([0, 0, 20, 20]), Line([0, 0, 20, 20]), Line([0, 0, 25, 25]),
-    #              header]
-    #
-    #     (headers, paragraph) = segment_helper.group_lines_into_paragraphs_headers(lines)
-    #
-    #     assert len(headers) == 1 and headers[0] == header
-    #
-    # def test_group_lines_into_paragraphs_headers_paragraph_success(self):
-    #     segment_helper = SegmentHelper()
-    #     paragraph = Line([0, 0, 10, 10])
-    #     lines = [paragraph, Line([0, 0, 20, 20]), Line([0, 0, 20, 20]), Line([0, 0, 25, 25]), Line([0, 0, 2000, 2000])]
-    #
-    #     (headers, paragraphs) = segment_helper.group_lines_into_paragraphs_headers(lines)
-    #
-    #     assert len(paragraphs) == 4 and paragraphs[0] == paragraph
-
     def test_make_box_around_lines_success(self):
         lines = [Line([0, 0, 10, 10]), Line([5, 10, 15, 20]), Line([0, 20, 10, 30])]
 
@@ -74,7 +38,7 @@ class TestSegmentHelper:
         text_line = [Line([0, 50, 100, 100])]
         line = [Line([50, 0, 50, 100])]
 
-        result = segment_helper.repair_text_lines(text_line, line)
+        result = segment_helper.split_segments_by_lines(text_line, line)
         expected_first = Segment([0, 50, 50, 100])
         expected_second = Segment([50, 50, 100, 100])
 
@@ -93,7 +57,7 @@ class TestSegmentHelper:
         text_line = [Line([0, 50, 100, 100])]
         line = [Line([200, 0, 200, 100])]
 
-        result = segment_helper.repair_text_lines(text_line, line)
+        result = segment_helper.split_segments_by_lines(text_line, line)
 
         assert len(result) == 1 and result == text_line
 
