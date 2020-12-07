@@ -24,18 +24,21 @@ class SegmentLines:
         # 3) - Find horizontal lines: Loop all paragraphs.
         content_bound = SegmentHelper().get_content_bounds(segments)
 
-        segments = sorted(segments, key=lambda segment: segment.x1)
+        segments.sort(key=lambda segment: segment.x1)
         image = cv2.imread(filepath, cv2.CV_8UC1)
 
         lines = self.__create_vertical_lines_for_each_segment(segments)
 
-        LineExtractor().show_lines_on_image(image, lines, "beforeMerge")
+        filename = filepath.split("/")[-1]
+
+        #LineExtractor().show_lines_on_image(image, lines, "beforeMerge")
 
         lines = self.__fix_and_extend_vertical_lines(lines, segments)
 
-        LineExtractor().show_lines_on_image(image, lines, "afterMerge")
+        LineExtractor().show_lines_on_image(image, lines, filename + "-merged")
 
-    def __create_vertical_lines_for_each_segment(self, segments):
+    @staticmethod
+    def __create_vertical_lines_for_each_segment(segments):
         """
         Creates a line to the left of every segment
         @param segments: List of all text segments
@@ -50,7 +53,7 @@ class SegmentLines:
         return lines
 
     def __fix_and_extend_vertical_lines(self, vertical_lines, segments):
-        merge_margin = 10
+        merge_margin = 30
         final_lines = []
         content_bound = SegmentHelper().get_content_bounds(segments)
 
@@ -60,10 +63,7 @@ class SegmentLines:
         # Merges lines
         for line_group in lines_to_be_merged:
             # Find statistics for line groups
-            statistics = self.__get_statistics_for_line_group(line_group)
-            min_y = statistics[0]
-            max_y = statistics[1]
-            average_x = statistics[2]
+            (min_y, max_y, average_x) = self.__get_statistics_for_line_group(line_group)
 
             # Finds affected segments
             affected_segments = self.__find_affected_segments_between_lines(segments, min_y, max_y, average_x)
@@ -159,7 +159,8 @@ class SegmentLines:
 
         return segments_above_line
 
-    def __find_segments_below_line(self, line, segments):
+    @staticmethod
+    def __find_segments_below_line(line, segments):
         segments_below_line = []
 
         for segment in segments:
@@ -238,7 +239,7 @@ class SegmentLines:
         lowest_line = max(lines, key=lambda line: line.y2)
 
         for line in lines:
-            if line != highest_line or line != lowest_line:
+            if line != highest_line and line != lowest_line:
                 extended_lines.append(line)
 
         if not self.__find_segments_above_line(highest_line, segments):
@@ -251,11 +252,10 @@ class SegmentLines:
 
     def __extend_lines_to_segment_borders(self, lines, segments):
         extended_lines = []
+        # todo slet
+        lines = sorted(lines, key=lambda line: line.y1)
 
         for line in lines:
-            y1 = 0
-            y2 = 0
-
             above_segments = self.__find_segments_above_line(line, segments)
             if len(above_segments) == 0:
                 y1 = line.y1
@@ -270,7 +270,8 @@ class SegmentLines:
                 below_segment = min(below_segments, key=lambda segment: segment.y1)
                 y2 = below_segment.y1
 
-            extended_lines.append(Line([line.x1, y1, line.x2, y2]))
+            if not extended_lines.__contains__(Line([line.x1, y1, line.x2, y2])):
+                extended_lines.append(Line([line.x1, y1, line.x2, y2]))
 
         return extended_lines
 
