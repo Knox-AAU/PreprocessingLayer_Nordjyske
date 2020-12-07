@@ -1,13 +1,23 @@
 from alto_segment_lib.segment import Segment
 from alto_segment_lib.segment_grouper import SegmentGrouper
 from alto_segment_lib.segment_helper import SegmentHelper
+import configparser
 import statistics
+
 
 class RepairSegments:
     """
     todo documentation and possibly rework
     """
-    def __init__(self, segments, threshold: int = 10):
+    def __init__(self, segments, threshold: int = None):
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+
+        if threshold is None:
+            self.__threshold = int(config['page_segmentation']['repair_segments_threshold'])
+        else:
+            self.__threshold = threshold
+
         self.__segments = segments
         self.__threshold = threshold
         self.__new_segments = []
@@ -65,13 +75,19 @@ def add_segment(segments: list, coordinates: list, lines, seg_type: str):
     segments.append(segment)
 
 
-def merge_segments(segments: list):
+def merge_segments(segments: list[Segment]) -> list[Segment]:
+    """
+    Merges segments into bigger chunks based on distance
+
+    @param List of segments
+    @return list[Segment]
+    """
     grouper = SegmentGrouper()
     segments_ordered = grouper.order_segments_by_x1_y1(segments)
     sub_segment_list = segments_ordered.copy()
     already_merged = []
     merged_segments = []
-    merge_distance_threshold = 80  # in px
+    merge_distance_threshold = 50  # in px
 
     for segment in segments_ordered:
         if segment in already_merged:

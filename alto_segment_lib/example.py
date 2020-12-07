@@ -103,8 +103,8 @@ def run_file(file_path):
     paragraphs = merge_segments(paragraphs)
 
     # Grouping
-    grouped_headers = SegmentHelper.group_headers_into_segments(headers)
     grouper = SegmentGrouper()
+    grouped_headers = SegmentHelper.group_headers_into_segments(headers)
     groups = grouper.order_segments(grouped_headers, paragraphs, lines)
 
     image = Image.open(file_path + filetype)
