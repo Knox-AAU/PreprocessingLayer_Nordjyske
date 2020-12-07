@@ -16,7 +16,7 @@ if __name__ == '__main__':
     parser.add_argument('path', help='Input file')
 
     # defines toDate argument
-    parser.add_argument('-o', '--output', dest="output_path", default=None,
+    parser.add_argument('-o', '--output_dest', dest="output_path", default=None,
                         help='Optional output path, which a json file will be saved to.')
 
     parser.add_argument('--tesseract-path', dest="tesseract_path", default=None,
@@ -31,6 +31,6 @@ if __name__ == '__main__':
     if args.output_path is None:
         print(publication.to_json())
     else:
-        handler = IOHandler(Generator(app="haha tesseract go brbrb", version=1.0), "link/to/schema.json")
+        handler = IOHandler(Generator(app="OCR", version=1.0), "link/to/schema.json")  # ToDo: insert link
         with codecs.open(args.output_path, 'w', encoding="utf-8") as outfile:
             handler.write_json(publication, outfile)
