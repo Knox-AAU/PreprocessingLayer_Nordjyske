@@ -352,6 +352,11 @@ class SegmentLines:
         return extended_lines
 
     def __merge_similar_lines(self, lines):
+        """
+        Merges similar lines
+        @param lines: A list of lines
+        @return: A list of merged lines
+        """
         #lines = sorted(lines, key=lambda line: line.y2 - line.y1)
         lines_to_remove = []
 
@@ -368,7 +373,14 @@ class SegmentLines:
 
         return lines
 
-    def __is_line_inside_other_line(self, outer_line, inner_line):
+    @staticmethod
+    def __is_line_inside_other_line(outer_line, inner_line):
+        """
+        Checks if an line is inside another line. Does not check the x-value
+        @param outer_line: The longer line
+        @param inner_line: The smaller line
+        @return: True if the inner_line is inside the outer_line, false otherwise
+        """
         if inner_line.y1 >= outer_line.y1 and inner_line.y2 <= outer_line.y2:
             return True
         else:
