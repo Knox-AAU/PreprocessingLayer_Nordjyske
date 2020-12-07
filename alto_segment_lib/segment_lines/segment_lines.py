@@ -127,11 +127,12 @@ class SegmentLines:
         @return: A list of lines
         """
         lines = []
+        margin = 2
         for segment in segments:
             if segment.type == SegmentType.paragraph:
                 # make a line that is parallel with the left side of the segment
-                lines.append(Line([segment.x1 - 2, segment.y1, segment.x1 - 2, segment.y2]))
-                lines.append(Line([segment.x2 + 2, segment.y1, segment.x2 + 2, segment.y2]))      # Lines on both sides of the segment
+                lines.append(Line([segment.x1 - margin, segment.y1, segment.x1 - margin, segment.y2]))
+                lines.append(Line([segment.x2 + margin, segment.y1, segment.x2 + margin, segment.y2]))      # Lines on both sides of the segment
 
         return lines
 
