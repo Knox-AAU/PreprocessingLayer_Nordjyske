@@ -1,7 +1,7 @@
 import os
 from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
 from alto_segment_lib.line_extractor.extractor import LineExtractor
-from alto_segment_lib.repair_segments import RepairSegments
+from alto_segment_lib.repair_segments import RepairSegments, merge_segments
 from alto_segment_lib.segment import SegmentType
 from alto_segment_lib.segment_grouper import SegmentGrouper
 from alto_segment_lib.segment_helper import SegmentHelper
@@ -54,6 +54,8 @@ class SegmentModule:
 
         paragraphs = segment_helper.remove_segments_within_segments(headers, paragraphs)
         headers = segment_helper.remove_segments_within_segments(paragraphs, headers)
+
+        paragraphs = merge_segments(paragraphs)
 
         segment_lines = SegmentLines(paragraphs, headers, file_path)
         (horizontal_lines, vertical_lines) = segment_lines.find_vertical_and_horizontal_lines()

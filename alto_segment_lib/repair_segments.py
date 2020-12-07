@@ -1,3 +1,5 @@
+from typing import List
+
 from alto_segment_lib.segment import Segment
 from alto_segment_lib.segment_grouper import SegmentGrouper
 from alto_segment_lib.segment_helper import SegmentHelper
@@ -75,7 +77,7 @@ def add_segment(segments: list, coordinates: list, lines, seg_type: str):
     segments.append(segment)
 
 
-def merge_segments(segments: list[Segment]) -> list[Segment]:
+def merge_segments(segments: List[Segment]) -> List[Segment]:
     """
     Merges segments into bigger chunks based on distance
 
