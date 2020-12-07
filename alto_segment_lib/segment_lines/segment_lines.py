@@ -19,7 +19,11 @@ class SegmentLines:
         self.headers = headers
         self.file_path = file_path
         self.vertical_lines = []
-        self.content_bound = SegmentHelper().get_content_bounds(paragraphs+headers)
+        content_bound = SegmentHelper().get_content_bounds(paragraphs+headers)
+        self.page_x1 = content_bound[0]
+        self.page_y1 = content_bound[1]
+        self.page_x2 = content_bound[2]
+        self.page_y2 = content_bound[3]
         self.display_segments_headers(headers, paragraphs, file_path, "segments")
 
     def find_vertical_and_horizontal_lines(self):
@@ -78,11 +82,11 @@ class SegmentLines:
                 right_side_lines.append(vertical_line)
 
         if len(left_side_lines) == 0:
-            left_side_lines.append(Line([self.content_bound[0], self.content_bound[1],
-                                         self.content_bound[0], self.content_bound[3]]))
+            left_side_lines.append(Line([self.page_x1, self.page_y1,
+                                         self.page_x1, self.page_y2]))
         if len(right_side_lines) == 0:
-            right_side_lines.append(Line([self.content_bound[2], self.content_bound[1],
-                                         self.content_bound[2], self.content_bound[3]]))
+            right_side_lines.append(Line([self.page_x2, self.page_y1,
+                                         self.page_x2, self.page_y2]))
 
         return min(left_side_lines, key=lambda line: horizontal_line.x1 - line.x1), min(right_side_lines, key=lambda line: line.x1 - horizontal_line.x1)
 
@@ -108,8 +112,6 @@ class SegmentLines:
 
         lines = self.__fix_and_extend_vertical_lines(lines, segments)
 
-
-
         return lines
 
     @staticmethod
@@ -129,7 +131,7 @@ class SegmentLines:
         return lines
 
     def __fix_and_extend_vertical_lines(self, vertical_lines, segments):
-        merge_margin = 60
+        merge_margin = 30
         final_lines = []
 
         # Finds similar lines
@@ -147,8 +149,8 @@ class SegmentLines:
             if len(affected_segments) == 0 or len(line_group) == 1:
                 final_lines.append(Line([average_x, min_y, average_x, max_y]))
             else:
-                wip_merged_lines = self.__merge_all_lines_not_intersecting_segment(line_group, all_affected_segments)
-                extended_to_bounds_lines = self.__extend_vertical_lines(wip_merged_lines, all_affected_segments)
+                merged_lines = self.__merge_all_lines_not_intersecting_segment(line_group, all_affected_segments)
+                extended_to_bounds_lines = self.__extend_vertical_lines(merged_lines, all_affected_segments)
                 extended_lines = self.__extend_lines_to_segment_borders(extended_to_bounds_lines, all_affected_segments)
                 fixed_lines = self.__merge_similar_lines(extended_lines)
 
@@ -298,13 +300,11 @@ class SegmentLines:
         # Line going through segment
         if min_y < segment.y1 and max_y > segment.y2:
             return True
-
         # Line goes through top or bottom of the segment
         elif min_y < segment.y1 < max_y:
             return True
         elif min_y < segment.y2 < max_y:
             return True
-
         else:
             return False
 
@@ -319,10 +319,10 @@ class SegmentLines:
                 extended_lines.append(line)
 
         if not self.__find_segments_above_line(highest_line, segments):
-            extended_lines.append(Line([highest_line.x1, self.content_bound[1], highest_line.x2, highest_line.y2]))
+            extended_lines.append(Line([highest_line.x1, self.page_y1, highest_line.x2, highest_line.y2]))
 
         if not self.__find_segments_below_line(lowest_line, segments):
-            extended_lines.append(Line([lowest_line.x1, lowest_line.y1, lowest_line.x2, self.content_bound[3]]))
+            extended_lines.append(Line([lowest_line.x1, lowest_line.y1, lowest_line.x2, self.page_y2]))
 
         return extended_lines
 
@@ -352,7 +352,7 @@ class SegmentLines:
         return extended_lines
 
     def __merge_similar_lines(self, lines):
-        lines = sorted(lines, key=lambda line: line.y2 - line.y1)
+        #lines = sorted(lines, key=lambda line: line.y2 - line.y1)
         lines_to_remove = []
 
         for outer_line in lines:
