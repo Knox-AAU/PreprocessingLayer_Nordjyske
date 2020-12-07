@@ -145,13 +145,7 @@ def run_file(file_path):
 
     #display_segments(lines, file_path, "lines")
 
-    rounds = 9
-    counter = 1
-
-    while counter <= rounds:
-        print("Segments before "+str(counter)+": " + str(len(segments)))
-        segments = merge_segments(segments)
-        counter += 1
+    segments = merge_segments(segments)
 
     display_segments(segments, file_path, "paragrphs")
     #display_segments(header_as_segment, file_path, "headers")
