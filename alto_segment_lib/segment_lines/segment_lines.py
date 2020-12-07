@@ -19,12 +19,12 @@ class SegmentLines:
 
 
     def find_horizontal_lines(self):
-        i=0
+        i = 0
         self.__make_line_over_headers()
 
 
     def __make_line_over_headers(self):
-
+        pass
 
     def find_vertical_lines(self):
         # 1) - Find page bounds (Use existing function)
@@ -90,8 +90,9 @@ class SegmentLines:
                 wip_merged_lines = self.__merge_all_lines_not_intersecting_segment(line_group, all_affected_segments)
                 extended_to_bounds_lines = self.__extend_lines(wip_merged_lines, all_affected_segments, content_bound)
                 extended_lines = self.__extend_lines_to_segment_borders(extended_to_bounds_lines, all_affected_segments)
+                fixed_lines = self.__merge_similar_lines(extended_lines)
 
-                for line in extended_lines:
+                for line in fixed_lines:
                     final_lines.append(line)
 
         return final_lines
@@ -290,8 +291,28 @@ class SegmentLines:
 
         return extended_lines
 
-    def __merge_simlar_lines(self):
-        i = 0
+    def __merge_similar_lines(self, lines):
+        lines = sorted(lines, key=lambda line: line.y2 - line.y1)
+        lines_to_remove = []
+
+        for outer_line in lines:
+            for inner_line in lines:
+                if outer_line == inner_line:
+                    continue
+                if self.__is_line_inside_other_line(outer_line, inner_line):
+                    lines_to_remove.append(inner_line)
+
+        for line in lines_to_remove:
+            if lines.__contains__(line):
+                lines.remove(line)
+
+        return lines
+
+    def __is_line_inside_other_line(self, outer_line, inner_line):
+        if inner_line.y1 >= outer_line.y1 and inner_line.y2 <= outer_line.y2:
+            return True
+        else:
+            return False
 
     def find_horizontal_lines(self):
         pass
