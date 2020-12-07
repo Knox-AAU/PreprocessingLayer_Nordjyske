@@ -17,12 +17,12 @@ class SegmentHelper:
         config = configparser.ConfigParser()
         config.read('config.ini')
 
-        self.__threshold_block_header_to_paragraph = float(config['page_segmentation']['threshold_block_header_to_paragraph'])
-        self.__threshold_line_header_to_paragraph = float(config['page_segmentation']['threshold_line_header_to_paragraph'])
-        self.__min_lines_to_compare_block_height_instead_of_line_height = int(config['page_segmentation']['min_lines_to_compare_block_height_instead_of_line_height'])
-        self.__group_same_column_margin = float(config['page_segmentation']['group_same_column_margin'])
-        self.__group_same_segment_margin_px = float(config['page_segmentation']['group_same_segment_margin_px'])
-        self.__min_cluster_size = int(config['page_segmentation']['min_cluster_size'])
+        self.threshold_block_header_to_paragraph = float(config['page_segmentation']['threshold_block_header_to_paragraph'])
+        self.threshold_line_header_to_paragraph = float(config['page_segmentation']['threshold_line_header_to_paragraph'])
+        self.min_lines_to_compare_block_height_instead_of_line_height = int(config['page_segmentation']['min_lines_to_compare_block_height_instead_of_line_height'])
+        self.group_same_column_margin = float(config['page_segmentation']['group_same_column_margin'])
+        self.group_same_segment_margin_px = float(config['page_segmentation']['group_same_segment_margin_px'])
+        self.min_cluster_size = int(config['page_segmentation']['min_cluster_size'])
 
     def segment_page(self, file_path: str, image=None) -> [list, list]:
         """
@@ -74,12 +74,12 @@ class SegmentHelper:
             # If line belongs to a block_segment, and that block_segment has more than some
             # minimum amount of lines, we assign the height we compare to the median of the
             # block_segment rather than the line.
-            if line.block_segment is not None and line.block_segment.line_count >= \
-                    self.__min_lines_to_compare_block_height_instead_of_line_height:
+            if line.block_segment is not None and len(line.block_segment.lines) >= \
+                    self.min_lines_to_compare_block_height_instead_of_line_height:
                 height = statistics.median([x.height() for x in line.block_segment.lines])
             # Checks if line height indicates that the line is a paragraph
-            if line.height() > height * self.__threshold_line_header_to_paragraph or\
-                    height > median * self.__threshold_block_header_to_paragraph:
+            if line.height() > height * self.threshold_line_header_to_paragraph or\
+                    height > median * self.threshold_block_header_to_paragraph:
                 headers.append(line)
             else:
                 paragraphs.append(line)
@@ -121,7 +121,7 @@ class SegmentHelper:
         new_headers = []
 
         for grouped_headers in header_segment_groups:
-            if len(grouped_headers) >= self.__min_cluster_size:
+            if len(grouped_headers) >= self.min_cluster_size:
                 new_paragraphs.extend(grouped_headers)
             else:
                 new_headers.extend(grouped_headers)
@@ -154,7 +154,7 @@ class SegmentHelper:
         previous_line = None
         temp = []
         column_groups = []
-        median = statistics.median([line.width() for line in text_lines]) * self.__group_same_column_margin
+        median = statistics.median([line.width() for line in text_lines]) * self.group_same_column_margin
 
         # Sorts the list in an ascending order based on x1
         text_lines = sorted(text_lines, key=lambda sorted_line: sorted_line.x1)
@@ -204,7 +204,7 @@ class SegmentHelper:
                 x1_diff = text_line.x1 - previous_line.x1
                 x2_diff = text_line.x2 - previous_line.x2
 
-                margin = self.__group_same_segment_margin_px
+                margin = self.group_same_segment_margin_px
 
                 # Is true if considered same segment, based on previous, current and next line.
                 is_width_ok = (not x1_diff < -margin and ((-margin < x2_diff < margin)
@@ -236,7 +236,7 @@ class SegmentHelper:
         x2_diff = curr_line.x2 - next_line.x2
 
         # If x2_diff within margin
-        return -self.__group_same_segment_margin_px < x2_diff < self.__group_same_segment_margin_px
+        return -self.group_same_segment_margin_px < x2_diff < self.group_same_segment_margin_px
 
     @staticmethod
     def make_box_around_lines(text_lines: list, return_coordinates=False):
