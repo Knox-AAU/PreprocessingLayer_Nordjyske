@@ -41,6 +41,7 @@ class SegmentHelper:
 
         # Combine closely related text lines into actual paragraphs.
         paragraphs = self.combine_lines_into_segments(paragraphs)
+        headers = [line.to_segment() for line in headers]
 
         # Remove segments that are completely within other segments,
         paragraphs = RepairSegments(paragraphs, 30).repair_rows()

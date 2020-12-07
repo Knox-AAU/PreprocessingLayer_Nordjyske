@@ -36,6 +36,7 @@ class SegmentModule:
 
         # Combine closely related text lines into actual paragraphs.
         paragraphs = segment_helper.combine_lines_into_segments(paragraphs)
+        headers = [line.to_segment(SegmentType.heading) for line in headers]
 
         # Remove segments that are completely within other segments,
         paragraphs = RepairSegments(paragraphs, 30).repair_rows()
@@ -44,6 +45,8 @@ class SegmentModule:
         headers = segment_helper.remove_segments_within_segments(paragraphs, headers)
 
         segment_lines = SegmentLines(paragraphs, headers, file_path)
-        segment_lines.find_vertical_and_horizontal_lines()
+        (horizontal_lines, vertical_lines) = segment_lines.find_vertical_and_horizontal_lines()
+
+
 
         return headers, paragraphs

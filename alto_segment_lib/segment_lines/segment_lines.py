@@ -1,6 +1,8 @@
 from os import environ
 from typing import List
-
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+from PIL import Image
 from alto_segment_lib.line_extractor.extractor import LineExtractor
 from alto_segment_lib.line_extractor.hough_bundler import HoughBundler
 from alto_segment_lib.segment import Line, SegmentType
@@ -18,6 +20,7 @@ class SegmentLines:
         self.file_path = file_path
         self.vertical_lines = []
         self.content_bound = SegmentHelper().get_content_bounds(paragraphs+headers)
+        self.display_segments_headers(headers, paragraphs, file_path, "segments")
 
     def find_vertical_and_horizontal_lines(self):
         vertical_lines = self.find_vertical_lines()
@@ -81,13 +84,6 @@ class SegmentLines:
             right_side_lines.append(Line([self.content_bound[2], self.content_bound[1],
                                          self.content_bound[2], self.content_bound[3]]))
 
-
-        min_x = 0
-        max_x = 0
-
-
-
-
         return min(left_side_lines, key=lambda line: horizontal_line.x1 - line.x1), min(right_side_lines, key=lambda line: line.x1 - horizontal_line.x1)
 
 
@@ -105,12 +101,14 @@ class SegmentLines:
 
         segments.sort(key=lambda segment: segment.x1)
 
-
+        image = cv2.imread(self.file_path, cv2.CV_8UC1)
         lines = self.__create_vertical_lines_for_each_segment(segments)
 
-        #LineExtractor().show_lines_on_image(image, lines, "beforeMerge")
+        LineExtractor().show_lines_on_image(image, lines, "beforeMerge")
 
         lines = self.__fix_and_extend_vertical_lines(lines, segments)
+
+
 
         return lines
 
@@ -126,12 +124,12 @@ class SegmentLines:
             if segment.type == SegmentType.paragraph:
                 # make a line that is parallel with the left side of the segment
                 lines.append(Line([segment.x1 - 2, segment.y1, segment.x1 - 2, segment.y2]))
-                # lines.append(Line([segment.x2 + 2, segment.y1, segment.x2 + 2, segment.y2]))      # Lines on both sides of the segment
+                #lines.append(Line([segment.x2 + 2, segment.y1, segment.x2 + 2, segment.y2]))      # Lines on both sides of the segment
 
         return lines
 
     def __fix_and_extend_vertical_lines(self, vertical_lines, segments):
-        merge_margin = 30
+        merge_margin = 60
         final_lines = []
 
         # Finds similar lines
@@ -376,7 +374,36 @@ class SegmentLines:
         else:
             return False
 
-    def find_horizontal_lines(self):
-        pass
+    @staticmethod
+    def display_segments_headers(headers, segments_for_display, file_path, file_name):
+        """
+        Plots the segmented headers
 
+        @param headers: list of headers
+        @param segments_for_display:
+        @param file_path:path to the file being segmented
+        @param file_name: name of the file being segmented
+        """
+        print(file_path)
+
+        plt.imshow(Image.open(file_path))
+        plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
+
+        for segment in headers:
+            plt.gca().add_patch(
+                Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1),
+                          (segment.y2 - segment.y1), linewidth=0.3,
+                          edgecolor='b', facecolor='none'))
+            plt.text(segment.x1, segment.y1, f"[{segment.x1},{segment.y1}],[{segment.x2},{segment.y2}]",
+                     horizontalalignment='left', verticalalignment='top', fontsize=1, color="blue")
+
+        for segment in segments_for_display:
+            plt.gca().add_patch(
+                Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1),
+                          (segment.y2 - segment.y1), linewidth=0.3,
+                          edgecolor='r', facecolor='none'))
+            plt.text(segment.x1, segment.y1, f"[{segment.x1},{segment.y1}],[{segment.x2},{segment.y2}]",
+                     horizontalalignment='left', verticalalignment='top', fontsize=1, color="blue")
+        plt.savefig(file_path + "-" + file_name + ".png", dpi=600, bbox_inches='tight')
+        plt.gca().clear()
 
