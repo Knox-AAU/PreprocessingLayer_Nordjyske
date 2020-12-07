@@ -55,11 +55,12 @@ class SegmentLines:
 
     def __extend_horizontal_lines(self, horizontal_lines):
         extended_horizontal_lines = []
+        margin = 2
 
         for horizontal_line in horizontal_lines:
             # find min distance til nærmeste vertikale linje i hver retning
             left_line, right_line = self.find_nearest_vertical_lines(horizontal_line, self.vertical_lines)
-            extended_horizontal_lines.append(Line([left_line.x1, horizontal_line.y1, right_line.x1, horizontal_line.y2]))
+            extended_horizontal_lines.append(Line([left_line.x1, horizontal_line.y1 + margin, right_line.x1, horizontal_line.y2 + margin]))
 
         return extended_horizontal_lines
 
@@ -76,11 +77,16 @@ class SegmentLines:
         right_side_lines = []
 
         for vertical_line in vertical_lines:
-            if vertical_line.x1 < horizontal_line.x1:
+            # Line has to be left of the line and intersect it
+            if vertical_line.x1 < horizontal_line.x1\
+                    and vertical_line.y1 < horizontal_line.y1\
+                    and vertical_line.y2 > horizontal_line.y2:
                 left_side_lines.append(vertical_line)
-            elif vertical_line.x1 > horizontal_line.x2:
+            elif vertical_line.x1 > horizontal_line.x2 \
+                    and vertical_line.y1 < horizontal_line.y1 \
+                    and vertical_line.y2 > horizontal_line.y2:
                 right_side_lines.append(vertical_line)
-
+        # If empty then add a line along the pages content bound
         if len(left_side_lines) == 0:
             left_side_lines.append(Line([self.page_x1, self.page_y1,
                                          self.page_x1, self.page_y2]))
@@ -89,7 +95,6 @@ class SegmentLines:
                                          self.page_x2, self.page_y2]))
 
         return min(left_side_lines, key=lambda line: horizontal_line.x1 - line.x1), min(right_side_lines, key=lambda line: line.x1 - horizontal_line.x1)
-
 
     def find_vertical_lines(self):
         # 1) - Find page bounds (Use existing function)
@@ -106,7 +111,7 @@ class SegmentLines:
         segments.sort(key=lambda segment: segment.x1)
 
         image = cv2.imread(self.file_path, cv2.CV_8UC1)
-        lines = self.__create_vertical_lines_for_each_segment(segments)
+        lines = self.__create_vertical_lines_for_each_segment(self.paragraphs)
 
         LineExtractor().show_lines_on_image(image, lines, "beforeMerge")
 
@@ -126,7 +131,7 @@ class SegmentLines:
             if segment.type == SegmentType.paragraph:
                 # make a line that is parallel with the left side of the segment
                 lines.append(Line([segment.x1 - 2, segment.y1, segment.x1 - 2, segment.y2]))
-                #lines.append(Line([segment.x2 + 2, segment.y1, segment.x2 + 2, segment.y2]))      # Lines on both sides of the segment
+                lines.append(Line([segment.x2 + 2, segment.y1, segment.x2 + 2, segment.y2]))      # Lines on both sides of the segment
 
         return lines
 
