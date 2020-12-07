@@ -3,7 +3,7 @@ from typing import List
 
 from alto_segment_lib.line_extractor.extractor import LineExtractor
 from alto_segment_lib.line_extractor.hough_bundler import HoughBundler
-from alto_segment_lib.segment import Line
+from alto_segment_lib.segment import Line, SegmentType
 from alto_segment_lib.segment_helper import SegmentHelper
 
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
@@ -16,14 +16,79 @@ class SegmentLines:
         self.paragraphs = paragraphs
         self.headers = headers
         self.file_path = file_path
+        self.vertical_lines = []
+        self.content_bound = SegmentHelper().get_content_bounds(paragraphs+headers)
 
+    def find_vertical_and_horizontal_lines(self):
+        vertical_lines = self.find_vertical_lines()
+        self.vertical_lines = vertical_lines
+        horizontal_lines = self.find_horizontal_lines()
+
+        image = cv2.imread(self.file_path, cv2.CV_8UC1)
+        filename = self.file_path.split("/")[-1]
+
+        LineExtractor().show_lines_on_image(image, horizontal_lines + vertical_lines, filename + "-merged")
+
+        return horizontal_lines, vertical_lines
 
     def find_horizontal_lines(self):
-        i=0
-        self.__make_line_over_headers()
+        horizontal_lines = []
+        horizontal_lines = self.__make_line_over_headers()
+        horizontal_lines = self.__extend_horizontal_lines(horizontal_lines)
 
+        return horizontal_lines
 
     def __make_line_over_headers(self):
+        horizontal_lines = []
+        margin = 2
+        for header in self.headers:
+            horizontal_lines.append(Line([header.x1, header.y1 - margin, header.x2, header.y1 - margin]))
+
+        return horizontal_lines
+
+    def __extend_horizontal_lines(self, horizontal_lines):
+        extended_horizontal_lines = []
+
+        for horizontal_line in horizontal_lines:
+            # find min distance til nærmeste vertikale linje i hver retning
+            left_line, right_line = self.find_nearest_vertical_lines(horizontal_line, self.vertical_lines)
+            extended_horizontal_lines.append(Line([left_line.x1, horizontal_line.y1, right_line.x1, horizontal_line.y2]))
+
+        return extended_horizontal_lines
+
+    def find_nearest_vertical_lines(self, horizontal_line, vertical_lines):
+        """
+
+        @param horizontal_line:
+        @param vertical_lines:
+        @return:
+        """
+        vertical_lines.sort(key=lambda line: line.x1)
+
+        left_side_lines = []
+        right_side_lines = []
+
+        for vertical_line in vertical_lines:
+            if vertical_line.x1 < horizontal_line.x1:
+                left_side_lines.append(vertical_line)
+            elif vertical_line.x1 > horizontal_line.x2:
+                right_side_lines.append(vertical_line)
+
+        if len(left_side_lines) == 0:
+            left_side_lines.append(Line([self.content_bound[0], self.content_bound[1],
+                                         self.content_bound[0], self.content_bound[3]]))
+        if len(right_side_lines) == 0:
+            right_side_lines.append(Line([self.content_bound[2], self.content_bound[1],
+                                         self.content_bound[2], self.content_bound[3]]))
+
+
+        min_x = 0
+        max_x = 0
+
+
+
+
+        return min(left_side_lines, key=lambda line: horizontal_line.x1 - line.x1), min(right_side_lines, key=lambda line: line.x1 - horizontal_line.x1)
 
 
     def find_vertical_lines(self):
@@ -37,20 +102,17 @@ class SegmentLines:
         #             - expand lines down and up (Until intersecting or outside page bounds)
         # 3) - Find horizontal lines: Loop all paragraphs.
         segments = self.paragraphs + self.headers
-        content_bound = SegmentHelper().get_content_bounds(segments)
 
         segments.sort(key=lambda segment: segment.x1)
-        image = cv2.imread(self.file_path, cv2.CV_8UC1)
+
 
         lines = self.__create_vertical_lines_for_each_segment(segments)
-
-        filename = self.file_path.split("/")[-1]
 
         #LineExtractor().show_lines_on_image(image, lines, "beforeMerge")
 
         lines = self.__fix_and_extend_vertical_lines(lines, segments)
 
-        LineExtractor().show_lines_on_image(image, lines, filename + "-merged")
+        return lines
 
     @staticmethod
     def __create_vertical_lines_for_each_segment(segments):
@@ -61,16 +123,16 @@ class SegmentLines:
         """
         lines = []
         for segment in segments:
-            # make a line that is parallel with the left side of the segment
-            lines.append(Line([segment.x1 - 2, segment.y1, segment.x1 - 2, segment.y2]))
-            # lines.append(Line([segment.x2 + 2, segment.y1, segment.x2 + 2, segment.y2]))      # Lines on both sides of the segment
+            if segment.type == SegmentType.paragraph:
+                # make a line that is parallel with the left side of the segment
+                lines.append(Line([segment.x1 - 2, segment.y1, segment.x1 - 2, segment.y2]))
+                # lines.append(Line([segment.x2 + 2, segment.y1, segment.x2 + 2, segment.y2]))      # Lines on both sides of the segment
 
         return lines
 
     def __fix_and_extend_vertical_lines(self, vertical_lines, segments):
         merge_margin = 30
         final_lines = []
-        content_bound = SegmentHelper().get_content_bounds(segments)
 
         # Finds similar lines
         lines_to_be_merged = self.__find_similar_lines(vertical_lines, merge_margin)
@@ -88,7 +150,7 @@ class SegmentLines:
                 final_lines.append(Line([average_x, min_y, average_x, max_y]))
             else:
                 wip_merged_lines = self.__merge_all_lines_not_intersecting_segment(line_group, all_affected_segments)
-                extended_to_bounds_lines = self.__extend_lines(wip_merged_lines, all_affected_segments, content_bound)
+                extended_to_bounds_lines = self.__extend_vertical_lines(wip_merged_lines, all_affected_segments)
                 extended_lines = self.__extend_lines_to_segment_borders(extended_to_bounds_lines, all_affected_segments)
 
                 for line in extended_lines:
@@ -247,7 +309,7 @@ class SegmentLines:
         else:
             return False
 
-    def __extend_lines(self, lines, segments, content_bound):
+    def __extend_vertical_lines(self, lines, segments):
         extended_lines = []
 
         highest_line = min(lines, key=lambda line: line.y1)
@@ -258,10 +320,10 @@ class SegmentLines:
                 extended_lines.append(line)
 
         if not self.__find_segments_above_line(highest_line, segments):
-            extended_lines.append(Line([highest_line.x1, content_bound[1], highest_line.x2, highest_line.y2]))
+            extended_lines.append(Line([highest_line.x1, self.content_bound[1], highest_line.x2, highest_line.y2]))
 
         if not self.__find_segments_below_line(lowest_line, segments):
-            extended_lines.append(Line([lowest_line.x1, lowest_line.y1, lowest_line.x2, content_bound[3]]))
+            extended_lines.append(Line([lowest_line.x1, lowest_line.y1, lowest_line.x2, self.content_bound[3]]))
 
         return extended_lines
 
@@ -289,12 +351,6 @@ class SegmentLines:
                 extended_lines.append(Line([line.x1, y1, line.x2, y2]))
 
         return extended_lines
-
-    def __merge_simlar_lines(self):
-        i = 0
-
-    def find_horizontal_lines(self):
-        pass
 
 
 

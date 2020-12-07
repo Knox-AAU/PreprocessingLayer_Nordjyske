@@ -36,7 +36,7 @@ class OCRRunner:
 
         # 19280517 = 1928-05-17
         if int(file_date) < 19280517:
-            tessdata = "dan_best_gothic_fine_tune"
+            tessdata = "gothic_fine_tune"
 
         article = Article()
         articles = []
