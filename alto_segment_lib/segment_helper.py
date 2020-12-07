@@ -194,7 +194,8 @@ class SegmentHelper:
             median = statistics.median([line.height() for line in group]) * (0.2 if ignore_width else 1)
             previous_line = None
 
-            for text_line in group:
+            for index, text_line in enumerate(group):
+
                 if previous_line is None:
                     previous_line = text_line
                     temp = [text_line]
@@ -205,9 +206,12 @@ class SegmentHelper:
 
                 margin = self.__group_same_segment_margin_px
 
+                # Is true if considered same segment, based on previous, current and next line.
+                is_width_ok = (not x1_diff < -margin and ((-margin < x2_diff < margin)
+                                            or not self.__is_next_line_similiar_x2(index, group)))
+
                 # Checks if the current and previous lines are in the same segment
-                if text_line.y1 - previous_line.y2 < median and \
-                        (ignore_width or not (x1_diff < -margin or x2_diff > margin)):
+                if text_line.y1 - previous_line.y2 < median and (ignore_width or is_width_ok):
                     temp.append(text_line)
                 # Makes a new segment and adds the first text line
                 else:
@@ -221,6 +225,18 @@ class SegmentHelper:
                 temp = []
 
         return segment_groups
+
+    def __is_next_line_similiar_x2(self, index, group) -> bool:
+        # If last element, then return false.
+        if len(group) == index + 1:
+            return False
+
+        curr_line = group[index]
+        next_line = group[index + 1]
+        x2_diff = curr_line.x2 - next_line.x2
+
+        # If x2_diff within margin
+        return -self.__group_same_segment_margin_px < x2_diff < self.__group_same_segment_margin_px
 
     @staticmethod
     def make_box_around_lines(text_lines: list, return_coordinates=False):
