@@ -4,7 +4,9 @@ from alto_segment_lib.segment_grouper import SegmentGrouper
 import statistics
 
 class RepairSegments:
-
+    """
+    todo documentation and possibly rework
+    """
     def __init__(self, segments, threshold: int = 10):
         self.__segments = segments
         self.__threshold = threshold
@@ -19,6 +21,10 @@ class RepairSegments:
         self.__median_paragraph_width = statistics.median(all_para)
 
     def repair_rows(self):
+        """
+        todo this needs documentation and possibly rework
+        @return:
+        """
         return_segments = self.__segments.copy()
         thresh_within = 5
 
@@ -49,10 +55,7 @@ class RepairSegments:
                             # Move y-coordinate to be beside segment
                             return_segments[subsegment_index].y2 = segment.y1
 
-        return return_segments.copy()
-
-    def get_median_column_width(self):
-        return self.__median_paragraph_width
+        return return_segments
 
 
 def add_segment(segments: list, coordinates: list, lines, seg_type: str):

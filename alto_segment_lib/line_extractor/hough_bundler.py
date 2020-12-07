@@ -1,3 +1,4 @@
+# pylint: skip-file
 import configparser
 import math
 from math import atan2
