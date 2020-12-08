@@ -33,7 +33,7 @@ source venv/bin/activate
 pip3.9 install wheel
 ```
 
-After this, the final step of installation is to install the packages in the _requirements.txt_ file by running:
+After this, the final step of installation is to install the packages in the *requirements.txt* file by running:
 
 ```
 pip install -r requirements.txt
@@ -42,33 +42,33 @@ pip install -r requirements.txt
 >:warning: The virtual environment can be disabled by running the command: ``deactivate``
 
 ## Usage
-Each package contains a _\_\_main\_\_.py_ file that can be execute. Each package can be executed individually by running the associate _\_\_main\_\_.py_ file, possibly with parameters.
+Each package contains a *\_\_main\_\_.py* file that can be execute. Each package can be executed individually by running the associate *\_\_main\_\_.py* file, possibly with parameters.
 
 ### Crawling
-The crawling module should only be used within other modules, which is the reason behind its empty _\_\_main\_\_.py_ file.
+The crawling module should only be used within other modules, which is the reason behind its empty *\_\_main\_\_.py* file.
 
 ### Segmentation
 The segmentation module is executed with two parameters.
-- _path_ : the relative path to the folder containing the _.jp2_ file and associated _.alto.xml_ file
-- _filename_ : name of the _.jp2_ to be segmented
+- *path* : the relative path to the folder containing the *.jp2* file and associated *.alto.xml* file
+- *filename* : name of the *.jp2* to be segmented
 
-This outputs a _.png_ file with the input file and an overlay of paragraph and header boxes.
+This outputs a *.png* file with the input file and an overlay of paragraph and header boxes.
 
 ### OCR
 The OCR module is executed with four parameters:
-- _path_ : the relative path to the file on which OCR should be performed
-- _output\_dest_ : the relative path at which the output should be saved
-- _tesseract_path_ : the relative path to Tesseract (this is only necessary if the installation of tesseract is not performed in a way that allows the system to find it by it self)
-- _language_ : the language that should be used for the OCR (a full list can be found at [https://github.com/tesseract-ocr/langdata](https://github.com/tesseract-ocr/langdata))
+- *path* : the relative path to the file on which OCR should be performed
+- *output\_dest* : the relative path at which the output should be saved
+- *tesseract\_path* : the relative path to Tesseract (this is only necessary if the installation of tesseract is not performed in a way that allows the system to find it by it self)
+- *language* : the language that should be used for the OCR (a full list can be found at [https://github.com/tesseract-ocr/langdata](https://github.com/tesseract-ocr/langdata))
 
-This outputs a _.json_ file following the I/O modules schema and contains the extracted text.
+This outputs a *.json* file following the I/O modules schema and contains the extracted text.
 
 ### Parsing of NITF Files
 The OCR module is executed with two parameters:
-- _input_file_ : the relative path to the _.xml_ file that should parsed (must be in NITF format)
-- _output\_dest_ : the relative path at which the output should be saved
+- *input\_file* : the relative path to the *.xml* file that should parsed (must be in NITF format)
+- *output\_dest* : the relative path at which the output should be saved
 
-This outputs a _.json_ file following the I/O modules schema and contains the parsed publication.
+This outputs a *.json* file following the I/O modules schema and contains the parsed publication.
 
 ## Support
 The development team behind this project will change once a year and for this reason support will be limited. However, if you have any questions or stumble upon something that has not clearly been described, please contact one of the developers at: <nvisti18@student.aau.dk>
