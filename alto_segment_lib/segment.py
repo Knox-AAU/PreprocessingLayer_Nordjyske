@@ -17,10 +17,6 @@ class Segment(Line):
     Segment is a set of two coordinates, combined with a SegmentType and optionally a list of coords.
     """
     type: SegmentType
-    x1: int
-    y1: int
-    x2: int
-    y2: int
     lines: list
 
     def __init__(self, coord: list = None, seg_type: SegmentType = SegmentType.unknown):
