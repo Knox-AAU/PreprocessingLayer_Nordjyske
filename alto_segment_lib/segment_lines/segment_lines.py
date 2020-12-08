@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from PIL import Image
 from alto_segment_lib.line_extractor.extractor import LineExtractor
-from alto_segment_lib.segment import Line, SegmentType
+from alto_segment_lib.segment import Line, SegmentType, Segment
 from alto_segment_lib.segment_helper import SegmentHelper
 
 
@@ -25,7 +25,7 @@ class SegmentLines:
         self.page_x2 = content_bound[2]
         self.page_y2 = content_bound[3]
 
-    def find_vertical_and_horizontal_lines(self):
+    def find_vertical_and_horizontal_lines(self) -> List[Segment]:
         """
         Finds the horizontal lines from the given segments and returns them.
         @return: A list of horizontal lines
@@ -68,7 +68,6 @@ class SegmentLines:
         margin = 2
 
         for horizontal_line in horizontal_lines:
-            # find min distance til nærmeste vertikale linje i hver retning
             left_line, right_line = self.find_nearest_vertical_lines(horizontal_line, self.vertical_lines)
             extended_horizontal_lines.append(Line([left_line.x1, horizontal_line.y1 + margin, right_line.x1, horizontal_line.y2 + margin]))
 
@@ -132,7 +131,7 @@ class SegmentLines:
         margin = 2
         for segment in segments:
             if segment.type == SegmentType.paragraph:
-                # make a line that is parallel with the left side of the segment
+                # Make a line that is parallel with the left side of the segment
                 lines.append(Line([segment.x1 - margin, segment.y1, segment.x1 - margin, segment.y2]))
                 lines.append(Line([segment.x2 + margin, segment.y1, segment.x2 + margin, segment.y2]))      # Lines on both sides of the segment
 
