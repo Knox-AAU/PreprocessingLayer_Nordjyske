@@ -19,7 +19,7 @@ class OCRRunner:
 
     def run_ocr(self, file: File, language='dan', tesseract_path=None):
         """
-        Runs everything thats needed to do OCR. It does the following: segmentation, creating articles, and
+        Runs everything that's needed to do OCR. It does the following: segmentation, creating articles, and
         turning articles into publications
         @param file: given file to perform OCR on
         @param language: optional parameter to change the language used by Tesseract

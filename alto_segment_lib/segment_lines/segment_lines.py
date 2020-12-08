@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from PIL import Image
 from alto_segment_lib.line_extractor.extractor import LineExtractor
-from alto_segment_lib.line_extractor.hough_bundler import HoughBundler
 from alto_segment_lib.segment import Line, SegmentType
 from alto_segment_lib.segment_helper import SegmentHelper
 
