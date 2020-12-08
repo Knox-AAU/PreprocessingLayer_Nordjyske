@@ -126,7 +126,7 @@ class Line:
 
     def get_center(self):
         """
-        Get the center of the segment
+        Gets the center of the segment
 
         @return: Center of the segment
         """
