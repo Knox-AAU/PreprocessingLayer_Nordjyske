@@ -1,7 +1,6 @@
 import argparse
 import os
 from alto_segment_lib.repair_segments import RepairSegments
-from alto_segment_lib.segment import Segment, SegmentType
 from alto_segment_lib.segment_grouper import SegmentGrouper
 from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
 import matplotlib.pyplot as plt

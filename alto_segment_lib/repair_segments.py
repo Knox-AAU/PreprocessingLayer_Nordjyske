@@ -43,7 +43,7 @@ class RepairSegments:
         # Iterates through all segments and all other segments
         for segment in self.__segments:
             for subsegment in self.__segments:
-                if not segment.compare(subsegment):
+                if not segment == subsegment:
                     thresh_close_to = subsegment.width() * 0.05
                     if subsegment in return_segments:
                         subsegment_index = return_segments.index(subsegment)
@@ -81,7 +81,7 @@ def merge_segments(segments: List[Segment]) -> List[Segment]:
     """
     Merges segments into bigger chunks based on distance
 
-    @param List of segments
+    @type segments: List of segments
     @return list[Segment]
     """
     grouper = SegmentGrouper()

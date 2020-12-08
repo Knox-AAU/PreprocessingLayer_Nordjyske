@@ -8,13 +8,13 @@ class TestSegment:
         segment_one = Segment([200, 400, 400, 600])
         segment_two = Segment([200, 400, 400, 600])
 
-        assert segment_one.compare(segment_two)
+        assert segment_one == segment_two
 
     def test_compare_unequal_segments(self):
         segment_one = Segment([200, 400, 400, 600])
         segment_two = Segment([200, 500, 400, 700])
 
-        if not segment_one.compare(segment_two):
+        if not segment_one == segment_two:
             assert True
         else:
             assert False
@@ -22,7 +22,7 @@ class TestSegment:
     def test_compare_on_none_segment_should_fail(self):
         segment_one = Segment([200, 400, 400, 600])
 
-        if not segment_one.compare("string"):
+        if not segment_one == "string":
             assert True
         else:
             assert False

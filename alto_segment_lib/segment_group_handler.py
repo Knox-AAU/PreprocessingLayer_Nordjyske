@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from alto_segment_lib.segment import SegmentGroup, Segment, SegmentType
 
 
@@ -7,8 +7,8 @@ class SegmentGroupHandler:
     todo
     """
     groups: List[SegmentGroup]
-    current_group: SegmentGroup = None
-    unfinished_group: SegmentGroup = None
+    current_group: Optional[SegmentGroup] = None
+    unfinished_group: Optional[SegmentGroup] = None
 
     def __init__(self):
         self.groups = []

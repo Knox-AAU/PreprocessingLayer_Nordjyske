@@ -1,10 +1,8 @@
-import statistics
 from os import environ
 from typing import List
-from alto_segment_lib.segment import Segment, Line, SegmentGroup, SegmentType
+from alto_segment_lib.segment import Segment, Line, SegmentType
 from alto_segment_lib.segment_group_handler import SegmentGroupHandler
 from alto_segment_lib.segment_helper import SegmentHelper
-from alto_segment_lib.line_extractor.extractor import LineExtractor
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 
 
