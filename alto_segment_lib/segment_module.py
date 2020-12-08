@@ -13,8 +13,8 @@ class SegmentModule:
     def run_segmentation(file_path):
         """
         Runs segmentation on a given .jp2 file.
-        @param file_path: Path to jp2
-        @return:
+        @param file_path: Path to jp2 file
+        @return: ordered segments. Sorted by article
         """
         headers, paragraphs = SegmentModule.segment_headers_paragraph_from_file(file_path)
 
@@ -34,7 +34,7 @@ class SegmentModule:
         """
         Get headers and paragraphs from a .jp2 file.
         @param file_path: The path to a jp2 file.
-        @return:
+        @return: headers and paragraphs from the jp2 file.
         """
         segment_helper = SegmentHelper()
         assert file_path.endswith(".jp2")
