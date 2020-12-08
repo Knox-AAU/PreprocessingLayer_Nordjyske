@@ -23,17 +23,11 @@ class SegmentLines:
         self.page_y1 = content_bound[1]
         self.page_x2 = content_bound[2]
         self.page_y2 = content_bound[3]
-        self.display_segments_headers(headers, paragraphs, file_path, "segments")
 
     def find_vertical_and_horizontal_lines(self):
         vertical_lines = self.find_vertical_lines()
         self.vertical_lines = vertical_lines
         horizontal_lines = self.find_horizontal_lines()
-
-        image = cv2.imread(self.file_path, cv2.CV_8UC1)
-        filename = self.file_path.split("/")[-1]
-
-        LineExtractor().show_lines_on_image(image, horizontal_lines + vertical_lines, filename + "-merged")
 
         return horizontal_lines, vertical_lines
 
@@ -109,10 +103,7 @@ class SegmentLines:
 
         segments.sort(key=lambda segment: segment.x1)
 
-        image = cv2.imread(self.file_path, cv2.CV_8UC1)
         lines = self.__create_vertical_lines_for_each_segment(self.paragraphs)
-
-        LineExtractor().show_lines_on_image(image, lines, "beforeMerge")
 
         lines = self.__fix_and_extend_vertical_lines(lines, segments)
 
@@ -333,8 +324,6 @@ class SegmentLines:
 
     def __extend_lines_to_segment_borders(self, lines, segments):
         extended_lines = []
-        # todo slet
-        lines = sorted(lines, key=lambda line: line.y1)
 
         for line in lines:
             above_segments = self.__find_segments_above_line(line, segments)
@@ -362,7 +351,6 @@ class SegmentLines:
         @param lines: A list of lines
         @return: A list of merged lines
         """
-        #lines = sorted(lines, key=lambda line: line.y2 - line.y1)
         lines_to_remove = []
 
         for outer_line in lines:
