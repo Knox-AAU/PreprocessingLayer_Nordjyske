@@ -7,9 +7,6 @@ from alto_segment_lib.line_extractor.extractor import LineExtractor
 from alto_segment_lib.segment import Line, SegmentType
 from alto_segment_lib.segment_helper import SegmentHelper
 
-environ["OPENCV_IO_ENABLE_JASPER"] = "true"
-import cv2
-
 
 class SegmentLines:
 
@@ -93,15 +90,7 @@ class SegmentLines:
         Finds all vertical lines from the segments, depending on the segments.
         @return: A list of vertical lines
         """
-        # 1) - Find page bounds (Use existing function)
-        # 2) - Try to merge as many
-        # 2) - Find vertical lines: Loop all paragraphs:
-        #         - Generate lines on the left-side of each element as long as the element is high.
-        #         (line.x1 = paragraph.x1 - 2px, same for line.x2, Skip lines outside page bounds)
-        #         - Loop the new lines
-        #             - merge lines that align based on thres (Check for intersection, should maybe be multiple lines).
-        #             - expand lines down and up (Until intersecting or outside page bounds)
-        # 3) - Find horizontal lines: Loop all paragraphs.
+
         segments = self.paragraphs + self.headers
 
         segments.sort(key=lambda segment: segment.x1)
@@ -150,7 +139,7 @@ class SegmentLines:
 
             # Finds affected segments
             affected_segments = self.__find_affected_segments_between_lines(segments, min_y, max_y, average_x)
-            all_affected_segments = self.__find_affected_segments(segments, min_y, max_y, average_x)
+            all_affected_segments = self.__find_affected_segments(segments, average_x)
 
             if len(affected_segments) == 0 or len(line_group) == 1:
                 final_lines.append(Line([average_x, min_y, average_x, max_y]))

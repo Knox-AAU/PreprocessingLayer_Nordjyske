@@ -38,10 +38,8 @@ class LineExtractor:
         image = cv2.imread(image_path, cv2.CV_8UC1)
 
         lines = self.extract_lines_via_image(image)
-        extended_lines = self.extend_lines_vertically(lines, image)     # Idk hvad den gør, den gør ihvertfald linjerne skæve
-        #self.show_lines_on_image(image, extended_lines)
+        extended_lines = self.extend_lines_vertically(lines, image)
         final_lines = self.remove_outline_lines(extended_lines, image)
-        #self.show_lines_on_image(image, final_lines)
         return final_lines
 
     def extract_lines_via_image(self, image: object):
