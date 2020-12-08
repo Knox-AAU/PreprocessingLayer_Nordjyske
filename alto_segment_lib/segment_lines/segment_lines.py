@@ -59,10 +59,10 @@ class SegmentLines:
 
     def find_nearest_vertical_lines(self, horizontal_line, vertical_lines):
         """
-
-        @param horizontal_line:
-        @param vertical_lines:
-        @return:
+        Finds the closest vertical line to the left and right of the horizontal line
+        @param horizontal_line: A horizontal line
+        @param vertical_lines: A list of vertical lines
+        @return: The closest vertical line to the left and right of the horizontal line
         """
         vertical_lines.sort(key=lambda line: line.x1)
 
@@ -90,6 +90,10 @@ class SegmentLines:
         return min(left_side_lines, key=lambda line: horizontal_line.x1 - line.x1), min(right_side_lines, key=lambda line: line.x1 - horizontal_line.x1)
 
     def find_vertical_lines(self):
+        """
+        Finds all vertical lines from the segments, depending on the segments.
+        @return: A list of vertical lines
+        """
         # 1) - Find page bounds (Use existing function)
         # 2) - Try to merge as many
         # 2) - Find vertical lines: Loop all paragraphs:
@@ -127,6 +131,13 @@ class SegmentLines:
         return lines
 
     def __fix_and_extend_vertical_lines(self, vertical_lines, segments):
+        """
+        Merges similar lines, extends them to page bounds, extends them to the nearest segments and finally removing
+        duplicate lines
+        @param vertical_lines: A list of vertical lines
+        @param segments: A list of segments
+        @return: A list of finalized vertical lines
+        """
         merge_margin = 30
         final_lines = []
 
@@ -157,6 +168,12 @@ class SegmentLines:
 
     @staticmethod
     def __is_line_in_groups(lines_to_be_merged, line):
+        """
+        Checks if a group is in any group of a list of groups of lines
+        @param lines_to_be_merged: A list of groups of lines
+        @param line: A line
+        @return: True if the any group contains the line, and False otherwise
+        """
         for group in lines_to_be_merged:
             if group.__contains__(line):
                 return True
@@ -181,6 +198,11 @@ class SegmentLines:
 
     @staticmethod
     def __get_statistics_for_line_group(line_group):
+        """
+        Fetches some key statistics for a line group used for merging and extending lines
+        @param line_group: A list of lines
+        @return: The minimum y-value, maximum y-value and average x-value for the line group
+        """
         if len(line_group) == 0:
             return 0, 0, 0
 
@@ -202,7 +224,7 @@ class SegmentLines:
         return min_y, max_y, average_x
 
     @staticmethod
-    def __find_affected_segments(segments, min_y, max_y, x_cord):
+    def __find_affected_segments(segments, x_cord):
         affected_segments = []
 
         for segment in segments:
