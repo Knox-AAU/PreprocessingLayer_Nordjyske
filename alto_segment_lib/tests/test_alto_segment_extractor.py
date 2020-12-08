@@ -39,7 +39,7 @@ def test_inch1200_to_px_conversion_failed():
     assert not extractor.inch1200_to_px(inch1200) == 3625
 
 
-def test_extract_lines():
+def test_extract_lines_success():
     line_1 = Mock()
     line_1.attributes = {
         "HPOS": PseudoValue(0),
