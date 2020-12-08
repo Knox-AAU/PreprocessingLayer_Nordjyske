@@ -129,7 +129,7 @@ def test_group_headers_into_segments_multiple_header_success():
     assert len(header_segments) == 2
 
 
-def test_group_lines_into_paragraphs_headers_one_header_one_paragraph_based_on_height():
+def test_group_lines_into_paragraphs_headers_one_header_one_paragraph_based_on_height_success():
     # Line that should be classified as a header
     header_line = Line()
     header_line.x1 = 0
@@ -151,7 +151,7 @@ def test_group_lines_into_paragraphs_headers_one_header_one_paragraph_based_on_h
     assert line_tuple == ([header_line], [para_line])
 
 
-def test_group_lines_into_paragraphs_3_paragraphs_based_on_median():
+def test_group_lines_into_paragraphs_3_paragraphs_based_on_median_success():
     # First group of lines for header 1
 
     segment = Segment([0, 0, 100, 250])
@@ -166,7 +166,7 @@ def test_group_lines_into_paragraphs_3_paragraphs_based_on_median():
     assert line_tuple == ([header_line], [para_line1, para_line2])
 
 
-def test_remove_segments_within_segments_to_delete():
+def test_remove_segments_within_segments_to_delete_success():
     # Inner segment
     segment_inner = [Segment([10, 10, 50, 50])]
 
@@ -178,7 +178,7 @@ def test_remove_segments_within_segments_to_delete():
     assert updated_segments == []
 
 
-def test_remove_segments_within_segments_not_to_remove():
+def test_remove_segments_within_segments_not_to_remove_success():
     # Inner segment
     segment_inner = [Segment([0, 10, 50, 50])]
 
