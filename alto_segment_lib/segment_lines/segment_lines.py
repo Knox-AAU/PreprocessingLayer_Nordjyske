@@ -13,10 +13,9 @@ import cv2
 
 class SegmentLines:
 
-    def __init__(self, paragraphs, headers, file_path):
+    def __init__(self, paragraphs, headers):
         self.paragraphs = paragraphs
         self.headers = headers
-        self.file_path = file_path
         self.vertical_lines = []
         content_bound = SegmentHelper().get_content_bounds(paragraphs+headers)
         self.page_x1 = content_bound[0]
@@ -400,37 +399,3 @@ class SegmentLines:
             return True
         else:
             return False
-
-    @staticmethod
-    def display_segments_headers(headers, segments_for_display, file_path, file_name):
-        """
-        Plots the segmented headers
-
-        @param headers: list of headers
-        @param segments_for_display:
-        @param file_path:path to the file being segmented
-        @param file_name: name of the file being segmented
-        """
-        print(file_path)
-
-        plt.imshow(Image.open(file_path))
-        plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
-
-        for segment in headers:
-            plt.gca().add_patch(
-                Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1),
-                          (segment.y2 - segment.y1), linewidth=0.3,
-                          edgecolor='b', facecolor='none'))
-            plt.text(segment.x1, segment.y1, f"[{segment.x1},{segment.y1}],[{segment.x2},{segment.y2}]",
-                     horizontalalignment='left', verticalalignment='top', fontsize=1, color="blue")
-
-        for segment in segments_for_display:
-            plt.gca().add_patch(
-                Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1),
-                          (segment.y2 - segment.y1), linewidth=0.3,
-                          edgecolor='r', facecolor='none'))
-            plt.text(segment.x1, segment.y1, f"[{segment.x1},{segment.y1}],[{segment.x2},{segment.y2}]",
-                     horizontalalignment='left', verticalalignment='top', fontsize=1, color="blue")
-        plt.savefig(file_path + "-" + file_name + ".png", dpi=600, bbox_inches='tight')
-        plt.gca().clear()
-
