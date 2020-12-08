@@ -1,17 +1,10 @@
-import configparser
-import os
 import statistics
 import math
 from typing import List
-
-from alto_segment_lib.alto_segment_extractor import AltoSegmentExtractor
-from alto_segment_lib.line_extractor.extractor import LineExtractor
-from alto_segment_lib.repair_segments import RepairSegments
 from alto_segment_lib.segment import Segment, Line, SegmentType
-
+import configparser
 
 class SegmentHelper:
-    """Provides helper methods for the Segment class"""
 
     def __init__(self):
         config = configparser.ConfigParser()
@@ -23,42 +16,6 @@ class SegmentHelper:
         self.__group_same_column_margin = float(config['page_segmentation']['group_same_column_margin'])
         self.__group_same_segment_margin_px = float(config['page_segmentation']['group_same_segment_margin_px'])
         self.__min_cluster_size = int(config['page_segmentation']['min_cluster_size'])
-
-    def segment_page(self, file_path: str, image=None) -> [list, list]:
-        """
-        Segments the page into headers and paragraphs
-        @param file_path: The path to the file we are segmentibng
-        @param image: The image we are segmenting
-        @return: headers, paragraphs: a tuple including a list of headers and a list of paragraphs
-        """
-        assert file_path.endswith(".jp2")
-
-        image_file_path = file_path
-        alto_file_path = f"{file_path.split('.jp2')[0]}.alto.xml"
-
-        assert os.path.isfile(image_file_path)
-        assert os.path.isfile(alto_file_path)
-
-        # Find the text-lines from Alto-xml
-        alto_extractor = AltoSegmentExtractor(alto_file_path)
-        text_lines = alto_extractor.extract_lines()
-
-        (headers, paragraphs) = self.group_lines_into_paragraphs_headers(text_lines)
-
-        # Find lines in image, then split segments that cross those lines.
-        lines = LineExtractor().extract_lines_via_path(image_file_path) \
-            if image is None else LineExtractor().extract_lines_via_image(image)
-        paragraphs = self.split_segments_by_lines(paragraphs, lines)
-
-        # Combine closely related text lines into actual paragraphs.
-        paragraphs = self.combine_lines_into_segments(paragraphs)
-
-        # Remove segments that are completely within other segments,
-        paragraphs = RepairSegments(paragraphs).repair_rows()
-
-        paragraphs = self.remove_segments_within_segments(headers, paragraphs)
-        headers = self.remove_segments_within_segments(paragraphs, headers)
-        return headers, paragraphs
 
     def group_lines_into_paragraphs_headers(self, lines: List):
         """ Groups headers together in one list and paragraphs in another list
@@ -437,3 +394,15 @@ class SegmentHelper:
         # with distance of its center
         # from given point
         return (x - circle_x) * (x - circle_x) + (y - circle_y) * (y - circle_y) <= rad * rad
+
+    @staticmethod
+    def inside_box(box_coords: list, x: int, y: int):
+        if len(box_coords) == 4:
+            return box_coords[0] <= x <= box_coords[2] and box_coords[1] <= y <= box_coords[3]
+        return False
+
+    @staticmethod
+    def distance_between_coordinates(x1, y1, x2, y2):
+        dx = x1 - x2
+        dy = y1 - y2
+        return math.sqrt(dx ** 2 + dy ** 2)
