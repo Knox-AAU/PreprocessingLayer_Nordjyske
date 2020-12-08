@@ -65,7 +65,7 @@ class Segment(Line):
                 self.y2 = line.y2
 
     @classmethod
-    def to_segment(cls, line: Line, segment_type: SegmentType):
+    def from_line(cls, line: Line, segment_type: SegmentType):
         """
         Converts the line to a segment
 

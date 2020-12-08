@@ -55,7 +55,7 @@ def run_file(file_path):
     Runs page segmentation on one files
     @param file_path: The path of the JP2-image to run page segmentation on.
     """
-    headers, paragraphs = SegmentModule().segment_page(file_path)
+    headers, paragraphs = SegmentModule.segment_headers_paragraph_from_file(file_path)
     display_segments_headers(headers, paragraphs, file_path, "repaired")
 
 
