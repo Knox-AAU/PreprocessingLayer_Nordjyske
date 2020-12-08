@@ -186,7 +186,7 @@ class SegmentOrdering:
 
     def display_lines(self, lines):
         """ Outputs a picture with headers and subheaders marked
-        :param headers_with_subheaders: A list of pairs and non pairs of headers
+        @param lines: A list of pairs and non pairs of headers
         """
         plt.imshow(Image.open(self.File_path + self.File_name + ".jp2"))
         plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})

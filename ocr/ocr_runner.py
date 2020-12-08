@@ -19,7 +19,7 @@ class OCRRunner:
 
     def run_ocr(self, file: File, language='dan', tesseract_path=None):
         """
-        Runs everything thats needed to do OCR. It does the following: segmentation, creating articles, and
+        Runs everything that's needed to do OCR. It does the following: segmentation, creating articles, and
         turning articles into publications
         @param file: given file to perform OCR on
         @param language: optional parameter to change the language used by Tesseract
@@ -28,7 +28,7 @@ class OCRRunner:
         """
         image = cv2.imread(file.path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        segments = SegmentModule.run_segmentation(file.path.split(".")[0])
+        segments = SegmentModule.run_segmentation(file.path)
 
         tessdata = "dan"
 
@@ -36,7 +36,7 @@ class OCRRunner:
 
         # 19280517 = 1928-05-17
         if int(file_date) < 19280517:
-            tessdata = "dan_best_gothic_fine_tune"
+            tessdata = "gothic_fine_tune"
 
         article = Article()
         articles = []
