@@ -151,7 +151,7 @@ class SegmentGrouper:
     def convert_groups_into_segments(self, groups: list):
         segments = []
         for group in groups:
-            [segments.append(head.to_segment(SegmentType.heading)) for head in group.headers]
+            [segments.append(head) for head in group.headers]
             [segments.append(paragraph) for paragraph in group.paragraphs]
 
         return segments
