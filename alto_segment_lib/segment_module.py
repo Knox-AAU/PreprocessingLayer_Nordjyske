@@ -46,7 +46,7 @@ class SegmentModule:
         paragraphs = merge_segments(paragraphs)
 
         segment_lines = SegmentLines(paragraphs, headers)
-        (horizontal_lines, vertical_lines) = segment_lines.find_vertical_and_horizontal_lines()
+        horizontal_lines = segment_lines.find_vertical_and_horizontal_lines()
 
         # Grouping
         grouper = SegmentGrouper()
