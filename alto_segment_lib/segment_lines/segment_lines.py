@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from PIL import Image
 from alto_segment_lib.line_extractor.extractor import LineExtractor
-from alto_segment_lib.line_extractor.hough_bundler import HoughBundler
 from alto_segment_lib.segment import Line, SegmentType
 from alto_segment_lib.segment_helper import SegmentHelper
 
@@ -14,27 +13,20 @@ import cv2
 
 class SegmentLines:
 
-    def __init__(self, paragraphs, headers, file_path):
+    def __init__(self, paragraphs, headers):
         self.paragraphs = paragraphs
         self.headers = headers
-        self.file_path = file_path
         self.vertical_lines = []
         content_bound = SegmentHelper().get_content_bounds(paragraphs+headers)
         self.page_x1 = content_bound[0]
         self.page_y1 = content_bound[1]
         self.page_x2 = content_bound[2]
         self.page_y2 = content_bound[3]
-        self.display_segments_headers(headers, paragraphs, file_path, "segments")
 
     def find_vertical_and_horizontal_lines(self):
         vertical_lines = self.find_vertical_lines()
         self.vertical_lines = vertical_lines
         horizontal_lines = self.find_horizontal_lines()
-
-        image = cv2.imread(self.file_path, cv2.CV_8UC1)
-        filename = self.file_path.split("/")[-1]
-
-        LineExtractor().show_lines_on_image(image, horizontal_lines + vertical_lines, filename + "-merged")
 
         return horizontal_lines, vertical_lines
 
@@ -66,10 +58,10 @@ class SegmentLines:
 
     def find_nearest_vertical_lines(self, horizontal_line, vertical_lines):
         """
-
-        @param horizontal_line:
-        @param vertical_lines:
-        @return:
+        Finds the closest vertical line to the left and right of the horizontal line
+        @param horizontal_line: A horizontal line
+        @param vertical_lines: A list of vertical lines
+        @return: The closest vertical line to the left and right of the horizontal line
         """
         vertical_lines.sort(key=lambda line: line.x1)
 
@@ -97,6 +89,10 @@ class SegmentLines:
         return min(left_side_lines, key=lambda line: horizontal_line.x1 - line.x1), min(right_side_lines, key=lambda line: line.x1 - horizontal_line.x1)
 
     def find_vertical_lines(self):
+        """
+        Finds all vertical lines from the segments, depending on the segments.
+        @return: A list of vertical lines
+        """
         # 1) - Find page bounds (Use existing function)
         # 2) - Try to merge as many
         # 2) - Find vertical lines: Loop all paragraphs:
@@ -110,10 +106,7 @@ class SegmentLines:
 
         segments.sort(key=lambda segment: segment.x1)
 
-        image = cv2.imread(self.file_path, cv2.CV_8UC1)
         lines = self.__create_vertical_lines_for_each_segment(self.paragraphs)
-
-        LineExtractor().show_lines_on_image(image, lines, "beforeMerge")
 
         lines = self.__fix_and_extend_vertical_lines(lines, segments)
 
@@ -137,6 +130,13 @@ class SegmentLines:
         return lines
 
     def __fix_and_extend_vertical_lines(self, vertical_lines, segments):
+        """
+        Merges similar lines, extends them to page bounds, extends them to the nearest segments and finally removing
+        duplicate lines
+        @param vertical_lines: A list of vertical lines
+        @param segments: A list of segments
+        @return: A list of finalized vertical lines
+        """
         merge_margin = 30
         final_lines = []
 
@@ -167,6 +167,12 @@ class SegmentLines:
 
     @staticmethod
     def __is_line_in_groups(lines_to_be_merged, line):
+        """
+        Checks if a group is in any group of a list of groups of lines
+        @param lines_to_be_merged: A list of groups of lines
+        @param line: A line
+        @return: True if the any group contains the line, and False otherwise
+        """
         for group in lines_to_be_merged:
             if group.__contains__(line):
                 return True
@@ -191,6 +197,11 @@ class SegmentLines:
 
     @staticmethod
     def __get_statistics_for_line_group(line_group):
+        """
+        Fetches some key statistics for a line group used for merging and extending lines
+        @param line_group: A list of lines
+        @return: The minimum y-value, maximum y-value and average x-value for the line group
+        """
         if len(line_group) == 0:
             return 0, 0, 0
 
@@ -212,7 +223,7 @@ class SegmentLines:
         return min_y, max_y, average_x
 
     @staticmethod
-    def __find_affected_segments(segments, min_y, max_y, x_cord):
+    def __find_affected_segments(segments, x_cord):
         affected_segments = []
 
         for segment in segments:
@@ -334,8 +345,6 @@ class SegmentLines:
 
     def __extend_lines_to_segment_borders(self, lines, segments):
         extended_lines = []
-        # todo slet
-        lines = sorted(lines, key=lambda line: line.y1)
 
         for line in lines:
             above_segments = self.__find_segments_above_line(line, segments)
@@ -363,7 +372,6 @@ class SegmentLines:
         @param lines: A list of lines
         @return: A list of merged lines
         """
-        #lines = sorted(lines, key=lambda line: line.y2 - line.y1)
         lines_to_remove = []
 
         for outer_line in lines:
@@ -391,37 +399,3 @@ class SegmentLines:
             return True
         else:
             return False
-
-    @staticmethod
-    def display_segments_headers(headers, segments_for_display, file_path, file_name):
-        """
-        Plots the segmented headers
-
-        @param headers: list of headers
-        @param segments_for_display:
-        @param file_path:path to the file being segmented
-        @param file_name: name of the file being segmented
-        """
-        print(file_path)
-
-        plt.imshow(Image.open(file_path))
-        plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
-
-        for segment in headers:
-            plt.gca().add_patch(
-                Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1),
-                          (segment.y2 - segment.y1), linewidth=0.3,
-                          edgecolor='b', facecolor='none'))
-            plt.text(segment.x1, segment.y1, f"[{segment.x1},{segment.y1}],[{segment.x2},{segment.y2}]",
-                     horizontalalignment='left', verticalalignment='top', fontsize=1, color="blue")
-
-        for segment in segments_for_display:
-            plt.gca().add_patch(
-                Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1),
-                          (segment.y2 - segment.y1), linewidth=0.3,
-                          edgecolor='r', facecolor='none'))
-            plt.text(segment.x1, segment.y1, f"[{segment.x1},{segment.y1}],[{segment.x2},{segment.y2}]",
-                     horizontalalignment='left', verticalalignment='top', fontsize=1, color="blue")
-        plt.savefig(file_path + "-" + file_name + ".png", dpi=600, bbox_inches='tight')
-        plt.gca().clear()
-

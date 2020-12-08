@@ -60,3 +60,11 @@ class SegmentModule:
         segment_lines = SegmentLines(paragraphs, headers, file_path)
         (horizontal_lines, vertical_lines) = segment_lines.find_vertical_and_horizontal_lines()
 
+        # Grouping
+        grouper = SegmentGrouper()
+        grouped_headers = SegmentHelper.group_headers_into_segments(headers)
+        groups = grouper.order_segments(grouped_headers, paragraphs, horizontal_lines)
+        ordered_segments = grouper.convert_groups_into_segments(groups)
+
+        return ordered_segments
+
