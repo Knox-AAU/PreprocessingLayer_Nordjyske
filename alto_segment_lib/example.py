@@ -9,6 +9,10 @@ from matplotlib.patches import Rectangle
 from PIL import Image
 from alto_segment_lib.line_extractor.extractor import LineExtractor
 from alto_segment_lib.repair_segments import merge_segments
+from alto_segment_lib.segment_lines.segment_lines import SegmentLines
+
+os.environ["OPENCV_IO_ENABLE_JASPER"] = "true"
+from cv2 import cv2
 
 base_path: str
 filename: str
@@ -100,11 +104,17 @@ def run_file(file_path):
     headers = segment_helper.remove_segments_within_segments(paragraphs, headers)
 
     paragraphs = merge_segments(paragraphs)
+    our_headers = segment_helper.group_headers_into_segments(headers)
+    segment_lines = SegmentLines(paragraphs, our_headers)
+    (horizontal_lines, vertical_lines) = segment_lines.find_vertical_and_horizontal_lines()
+    LineExtractor.show_lines_on_image(cv2.imread(file_path, cv2.CV_8UC1), horizontal_lines, "-HelloThere")
+    LineExtractor.show_lines_on_image(cv2.imread(file_path, cv2.CV_8UC1), horizontal_lines + vertical_lines, "-HelloThereMedAlleLinjer")
 
     # Grouping
     grouper = SegmentGrouper()
     grouped_headers = SegmentHelper.group_headers_into_segments(headers)
-    groups = grouper.order_segments(grouped_headers, paragraphs, lines)
+    # groups = grouper.order_segments(grouped_headers, paragraphs, lines)     # Sæt vores linjer ind her
+    groups = grouper.order_segments(grouped_headers, paragraphs, horizontal_lines)     # Sæt vores linjer ind her
 
     image = Image.open(file_path + filetype)
     image.putalpha(128)
@@ -140,7 +150,7 @@ def run_file(file_path):
 
     display_segments(lines, file_path, "lines")
     display_segments(paragraphs, file_path, "paragrphs")
-    display_segments(headers, file_path, "headers")
+    display_segments(our_headers, file_path, "headers")
 
     paragraphs.clear()
 

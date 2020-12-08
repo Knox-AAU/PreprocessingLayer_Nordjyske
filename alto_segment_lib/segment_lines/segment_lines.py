@@ -163,10 +163,10 @@ class SegmentLines:
             if len(affected_segments) == 0 or len(line_group) == 1:
                 final_lines.append(Line([average_x, min_y, average_x, max_y]))
             else:
-                merged_lines = self.__merge_all_lines_not_intersecting_segment(line_group, all_affected_segments)
-                extended_to_bounds_lines = self.__extend_vertical_lines(merged_lines, all_affected_segments)
-                extended_lines = self.__extend_lines_to_segment_borders(extended_to_bounds_lines, all_affected_segments)
-                fixed_lines = self.__merge_similar_lines(extended_lines)
+                # merged_lines = self.__merge_all_lines_not_intersecting_segment(line_group, all_affected_segments)
+                # extended_to_bounds_lines = self.__extend_vertical_lines(merged_lines, all_affected_segments)
+                # extended_lines = self.__extend_lines_to_segment_borders(extended_to_bounds_lines, all_affected_segments)
+                fixed_lines = self.__merge_similar_lines(line_group)
 
                 for line in fixed_lines:
                     final_lines.append(line)
