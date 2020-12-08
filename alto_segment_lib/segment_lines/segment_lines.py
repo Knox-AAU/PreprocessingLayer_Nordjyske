@@ -102,7 +102,7 @@ class SegmentLines:
         if len(right_side_lines) == 0:
             right_side_lines.append(Line([self.page_x2, self.page_y1,
                                          self.page_x2, self.page_y2]))
-
+        # Return the min distance of the left_side and right_side lines
         return min(left_side_lines, key=lambda line: horizontal_line.x1 - line.x1), min(right_side_lines, key=lambda line: line.x1 - horizontal_line.x1)
 
     def find_vertical_lines(self):
