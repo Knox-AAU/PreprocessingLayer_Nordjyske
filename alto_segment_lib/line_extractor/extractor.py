@@ -155,7 +155,7 @@ class LineExtractor:
     @staticmethod
     def show_lines_on_image(image, lines, name):
         """
-        Displays the lines on hte image
+        Displays the lines on the image
 
         @param image: The image to display the lines on
         @param lines: The lines to display
