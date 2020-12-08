@@ -1,7 +1,5 @@
 from enum import Enum
 from typing import List
-
-
 from alto_segment_lib.line import Line
 
 

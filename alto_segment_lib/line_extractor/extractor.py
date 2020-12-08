@@ -5,9 +5,8 @@ from math import atan2
 from os import environ
 from alto_segment_lib.line_extractor.hough_bundler import HoughBundler
 from alto_segment_lib.segment import Line
-from cv2 import cv2
-
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
+from cv2 import cv2
 
 
 class LineExtractor:
@@ -40,9 +39,7 @@ class LineExtractor:
 
         lines = self.extract_lines_via_image(image)
         extended_lines = self.extend_lines_vertically(lines, image)
-
         final_lines = self.remove_outline_lines(extended_lines, image)
-        #self.show_lines_on_image(image, final_lines)
         return final_lines
 
     def extract_lines_via_image(self, image: object):
@@ -55,7 +52,8 @@ class LineExtractor:
         enhanced_image = self.clarify_lines(image)
         return self.get_lines_from_binary_image(enhanced_image)
 
-    def remove_outline_lines(self, lines, image):
+    @staticmethod
+    def remove_outline_lines(lines, image):
         """
         Removes the lines constituting the outline of the image
 
@@ -155,7 +153,7 @@ class LineExtractor:
         return filtered_lines
 
     @staticmethod
-    def show_lines_on_image(image, lines):
+    def show_lines_on_image(image, lines, name):
         """
         Displays the lines on hte image
 
@@ -172,12 +170,17 @@ class LineExtractor:
 
         lines_edges = cv2.addWeighted(image_in_color, 0.5, line_image, 1, 0)
 
-        # cv2.imwrite("2004-stregerne.png", lines_edges)
+        cv2.imwrite(r"/home/jakob/Desktop/test/2015-01-01-01/" + name + ".png", lines_edges)
+        # cv2.imwrite(r"C:\Users\Alexi\Desktop\KnoxFiler\5\2015-01-01-01" + name + ".png", lines_edges)
+        # cv2.imwrite("C:\\Users\\Alexi\\Desktop\\KnoxTing\\5\\2015-01-01-01\\" + name + ".png", lines_edges)
+        # cv2.imwrite("E:\\Nordjyske\\2015-01-01-01\\" + name + ".png", lines_edges)
+        # print("done")
         # cv2.namedWindow("image", cv2.WINDOW_NORMAL)
         # cv2.imshow("image", lines_edges)
         # cv2.waitKey(0)
 
-    def extend_lines_vertically(self, lines, image):
+    @staticmethod
+    def extend_lines_vertically(lines, image):
         """
         Extends the lines vertically by decreasing y1 and increasing y2 of the lines
 
@@ -194,7 +197,8 @@ class LineExtractor:
 
         return lines
 
-    def correct_lines(self, lines):
+    @staticmethod
+    def correct_lines(lines):
         """
         ToDo: Add this!!!
 
