@@ -1,4 +1,3 @@
-from datetime import datetime, timezone
 from queue import Queue
 from unittest import mock
 
