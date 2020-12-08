@@ -64,7 +64,7 @@ class SegmentModule:
         grouper = SegmentGrouper()
         grouped_headers = SegmentHelper.group_headers_into_segments(headers)
         groups = grouper.order_segments(grouped_headers, paragraphs, horizontal_lines)
-        ordered_segments = grouper.convert_groups_into_segments(groups)
+        ordered_segments = grouper.order_segments(groups)
 
         return ordered_segments
 
