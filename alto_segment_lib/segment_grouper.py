@@ -1,10 +1,8 @@
-import statistics
 from os import environ
 from typing import List
-from alto_segment_lib.segment import Segment, Line, SegmentGroup, SegmentType
+from alto_segment_lib.segment import Segment, Line, SegmentType
 from alto_segment_lib.segment_group_handler import SegmentGroupHandler
 from alto_segment_lib.segment_helper import SegmentHelper
-from alto_segment_lib.line_extractor.extractor import LineExtractor
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 
 
@@ -117,7 +115,7 @@ class SegmentGrouper:
         segment.y2 = line.y2
         return segment
 
-    def order_segments_by_x1_y1(self, segments: list[Segment]):
+    def order_segments_by_x1_y1(self, segments: List[Segment]):
         # Group segments by x1, if segment.x1 is within range of the first element of an existing group, else create new group
         # Run through each group and sort by y1
         # Merge groups into collective list

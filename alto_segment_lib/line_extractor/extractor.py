@@ -55,7 +55,7 @@ class LineExtractor:
         enhanced_image = self.clarify_lines(image)
         return self.get_lines_from_binary_image(enhanced_image)
 
-    def remove_outline_lines(self, lines, image: object):
+    def remove_outline_lines(self, lines, image):
         """
         Removes the lines constituting the outline of the image
 
