@@ -157,6 +157,7 @@ class LineExtractor:
         """
         Displays the lines on the image
 
+        @param name: Name of the saved image
         @param image: The image to display the lines on
         @param lines: The lines to display
         @return: void
@@ -170,14 +171,7 @@ class LineExtractor:
 
         lines_edges = cv2.addWeighted(image_in_color, 0.5, line_image, 1, 0)
 
-        cv2.imwrite(r"/home/jakob/Desktop/test/2015-01-01-01/" + name + ".png", lines_edges)
-        # cv2.imwrite(r"C:\Users\Alexi\Desktop\KnoxFiler\5\2015-01-01-01" + name + ".png", lines_edges)
-        # cv2.imwrite("C:\\Users\\Alexi\\Desktop\\KnoxTing\\5\\2015-01-01-01\\" + name + ".png", lines_edges)
-        # cv2.imwrite("E:\\Nordjyske\\2015-01-01-01\\" + name + ".png", lines_edges)
-        # print("done")
-        # cv2.namedWindow("image", cv2.WINDOW_NORMAL)
-        # cv2.imshow("image", lines_edges)
-        # cv2.waitKey(0)
+        cv2.imwrite(f"{name}.png", lines_edges)
 
     @staticmethod
     def extend_lines_vertically(lines, image):

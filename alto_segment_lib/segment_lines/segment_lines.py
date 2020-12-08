@@ -1,9 +1,3 @@
-from os import environ
-from typing import List
-import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle
-from PIL import Image
-from alto_segment_lib.line_extractor.extractor import LineExtractor
 from alto_segment_lib.segment import Line, SegmentType
 from alto_segment_lib.segment_helper import SegmentHelper
 
@@ -134,7 +128,7 @@ class SegmentLines:
 
         # Merges lines
         for line_group in lines_to_be_merged:
-            # Find statistics for line groups
+            # Finds statistics for line groups
             (min_y, max_y, average_x) = self.__get_statistics_for_line_group(line_group)
 
             # Finds affected segments

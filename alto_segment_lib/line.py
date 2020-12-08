@@ -25,7 +25,7 @@ class Line:
 
     def width(self):
         """
-        Get the width of the segment
+        Gets the width of the segment
 
         @return: Width of the segment
         """
@@ -33,7 +33,7 @@ class Line:
 
     def height(self):
         """
-        Get the height of the segment
+        Gets the height of the segment
 
         @return: height of the segment
         """
@@ -67,7 +67,7 @@ class Line:
     def get_orientation(self):
         """
         Gets orientation of a line, using its length
-        https://en.wikipedia.org/wiki/Atan2
+        Using: https://en.wikipedia.org/wiki/Atan2
 
         @return Orientation of the line as a float
         """

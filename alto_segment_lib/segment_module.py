@@ -32,7 +32,7 @@ class SegmentModule:
     @staticmethod
     def segment_headers_paragraph_from_file(file_path):
         """
-        Get headers and paragraphs from a .jp2 file.
+        Gets headers and paragraphs from a .jp2 file.
         @param file_path: The path to a jp2 file.
         @return:
         """
