@@ -17,6 +17,7 @@ def run_around_tests():
     alto_segment_extractor.margin = 0 # in case config file changes.
     yield
     # Code that will run after every test:
+    pass # Nothing to run after every test.
 
 class PseudoValue:
     def __init__(self, value):
