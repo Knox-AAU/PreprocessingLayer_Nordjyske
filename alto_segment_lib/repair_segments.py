@@ -1,3 +1,5 @@
+from typing import List
+
 from alto_segment_lib.segment import Segment
 from alto_segment_lib.segment_grouper import SegmentGrouper
 from alto_segment_lib.segment_helper import SegmentHelper
@@ -41,7 +43,7 @@ class RepairSegments:
         # Iterates through all segments and all other segments
         for segment in self.__segments:
             for subsegment in self.__segments:
-                if not segment.compare(subsegment):
+                if not segment == subsegment:
                     thresh_close_to = subsegment.width() * 0.05
                     if subsegment in return_segments:
                         subsegment_index = return_segments.index(subsegment)
@@ -75,11 +77,11 @@ def add_segment(segments: list, coordinates: list, lines, seg_type: str):
     segments.append(segment)
 
 
-def merge_segments(segments: list[Segment]) -> list[Segment]:
+def merge_segments(segments: List[Segment]) -> List[Segment]:
     """
     Merges segments into bigger chunks based on distance
 
-    @param List of segments
+    @type segments: List of segments
     @return list[Segment]
     """
     grouper = SegmentGrouper()

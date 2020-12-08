@@ -1,4 +1,4 @@
-from alto_segment_lib.segment import Segment
+from alto_segment_lib.segment import Segment, SegmentType
 from alto_segment_lib.segment import Line
 
 
@@ -8,13 +8,13 @@ class TestSegment:
         segment_one = Segment([200, 400, 400, 600])
         segment_two = Segment([200, 400, 400, 600])
 
-        assert segment_one.compare(segment_two)
+        assert segment_one == segment_two
 
     def test_compare_unequal_segments(self):
         segment_one = Segment([200, 400, 400, 600])
         segment_two = Segment([200, 500, 400, 700])
 
-        if not segment_one.compare(segment_two):
+        if not segment_one == segment_two:
             assert True
         else:
             assert False
@@ -22,7 +22,7 @@ class TestSegment:
     def test_compare_on_none_segment_should_fail(self):
         segment_one = Segment([200, 400, 400, 600])
 
-        if not segment_one.compare("string"):
+        if not segment_one == "string":
             assert True
         else:
             assert False
@@ -158,7 +158,18 @@ class TestLine:
     def test_height_failed(self):
         line = Line([20, 30, 80, 50])
 
-        if line.height() == 74:
-            assert False
-        else:
-            assert True
+        assert line.height() != 74
+
+    def test_to_segment_returns_segment_with_correct_type(self):
+        line = Line([0, 0, 10, 10])
+
+        segment = Segment.from_line(line, SegmentType.paragraph)
+
+        assert segment.type == SegmentType.paragraph
+
+    def test_to_segment_returns_segment_with_correct_coordinates(self):
+        line = Line([0, 0, 10, 10])
+
+        segment = Segment.from_line(line, SegmentType.paragraph)
+
+        assert segment.x1 == line.x1 and segment.y1 == line.y1 and segment.x2 == line.x2 and segment.y2 == line.y2
