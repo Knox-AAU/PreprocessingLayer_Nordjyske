@@ -167,7 +167,7 @@ class SegmentLines:
                 return True
 
     def __find_similar_lines(self, vertical_lines, merge_margin):
-        lines_to_be_merged = [[]]
+        lines_to_be_merged = []
 
         for line in vertical_lines:
             if self.__is_line_in_groups(lines_to_be_merged, line):

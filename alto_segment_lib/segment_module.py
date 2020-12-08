@@ -6,21 +6,9 @@ from alto_segment_lib.segment import SegmentType
 from alto_segment_lib.segment_grouper import SegmentGrouper
 from alto_segment_lib.segment_helper import SegmentHelper
 from alto_segment_lib.segment_lines.segment_lines import SegmentLines
-import configparser
 
 
 class SegmentModule:
-
-    def __init__(self):
-        config = configparser.ConfigParser()
-        config.read('config.ini')
-
-        self.__threshold_block_header_to_paragraph = float(config['page_segmentation']['threshold_block_header_to_paragraph'])
-        self.__threshold_line_header_to_paragraph = float(config['page_segmentation']['threshold_line_header_to_paragraph'])
-        self.__min_lines_to_compare_block_height_instead_of_line_height = int(config['page_segmentation']['min_lines_to_compare_block_height_instead_of_line_height'])
-        self.__group_same_column_margin = float(config['page_segmentation']['group_same_column_margin'])
-        self.__group_same_segment_margin_px = float(config['page_segmentation']['group_same_segment_margin_px'])
-        self.__min_cluster_size = int(config['page_segmentation']['min_cluster_size'])
 
     @staticmethod
     def run_segmentation(file_path):

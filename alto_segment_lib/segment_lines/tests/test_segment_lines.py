@@ -12,4 +12,4 @@ def test_find_vertical_lines():
     segment_lines = SegmentLines(paragraphs, headers)
     vertical_line = segment_lines.find_vertical_lines()
 
-    assert vertical_line[1] == Line([10,0,10,30])
+    assert vertical_line[0] == Line([10,0,10,30])
