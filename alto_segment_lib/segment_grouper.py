@@ -1,10 +1,8 @@
-import statistics
 from os import environ
 from typing import List
-from alto_segment_lib.segment import Segment, Line, SegmentGroup, SegmentType
+from alto_segment_lib.segment import Segment, Line, SegmentType
 from alto_segment_lib.segment_group_handler import SegmentGroupHandler
 from alto_segment_lib.segment_helper import SegmentHelper
-from alto_segment_lib.line_extractor.extractor import LineExtractor
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 
 
@@ -34,17 +32,13 @@ class SegmentGrouper:
                  element.is_horizontal() and line_bound < element.y1 < (bounds[3] - line_bound)]
 
         for line in lines:
-            length = line.width()
             # We shorten all lines by 5% in both ends to prevent column overlap
             line.x1 = line.x1 * 1.05
             line.x2 = line.x2 * 0.95
             segments.append(self.__convert_line_to_segment(line))
 
-        # segments = [element for element, element in enumerate(segments) if
-        #            line_bound < element.y1 < (bounds[3] - line_bound)]
-
         # Sort headers and paragraphs by lowest x, lowest y.
-        segments = self.__order_segments_by_x1_y1(segments)
+        segments = self.order_segments_by_x1_y1(segments)
 
         segments_to_check = segments.copy()
         group_handler = SegmentGroupHandler()
@@ -74,13 +68,8 @@ class SegmentGrouper:
             segments_to_check.remove(segment)
 
         group_handler.finalize()
-        segments = []
 
-        for group in group_handler.groups:
-            [segments.append(head.to_segment(SegmentType.heading)) for head in group.headers]
-            [segments.append(paragraph) for paragraph in group.paragraphs]
-
-        return segments
+        return group_handler.groups
 
     def __finish_article_based_on_line(self, group_handler: SegmentGroupHandler, line: Segment,
                                        segments_to_check: List[Segment]):
@@ -126,7 +115,7 @@ class SegmentGrouper:
         segment.y2 = line.y2
         return segment
 
-    def __order_segments_by_x1_y1(self, segments: List[Segment]):
+    def order_segments_by_x1_y1(self, segments: List[Segment]):
         # Group segments by x1, if segment.x1 is within range of the first element of an existing group, else create new group
         # Run through each group and sort by y1
         # Merge groups into collective list
@@ -156,3 +145,11 @@ class SegmentGrouper:
 
         # Return the segments as a 1-dimensional list
         return [segment for group in segments_grouped for segment in group]
+
+    def convert_groups_into_segments(self, groups: list):
+        segments = []
+        for group in groups:
+            [segments.append(head) for head in group.headers]
+            [segments.append(paragraph) for paragraph in group.paragraphs]
+
+        return segments

@@ -6,8 +6,8 @@ os.environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from PIL import Image
+from alto_segment_lib.segment_module import *
 
-from alto_segment_lib.segment_helper import SegmentHelper
 
 def display_segments_headers(headers, segments_for_display, file_path, file_name):
     """
@@ -55,7 +55,7 @@ def run_file(file_path):
     Runs page segmentation on one files
     @param file_path: The path of the JP2-image to run page segmentation on.
     """
-    headers, paragraphs = SegmentHelper().segment_page(file_path)
+    headers, paragraphs = SegmentModule.segment_headers_paragraph_from_file(file_path)
     display_segments_headers(headers, paragraphs, file_path, "repaired")
 
 

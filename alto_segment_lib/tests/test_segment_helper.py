@@ -128,6 +128,29 @@ def test_group_headers_into_segments_multiple_header_success():
 
     assert len(header_segments) == 2
 
+def test_inside_box_actually_inside_box(self):
+    the_box = [10, 10, 100, 100]
+    assert segment_helper.inside_box(the_box, 50, 50)
+
+def test_inside_box_actually_outside_box(self):
+    the_box = [10, 10, 100, 100]
+    assert not segment_helper.inside_box(the_box, 101, 101)
+
+def test_distance_between_coordinates_success(self):
+    dot1_x = 0
+    dot2_x = 100
+    dot1_y = dot2_y = 0
+
+    distance = segment_helper.distance_between_coordinates(dot1_x, dot1_y, dot2_x, dot2_y)
+    assert distance == 100
+
+def test_distance_between_coordinates_failed(self):
+    dot1_x = 0
+    dot2_x = 400
+    dot1_y = dot2_y = 0
+
+    distance = segment_helper.distance_between_coordinates(dot1_x, dot1_y, dot2_x, dot2_y)
+    assert not distance == 500
 
 def test_group_lines_into_paragraphs_headers_one_header_one_paragraph_based_on_height_success():
     # Line that should be classified as a header
@@ -189,5 +212,3 @@ def test_remove_segments_within_segments_not_to_remove_success():
     array_segments = [segment.to_array() for segment in updated_segments]
 
     assert array_segments == [[0, 10, 50, 50]]
-
-

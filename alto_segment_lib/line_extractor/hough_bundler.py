@@ -1,7 +1,6 @@
 # pylint: skip-file
 import configparser
 import math
-from math import atan2
 
 from alto_segment_lib.segment import Line
 
