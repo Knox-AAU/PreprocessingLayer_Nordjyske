@@ -25,16 +25,16 @@ class SegmentLines:
         self.page_x2 = content_bound[2]
         self.page_y2 = content_bound[3]
 
-    def find_vertical_and_horizontal_lines(self) -> List[Segment]:
+    def find_vertical_and_horizontal_lines(self) -> List[Line]:
         """
         Finds the horizontal lines from the given segments and returns them.
         @return: A list of horizontal lines
         """
         vertical_lines = self.find_vertical_lines()
         self.vertical_lines = vertical_lines
-        horizontal_lines = self.find_horizontal_lines()
+        horizontal_lines = self.__find_horizontal_lines()
 
-        return horizontal_lines
+        return horizontal_lines, vertical_lines
 
     def __find_horizontal_lines(self):
         """

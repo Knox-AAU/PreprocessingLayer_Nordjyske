@@ -164,14 +164,14 @@ class LineExtractor:
         line_image = np.copy(image) * 0  # creating a blank to draw lines on
         line_image = cv2.cvtColor(line_image, cv2.COLOR_GRAY2RGB)
         for line in lines:
-            cv2.line(line_image, (line.x1, line.y1), (line.x2, line.y2), (0, 0, 255), 3)
+            cv2.line(line_image, (int(line.x1), line.y1), (int(line.x2), line.y2), (0, 0, 255), 3)
 
         image_in_color = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
 
         lines_edges = cv2.addWeighted(image_in_color, 0.5, line_image, 1, 0)
 
-        cv2.imwrite(r"/home/jakob/Desktop/test/2015-01-01-01/" + name + ".png", lines_edges)
-        # cv2.imwrite(r"C:\Users\Alexi\Desktop\KnoxFiler\5\2015-01-01-01" + name + ".png", lines_edges)
+        # cv2.imwrite(r"/home/jakob/Desktop/test/2015-01-01-01/" + name + ".png", lines_edges)
+        cv2.imwrite(r"C:\Users\Alexi\Desktop\KnoxFiler\5\2015-01-01-01" + name + ".png", lines_edges)
         # cv2.imwrite("C:\\Users\\Alexi\\Desktop\\KnoxTing\\5\\2015-01-01-01\\" + name + ".png", lines_edges)
         # cv2.imwrite("E:\\Nordjyske\\2015-01-01-01\\" + name + ".png", lines_edges)
         # print("done")
