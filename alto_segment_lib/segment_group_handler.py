@@ -35,6 +35,13 @@ class SegmentGroupHandler:
         @param segment: the segment to add
         @return: void
         """
+
+        # Fix for pages without headers (gothic)
+        # Fix since cross page segmentation is not managed in the rest of the code.
+        if self.current_group is None and self.unfinished_group is None:
+            self.start_group()
+            self.add_segment(segment)
+
         if self.current_group is not None:
             if segment.type == SegmentType.heading:
                 self.current_group.headers = segment.lines

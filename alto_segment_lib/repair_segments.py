@@ -98,7 +98,8 @@ def merge_segments(segments: List[Segment]) -> List[Segment]:
         skip_segment = False
 
         for merged_segment in merged_segments:
-            if SegmentHelper.inside_box([merged_segment.x1, merged_segment.y1, merged_segment.x2, merged_segment.y2], segment.x1, segment.y1):
+            # Adding one since some segments are starting at exactly same y as parent
+            if SegmentHelper.inside_box([merged_segment.x1, merged_segment.y1, merged_segment.x2, merged_segment.y2], segment.x1, segment.y1+1):
                 skip_segment = True
                 break
 
