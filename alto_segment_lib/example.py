@@ -153,10 +153,13 @@ def run_file(file_path):
 
         if len(group.headers) > 0:
             header = group.headers[0]
-            circle = plt.Circle((header.x1 + 100, header.y1 + 100), 100, linewidth=0.35, edgecolor="black", facecolor=color)
+            circle = plt.Circle((header.x1 + 100, header.y1 + 100), 150, linewidth=0.35, edgecolor="black", facecolor=color)
             plt.gca().add_patch(circle)
             plt.rcParams.update({'font.size': 6, 'text.color': 'white', 'axes.labelcolor': 'white'})
-            text = plt.text(header.x1+51, header.y1+45, str(counter), horizontalalignment='left', verticalalignment='top')
+            padding = 51
+            if counter > 9:
+                padding -= 50
+            text = plt.text(header.x1+padding, header.y1+45, str(counter), horizontalalignment='left', verticalalignment='top')
             text.set_path_effects([peffect.Stroke(linewidth=0.7, foreground='black'), peffect.Normal()])
 
 
