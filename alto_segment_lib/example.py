@@ -11,6 +11,9 @@ from PIL import Image
 from alto_segment_lib.line_extractor.extractor import LineExtractor
 from alto_segment_lib.repair_segments import merge_segments
 import matplotlib.patheffects as peffect
+from alto_segment_lib.segment_lines.segment_lines import SegmentLines
+os.environ["OPENCV_IO_ENABLE_JASPER"] = "true"
+from cv2 import cv2
 
 base_path: str
 filename: str
@@ -109,11 +112,19 @@ def run_file(file_path):
     print("After:  " + str(len(paragraphs)))
     display_segments(paragraphs, file_path, "paragraphs-after")
 
+    our_headers = segment_helper.group_headers_into_segments(headers)
+    segment_lines = SegmentLines(paragraphs, our_headers)
+    (horizontal_lines, vertical_lines) = segment_lines.find_vertical_and_horizontal_lines()
+    LineExtractor.show_lines_on_image(cv2.imread(file_path, cv2.CV_8UC1), horizontal_lines, "-HelloThere")
+    LineExtractor.show_lines_on_image(cv2.imread(file_path, cv2.CV_8UC1), horizontal_lines + vertical_lines, "-HelloThereMedAlleLinjer")
+
+
     # Grouping
 
 
     grouper = SegmentGrouper()
     grouped_headers = SegmentHelper.group_headers_into_segments(headers)
+
     print("Headers after : " + str(len(grouped_headers)))
 
     display_segments(grouped_headers, file_path, "box-headers")
@@ -156,7 +167,7 @@ def run_file(file_path):
 
     display_segments(lines, file_path, "lines")
     display_segments(paragraphs, file_path, "paragrphs")
-    display_segments(headers, file_path, "headers")
+    display_segments(our_headers, file_path, "headers")
 
     paragraphs.clear()
 
