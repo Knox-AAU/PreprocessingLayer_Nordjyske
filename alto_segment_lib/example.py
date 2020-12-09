@@ -1,5 +1,7 @@
 import argparse
 import os
+
+from alto_segment_lib.line import Line
 from alto_segment_lib.repair_segments import RepairSegments
 from alto_segment_lib.segment import Segment, SegmentType
 from alto_segment_lib.segment_grouper import SegmentGrouper
@@ -114,9 +116,24 @@ def run_file(file_path):
 
     our_headers = segment_helper.group_headers_into_segments(headers)
     segment_lines = SegmentLines(paragraphs, our_headers)
-    (horizontal_lines, vertical_lines) = segment_lines.find_vertical_and_horizontal_lines()
-    LineExtractor.show_lines_on_image(cv2.imread(file_path, cv2.CV_8UC1), horizontal_lines, "-HelloThere")
-    LineExtractor.show_lines_on_image(cv2.imread(file_path, cv2.CV_8UC1), horizontal_lines + vertical_lines, "-HelloThereMedAlleLinjer")
+    # (horizontal_lines, vertical_lines) = segment_lines.find_vertical_and_horizontal_lines()
+    horizontal_lines = []
+                #     # De 3
+                # horizontal_lines.append(Line([1000, 3950, 4100, 3950]))
+                # horizontal_lines.append(Line([1000, 5030, 4100, 5030]))
+                # horizontal_lines.append(Line([1000, 5850, 4100, 5850]))
+                #     # Øverst
+                # horizontal_lines.append(Line([200, 325, 4700, 325]))
+                #     # Over billede
+                # horizontal_lines.append(Line([1000, 2000, 4100, 2000]))
+                #     # Til højre
+                # horizontal_lines.append(Line([4100, 2500, 4600, 2500]))
+    # horizontal_lines.append(Line([1600, 4470, 3000, 4470]))     # Hitler
+
+    # horizontal_lines.clear()
+    LineExtractor.show_lines_on_image(cv2.imread(file_path + ".jp2", cv2.CV_8UC1), horizontal_lines, "-Wupti")
+
+    display_segments(horizontal_lines, file_path, "paragraphs-before")
 
 
     # Grouping
@@ -129,6 +146,7 @@ def run_file(file_path):
 
     display_segments(grouped_headers, file_path, "box-headers")
     groups = grouper.order_segments(grouped_headers, paragraphs, lines)
+    # groups = grouper.order_segments(grouped_headers, paragraphs, horizontal_lines)
 
     image = Image.open(file_path + filetype)
     image.putalpha(128)
@@ -138,7 +156,7 @@ def run_file(file_path):
     counter = 1
     color_counter = 0
 
-    colors = ['magenta', 'blue', 'green', 'brown', 'purple', 'yellow', 'orange']
+    colors = ['magenta', 'blue', 'green', 'brown', 'orange', 'yellow', 'purple']
 
     for group in groups:
         if color_counter >= len(colors):

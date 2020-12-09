@@ -357,7 +357,7 @@ class SegmentHelper:
 
         x1 = x2 = y1 = y2 = 0
         radius = 0
-        threshold = 100  # ToDo: make smart
+        threshold = 300  # ToDo: make smart
 
         for line in header_lines:
             if SegmentHelper.distance_between_coordinates(x1, y2, line.x1, line.y1) <= threshold:
