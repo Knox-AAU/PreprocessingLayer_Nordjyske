@@ -11,7 +11,7 @@ from nitf_parser.parser import NitfParser
 class MotherRunner:
     def __init__(self, root, from_date, to_date, output_dest):
         self.q = Queue()
-        self.worker = Process(target=self._consumer)
+        self.consumer = Process(target=self._consumer)
         self.root = root
         self.from_date = from_date
         self.to_date = to_date
@@ -54,13 +54,8 @@ class MotherRunner:
 
     def start(self):
         print("Starting consumer")
-        self.worker.start()
+        self.consumer.start()
 
         self.__producer()
 
-        self.stop()
-
-    def stop(self):
-        print("Stopping consumer worker")
-        self.q.put(None)
-        self.worker.join()
+        self.consumer.join()
