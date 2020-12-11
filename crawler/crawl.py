@@ -42,7 +42,8 @@ class Crawler:
             if not entry.is_dir():
                 continue
             # Let's check if the current dir is a target dir by matching to regexs
-            matched_regex = next(filter(lambda regex: re.match(regex['compiled'], entry.name), self.regexs), None)
+            matched_regex = next(
+                filter(lambda regex: re.match(regex['compiled'], entry.name), self.regexs), None)
             if matched_regex is not None:
                 # Current dir IS a target dir, append to list to return later.
 
@@ -51,7 +52,12 @@ class Crawler:
                                 int(entry.name[limits[0]:limits[1]]),
                                 int(entry.name[limits[2]:limits[3]]),
                                 int(entry.name[limits[4]:limits[5]]))
-                if not (from_date <= folder.get_datetime() <= to_date):
+
+                if not (
+                        from_date if from_date is not None else datetime.min <=
+                        folder.get_datetime() <=
+                        to_date if to_date is not None else datetime.max
+                ):
                     # only consume if within date
                     continue
                 self.crawl_for_files_in_folders(folder, entry.path)

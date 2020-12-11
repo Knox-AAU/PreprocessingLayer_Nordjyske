@@ -24,13 +24,13 @@ if __name__ == '__main__':
 
     # defines from_date argument
     parser.add_argument('-f', '--from', dest="from_date", type=parse_date,
-                        default="1000-01-01",
+                        default=None,
                         help='defines the end date from the collected data.'
                              ' It should be formatted as YYYY-MM-DD. (Default: no)')
 
     # defines toDate argument
     parser.add_argument('-t', '--to', dest="to_date", type=parse_date,
-                        default="5000-01-01",
+                        default=None,
                         help='defines the end date from the collected data. '
                              'It should be formatted as YYYY-MM-DD. (Default: no)')
 

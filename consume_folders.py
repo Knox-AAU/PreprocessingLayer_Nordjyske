@@ -3,10 +3,8 @@ from queue import Queue
 from multiprocessing import Process, Queue
 from joblib import Parallel, delayed
 from crawler.crawl import Crawler
-# https://asyncio.readthedocs.io/en/latest/producer_consumer.html
 from crawler.file_types import FileType
 from ocr.ocr_runner import OCRRunner
-from ocr.tesseract import TesseractModule
 from save_to_json import save_to_json
 from nitf_parser.parser import NitfParser
 
@@ -14,8 +12,7 @@ from nitf_parser.parser import NitfParser
 class MotherRunner:
     def __init__(self, root, from_date, to_date, output_dest):
         self.q = Queue()
-        self.worker_count = 1
-        self.workers = []
+        self.worker = Process(target=self._consumer)
         self.root = root
         self.from_date = from_date
         self.to_date = to_date
@@ -37,7 +34,8 @@ class MotherRunner:
             item = self.q.get()
             if item is None:
                 # the producer emits None to indicate that it is done
-                break
+                print("Finished all items, exiting.")
+                return
 
             print(f'[Consumer Thread] consuming item {item.__dict__}...')
 
@@ -56,20 +54,15 @@ class MotherRunner:
         self.q.put(None)
 
     def start(self):
-        print("starting %d workers" % self.worker_count)
-        self.workers = [
-            Process(target=self._consumer)
-            for i in range(self.worker_count)]
-        for w in self.workers:
-            w.start()
+        print("Starting consumer")
+        self.worker.start()
 
         self.__producer()
 
         self.stop()
 
     def stop(self):
-        print(f"stopping {self.worker_count} workers")
+        print("Stopping consumer worker")
         self.q.put(None)
-        for i in range(self.worker_count):
-            self.workers[i].join()
+        self.worker.join()
         self.q.close()
