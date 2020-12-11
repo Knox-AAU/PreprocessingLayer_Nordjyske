@@ -1,10 +1,5 @@
-from os import environ
 from typing import List
-import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle
-from PIL import Image
-from alto_segment_lib.line_extractor.extractor import LineExtractor
-from alto_segment_lib.segment import Line, SegmentType, Segment
+from alto_segment_lib.segment import Line, SegmentType
 from alto_segment_lib.segment_helper import SegmentHelper
 
 
@@ -34,7 +29,7 @@ class SegmentLines:
         self.vertical_lines = vertical_lines
         horizontal_lines = self.__find_horizontal_lines()
 
-        return horizontal_lines, vertical_lines
+        return horizontal_lines
 
     def __find_horizontal_lines(self):
         """
@@ -110,14 +105,8 @@ class SegmentLines:
         Finds all vertical lines from the segments, depending on the segments.
         @return: A list of vertical lines
         """
-        segments = self.paragraphs + self.headers
-
-        segments.sort(key=lambda segment: segment.x1)
 
         lines = self.__create_vertical_lines_for_each_segment(self.paragraphs)
-
-        #lines = self.__merge_similar_lines(lines)
-        #lines = self.__fix_and_extend_vertical_lines(lines, segments)
 
         return lines
 
@@ -132,10 +121,9 @@ class SegmentLines:
         margin = 2
         for segment in segments:
             if segment.type == SegmentType.paragraph:
-                # Make a line that is parallel with the left side of the segment
+                # Make a line that is parallel with the left and right side of the segment
                 lines.append(Line([segment.x1 - margin, segment.y1, segment.x1 - margin, segment.y2]))
-                lines.append(Line([segment.x2 + margin, segment.y1, segment.x2 + margin, segment.y2]))      # Lines on both sides of the segment
-
+                lines.append(Line([segment.x2 + margin, segment.y1, segment.x2 + margin, segment.y2]))
         return lines
 
     def __fix_and_extend_vertical_lines(self, vertical_lines, segments):

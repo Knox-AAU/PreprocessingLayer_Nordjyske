@@ -28,7 +28,7 @@ class OCRRunner:
         """
         image = cv2.imread(file.path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        segments = SegmentModule.run_segmentation(file.path)
+        segments = SegmentModule().run_segmentation(file.path)
 
         tessdata = "dan"
 

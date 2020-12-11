@@ -24,11 +24,7 @@ class SegmentModule:
         headers, paragraphs = SegmentModule.segment_headers_paragraph_from_file(file_path)
 
         segment_lines = SegmentLines(paragraphs, headers)
-        (horizontal_lines, vert_lines) = segment_lines.find_vertical_and_horizontal_lines()
-        LineExtractor.show_lines_on_image(cv2.imread(file_path, cv2.CV_8UC1), horizontal_lines, "-HelloThere")
-        LineExtractor.show_lines_on_image(cv2.imread(file_path, cv2.CV_8UC1), horizontal_lines + vert_lines, "-HelloThereMedAlleLinjer")
-
-        self.display_segments(headers + paragraphs, file_path, "cake")
+        horizontal_lines = segment_lines.find_vertical_and_horizontal_lines()
 
         # Grouping
         grouper = SegmentGrouper()
