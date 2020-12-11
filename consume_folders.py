@@ -1,5 +1,4 @@
 import multiprocessing
-from queue import Queue
 from multiprocessing import Process, Queue
 from joblib import Parallel, delayed
 from crawler.crawl import Crawler
@@ -64,5 +63,4 @@ class MotherRunner:
     def stop(self):
         print("Stopping consumer worker")
         self.q.put(None)
-        self.q.close()
-        self.q.join_thread()
+        self.worker.join()
