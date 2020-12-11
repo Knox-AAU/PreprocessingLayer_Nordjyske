@@ -353,10 +353,9 @@ class SegmentHelper:
         @return:
         """
         header_segments = []
-        segment = None
+        segment = Segment()
 
         x1 = x2 = y1 = y2 = 0
-        radius = 0
         threshold = 300  # ToDo: make smart
 
         for line in header_lines:
@@ -367,7 +366,7 @@ class SegmentHelper:
                 # The line is right next to the header
                 segment.add_line(line)
             else:
-                if segment is not None:
+                if len(segment.lines) != 0:
                     segment.update_coordinates_based_on_lines()
                     header_segments.append(segment)
 
@@ -379,7 +378,6 @@ class SegmentHelper:
             y1 = line.y1
             x2 = line.x2
             y2 = line.y2
-            radius = line.height() + 400  # TODO: Make smarter
 
         if segment is not None:
             segment.update_coordinates_based_on_lines()
