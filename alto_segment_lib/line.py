@@ -84,6 +84,13 @@ class Line:
         return isinstance(other, Line) and (self.x1 == other.x1 and self.y1 == other.y1
                                             and self.x2 == other.x2 and self.y2 == other.y2)
 
+    def __repr__(self):
+        """
+        Makes a string representation of the coordinates
+        @return: string representation
+        """
+        return str(self.to_array())
+
     def is_horizontal(self):
         """
         Checks if the line is horizontal
