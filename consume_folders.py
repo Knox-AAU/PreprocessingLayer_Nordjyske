@@ -66,4 +66,3 @@ class MotherRunner:
         self.q.put(None)
         self.q.close()
         self.q.join_thread()
-        self.worker.join()
