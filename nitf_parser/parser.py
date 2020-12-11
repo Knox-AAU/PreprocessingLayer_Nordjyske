@@ -38,12 +38,14 @@ class NitfParser:
         # get name attribute
         byline = {'name': None, 'email': None}
 
-        data = [data for data in metadata if data.getAttribute("name") == config['metadata']['name']]
+        data = [data for data in metadata if
+                data.getAttribute("name") == config['metadata']['name']]
         if len(data) != 0:
             byline['name'] = data[0].getAttribute('content')
 
         # get email attribute
-        data = [data for data in metadata if data.getAttribute("name") == config['metadata']['email']]
+        data = [data for data in metadata if
+                data.getAttribute("name") == config['metadata']['email']]
         if len(data) != 0:
             byline['email'] = data[0].getAttribute('content')
 
@@ -52,12 +54,14 @@ class NitfParser:
             self.article.add_byline(byline['name'], byline['email'])
 
         # get page attribute
-        data = [data for data in metadata if data.getAttribute("name") == config['metadata']['page']]
+        data = [data for data in metadata if
+                data.getAttribute("name") == config['metadata']['page']]
         if len(data) != 0:
             self.article.page = int(data[0].getAttribute('content'))
 
         # get nmid attribute
-        data = [data for data in metadata if data.getAttribute("name") == config['metadata']['nmid']]
+        data = [data for data in metadata if
+                data.getAttribute("name") == config['metadata']['nmid']]
         if len(data) != 0:
             if data[0].getAttribute('content') != "noid":
                 self.article.id = data[0].getAttribute('content')
@@ -114,21 +118,42 @@ class NitfParser:
                 if paragraph_kind != "":
                     p.kind = paragraph_kind
 
-                p.value = NitfParser.sanitize_spaces(paragraph.firstChild.nodeValue)
+                p.value = NitfParser.sanitize_spaces(
+                    NitfParser.__get_text_recursive_xmldom(paragraph).strip())
+
                 self.article.add_paragraph(p)
+
+    @staticmethod
+    def __get_text_recursive_xmldom(element) -> str:
+        accumulated = ""
+        for child in element.childNodes:
+            if child.nodeValue is not None:
+                accumulated += f"{child.nodeValue} "
+            else:
+                accumulated += f"{NitfParser.__get_text_recursive_xmldom(child)} "
+
+        return accumulated
 
     def __parse_body_head(self, head):
         """ Returns needed information from head including title and trompet
         :param head:
         :return:
         """
+        subheaders = []
         hl1s = head.getElementsByTagName('nitf:hl1')
         if len(hl1s) > 0:
             self.article.headline = NitfParser.sanitize_spaces(hl1s[0].firstChild.nodeValue)
-
+            subheaders.extend(hl1s[1:])
         hl2s = head.getElementsByTagName('nitf:hl2')
-        if len(hl2s) > 0:
-            self.article.lead = NitfParser.sanitize_spaces(hl2s[0].firstChild.nodeValue)
+        subheaders.extend(hl2s)
+
+        for subheader in subheaders:
+            p = Paragraph()
+            p.kind = "subheader"
+            p.value = NitfParser.sanitize_spaces(
+                NitfParser.__get_text_recursive_xmldom(subheader).strip()
+            )
+            self.article.add_paragraph(p)
 
     def __parse_body(self, body_element):
         """Calls the needed methods to extract information from the body, and merges it into one object
@@ -142,7 +167,7 @@ class NitfParser:
         # body content contains the paragraphs and subheaders
         self.__parse_body_content(body_element.getElementsByTagName("nitf:body.content")[0])
 
-    def parse(self, article_path): # todo rewrite into a text driven method
+    def parse(self, article_path):  # todo rewrite into a text driven method
         self.article = Article()
         self.article.add_extracted_from(article_path)
         xml_doc = minidom.parse(article_path)
