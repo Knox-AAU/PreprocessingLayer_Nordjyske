@@ -65,4 +65,3 @@ class MotherRunner:
         print("Stopping consumer worker")
         self.q.put(None)
         self.worker.join()
-        self.q.close()
