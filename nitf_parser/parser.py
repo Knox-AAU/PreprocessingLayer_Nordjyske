@@ -139,13 +139,21 @@ class NitfParser:
         :param head:
         :return:
         """
+        subheaders = []
         hl1s = head.getElementsByTagName('nitf:hl1')
         if len(hl1s) > 0:
             self.article.headline = NitfParser.sanitize_spaces(hl1s[0].firstChild.nodeValue)
-
+            subheaders.extend(hl1s[1:])
         hl2s = head.getElementsByTagName('nitf:hl2')
-        if len(hl2s) > 0:
-            self.article.lead = NitfParser.sanitize_spaces(hl2s[0].firstChild.nodeValue)
+        subheaders.extend(hl2s)
+
+        for subheader in subheaders:
+            p = Paragraph()
+            p.kind = "subheader"
+            p.value = NitfParser.sanitize_spaces(
+                NitfParser.__get_text_recursive_xmldom(subheader).strip()
+            )
+            self.article.add_paragraph(p)
 
     def __parse_body(self, body_element):
         """Calls the needed methods to extract information from the body, and merges it into one object
