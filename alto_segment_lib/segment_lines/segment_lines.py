@@ -116,7 +116,8 @@ class SegmentLines:
 
         lines = self.__create_vertical_lines_for_each_segment(self.paragraphs)
 
-        lines = self.__fix_and_extend_vertical_lines(lines, segments)
+        #lines = self.__merge_similar_lines(lines)
+        #lines = self.__fix_and_extend_vertical_lines(lines, segments)
 
         return lines
 
