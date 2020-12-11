@@ -10,12 +10,11 @@ import matplotlib.pyplot as plt
 from PIL import Image
 from matplotlib.patches import Rectangle
 
-os.environ["OPENCV_IO_ENABLE_JASPER"] = "true"
-from cv2 import cv2
 
 class SegmentModule:
 
-    def run_segmentation(self, file_path):
+    @staticmethod
+    def run_segmentation(file_path):
         """
         Runs segmentation on a given .jp2 file.
         @param file_path: Path to jp2 file

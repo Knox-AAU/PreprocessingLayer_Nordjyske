@@ -118,17 +118,6 @@ def run_file(file_path):
     segment_lines = SegmentLines(paragraphs, our_headers)
     # (horizontal_lines, vertical_lines) = segment_lines.find_vertical_and_horizontal_lines()
     horizontal_lines = []
-                #     # De 3
-                # horizontal_lines.append(Line([1000, 3950, 4100, 3950]))
-                # horizontal_lines.append(Line([1000, 5030, 4100, 5030]))
-                # horizontal_lines.append(Line([1000, 5850, 4100, 5850]))
-                #     # Øverst
-                # horizontal_lines.append(Line([200, 325, 4700, 325]))
-                #     # Over billede
-                # horizontal_lines.append(Line([1000, 2000, 4100, 2000]))
-                #     # Til højre
-                # horizontal_lines.append(Line([4100, 2500, 4600, 2500]))
-    # horizontal_lines.append(Line([1600, 4470, 3000, 4470]))     # Hitler
 
     # horizontal_lines.clear()
     LineExtractor.show_lines_on_image(cv2.imread(file_path + ".jp2", cv2.CV_8UC1), horizontal_lines, "-Wupti")
