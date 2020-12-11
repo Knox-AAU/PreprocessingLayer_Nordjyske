@@ -26,11 +26,11 @@ if __name__ == '__main__':
                         help='If other language than "dan" is to be used, define here.')
 
     args = parser.parse_args()
-    tm = TesseractModule.from_file(File(args.path, FileType.JP2))
+    tm = TesseractModule.from_file(File(args.path, FileType.JP2), "dan")
     publication = tm.to_publication()
     if args.output_path is None:
         print(publication.to_json())
     else:
-        handler = IOHandler(Generator(app="OCR", version=1.0), "link/to/schema.json")  # ToDo: insert link
+        handler = IOHandler(Generator(app="OCR", version=1.0), "https://repos.knox.cs.aau.dk/schema/publication.schema.json")
         with codecs.open(args.output_path, 'w', encoding="utf-8") as outfile:
             handler.write_json(publication, outfile)

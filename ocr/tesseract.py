@@ -15,9 +15,7 @@ class TesseractModule:
 
     @classmethod
     def from_file(cls, image, tessdata: str):
-        # todo do preprocessing methods instead of loading file
         tm = cls(image, tessdata)
-
         return tm
 
     @staticmethod

@@ -196,10 +196,8 @@ class SegmentHelper:
         return -self.group_same_segment_margin_px < x2_diff < self.group_same_segment_margin_px
 
     @staticmethod
-    def make_box_around_lines(text_lines: list, return_coordinates=False):
+    def make_box_around_lines(text_lines: list):
         """ Finds the coordinates for the segment containing the lines and creates the segment
-        # todo Lau: Kan vi ikke bare kalde .to_array() istedet for at lave metoden til at returnere array?
-        # todo : 16 linjer duplikeret kode længere nede i get_content_bounds()
         @param return_coordinates:
         @param text_lines: list of text lines
         @return: segment
@@ -229,9 +227,6 @@ class SegmentHelper:
             # Find y-coordinate lower right corner
             if line.y2 > y2:
                 y2 = line.y2
-
-        if return_coordinates:
-            return x1, y1, x2, y2
 
         segment = Segment([x1, y1, x2, y2])
         segment.lines = text_lines

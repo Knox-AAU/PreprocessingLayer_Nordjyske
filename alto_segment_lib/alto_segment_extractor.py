@@ -76,7 +76,6 @@ class AltoSegmentExtractor:
 
         for index in range(4):
             var = coordinates[index]
-            # todo do we need this line?
             if isinstance(var, int):
                 coordinates[index] = self.inch1200_to_px(coordinates[index])
 

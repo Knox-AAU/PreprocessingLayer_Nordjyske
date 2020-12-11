@@ -79,7 +79,6 @@ def __add_publication_if_new_or_add_articles_to_already_found_publication(found_
     :return:
     """
     # Ensures that articles with no paragraphs are not added to the publications
-    # todo fix: er der ikke flere end en artikel?
     if len(input_pub.articles[0].paragraphs) == 0:
         return
 
