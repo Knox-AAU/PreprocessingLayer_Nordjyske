@@ -14,7 +14,7 @@ class SegmentModule:
         """
         Runs segmentation on a given .jp2 file.
         @param file_path: Path to jp2
-        @return:
+        @return: ToDo
         """
         headers, paragraphs = SegmentModule.segment_headers_paragraph_from_file(file_path)
 
@@ -34,7 +34,7 @@ class SegmentModule:
         """
         Gets headers and paragraphs from a .jp2 file.
         @param file_path: The path to a jp2 file.
-        @return:
+        @return: ToDo
         """
         segment_helper = SegmentHelper()
         assert file_path.endswith(".jp2")
