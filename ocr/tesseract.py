@@ -1,6 +1,5 @@
 import re
 from datetime import datetime, timezone
-import cv2
 import pytesseract
 from knox_source_data_io.models.publication import Publication, Article, Paragraph
 
@@ -11,7 +10,11 @@ class TesseractModule:
         if tesseract_path is not None:
             pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
-        self.data = pytesseract.image_to_data(image, lang=language, output_type='dict', config="")
+        try:
+            self.data = pytesseract.image_to_data(image, lang=language, output_type='dict', config="--psm 4")
+        except:
+            print("[ERROR] Tesseract has run into a problem.")
+    #         todo
 
     @classmethod
     def from_file(cls, image, tessdata: str):
@@ -40,6 +43,12 @@ class TesseractModule:
         article = Article()
         [article.add_paragraph(p) for p in self.to_paragraphs()]
         return article
+
+    def to_text(self):
+        b_str = ""
+        for t in self.data['text']:
+            b_str += f"{t} "
+        return b_str.strip()
 
     def to_paragraphs(self):
         text = self.data['text']
