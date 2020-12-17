@@ -7,7 +7,7 @@ import configparser
 
 class SegmentHelper:
     """
-    Used to
+    Used to handle some of the calculations rooted in the Segment class.
     """
     def __init__(self):
         config = configparser.ConfigParser()
@@ -372,10 +372,10 @@ class SegmentHelper:
         segment = Segment()
 
         x1 = x2 = y1 = y2 = 0
-        threshold = 300  # ToDo: Make use of some logic to calculate this (we discovered that 300 was the best result)
+        threshold = 300  # ToDo: Make use of some logic to calculate this (we discovered that 300 gave the best result)
 
         for line in header_lines:
-            if SegmentHelper.distance_between_coordinates(x1, y2, line.x1, line.y1) <= threshold:
+            if SegmentHelper.distance_between_points(x1, y2, line.x1, line.y1) <= threshold:
                 # The line is within the circle of the header
                 segment.add_line(line)
             elif x1 != x2 != y1 != y2 != 0 and abs(line.x1 - x2) < threshold and abs(line.y1 - y1) < threshold:
@@ -403,12 +403,29 @@ class SegmentHelper:
 
     @staticmethod
     def inside_box(box_coords: list, x: int, y: int):
+        """
+        Checks if the specified point, given by x and y, is within the box.
+
+        @param box_coords: list of coordinates of the box order as [x1, y1, x2, y2].
+        @param x: the x coordinate of the point.
+        @param y: the y coordinate of the point.
+        @return: true if the point is inside the box, else false.
+        """
         if len(box_coords) == 4:
             return box_coords[0] <= x <= box_coords[2] and box_coords[1] <= y <= box_coords[3]
         return False
 
     @staticmethod
-    def distance_between_coordinates(x1, y1, x2, y2):
+    def distance_between_points(x1, y1, x2, y2):
+        """
+        Calculates the distance between the two points.
+
+        @param x1: x of the first point.
+        @param y1: y of the first point.
+        @param x2: x of the second point.
+        @param y2: y of the second point.
+        @return: the distance between the points.
+        """
         dx = x1 - x2
         dy = y1 - y2
         return math.sqrt(dx ** 2 + dy ** 2)

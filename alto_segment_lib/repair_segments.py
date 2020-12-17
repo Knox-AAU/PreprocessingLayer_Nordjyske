@@ -113,8 +113,8 @@ def merge_segments(segments: List[Segment]) -> List[Segment]:
             merged = False
 
             # Check from current segments lower left corner if any segments are within threshold distance.
-            if SegmentHelper.distance_between_coordinates(segment.x1, segment.y2, sub_segment.x1,
-                                                          sub_segment.y1) <= merge_distance_threshold:
+            if SegmentHelper.distance_between_points(segment.x1, segment.y2, sub_segment.x1,
+                                                     sub_segment.y1) <= merge_distance_threshold:
 
                 # Generate coordinates equal to the empty space on the right or left, to check if
                 # we will overlap existing elements by merging

@@ -144,7 +144,7 @@ def test_distance_between_coordinates_success():
     dot2_x = 100
     dot1_y = dot2_y = 0
 
-    distance = segment_helper.distance_between_coordinates(dot1_x, dot1_y, dot2_x, dot2_y)
+    distance = segment_helper.distance_between_points(dot1_x, dot1_y, dot2_x, dot2_y)
     assert distance == 100
 
 
@@ -153,7 +153,7 @@ def test_distance_between_coordinates_failed():
     dot2_x = 400
     dot1_y = dot2_y = 0
 
-    distance = segment_helper.distance_between_coordinates(dot1_x, dot1_y, dot2_x, dot2_y)
+    distance = segment_helper.distance_between_points(dot1_x, dot1_y, dot2_x, dot2_y)
     assert not distance == 500
 
 
