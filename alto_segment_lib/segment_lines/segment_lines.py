@@ -1,3 +1,4 @@
+from typing import List
 from alto_segment_lib.segment import Line, SegmentType
 from alto_segment_lib.segment_helper import SegmentHelper
 
@@ -5,6 +6,11 @@ from alto_segment_lib.segment_helper import SegmentHelper
 class SegmentLines:
 
     def __init__(self, paragraphs, headers):
+        """
+        Sets some internal properties.
+        @param paragraphs: A list of paragraph segments
+        @param headers: A list of header segments
+        """
         self.paragraphs = paragraphs
         self.headers = headers
         self.vertical_lines = []
@@ -14,21 +20,32 @@ class SegmentLines:
         self.page_x2 = content_bound[2]
         self.page_y2 = content_bound[3]
 
-    def find_vertical_and_horizontal_lines(self):
+    def find_vertical_and_horizontal_lines(self) -> List[Line]:
+        """
+        Finds the horizontal lines from the given segments and returns them.
+        @return: A list of horizontal lines
+        """
         vertical_lines = self.find_vertical_lines()
         self.vertical_lines = vertical_lines
-        horizontal_lines = self.find_horizontal_lines()
+        horizontal_lines = self.__find_horizontal_lines()
 
-        return horizontal_lines, vertical_lines
+        return horizontal_lines
 
-    def find_horizontal_lines(self):
-        horizontal_lines = []
+    def __find_horizontal_lines(self):
+        """
+        Finds horizontal lines from the segments, and processes them to return the extended ones
+        @return: A list of horizontal lines
+        """
         horizontal_lines = self.__make_line_over_headers()
         horizontal_lines = self.__extend_horizontal_lines(horizontal_lines)
 
         return horizontal_lines
 
     def __make_line_over_headers(self):
+        """
+        Creates lines over the header segments
+        @return: A list of basic horizontal lines
+        """
         horizontal_lines = []
         margin = 2
         for header in self.headers:
@@ -37,11 +54,15 @@ class SegmentLines:
         return horizontal_lines
 
     def __extend_horizontal_lines(self, horizontal_lines):
+        """
+        Extends horizontal lines the nearest vertical line on both sides
+        @param horizontal_lines:
+        @return:
+        """
         extended_horizontal_lines = []
         margin = 2
 
         for horizontal_line in horizontal_lines:
-            # find min distance til nærmeste vertikale linje i hver retning
             left_line, right_line = self.find_nearest_vertical_lines(horizontal_line, self.vertical_lines)
             extended_horizontal_lines.append(Line([left_line.x1, horizontal_line.y1 + margin, right_line.x1, horizontal_line.y2 + margin]))
 
@@ -76,7 +97,7 @@ class SegmentLines:
         if len(right_side_lines) == 0:
             right_side_lines.append(Line([self.page_x2, self.page_y1,
                                          self.page_x2, self.page_y2]))
-
+        # Return the min distance of the left_side and right_side lines
         return min(left_side_lines, key=lambda line: horizontal_line.x1 - line.x1), min(right_side_lines, key=lambda line: line.x1 - horizontal_line.x1)
 
     def find_vertical_lines(self):
@@ -85,13 +106,7 @@ class SegmentLines:
         @return: A list of vertical lines
         """
 
-        segments = self.paragraphs + self.headers
-
-        segments.sort(key=lambda segment: segment.x1)
-
         lines = self.__create_vertical_lines_for_each_segment(self.paragraphs)
-
-        lines = self.__fix_and_extend_vertical_lines(lines, segments)
 
         return lines
 
@@ -106,10 +121,9 @@ class SegmentLines:
         margin = 2
         for segment in segments:
             if segment.type == SegmentType.paragraph:
-                # make a line that is parallel with the left side of the segment
+                # Make a line that is parallel with the left and right side of the segment
                 lines.append(Line([segment.x1 - margin, segment.y1, segment.x1 - margin, segment.y2]))
-                lines.append(Line([segment.x2 + margin, segment.y1, segment.x2 + margin, segment.y2]))      # Lines on both sides of the segment
-
+                lines.append(Line([segment.x2 + margin, segment.y1, segment.x2 + margin, segment.y2]))
         return lines
 
     def __fix_and_extend_vertical_lines(self, vertical_lines, segments):
@@ -138,10 +152,10 @@ class SegmentLines:
             if len(affected_segments) == 0 or len(line_group) == 1:
                 final_lines.append(Line([average_x, min_y, average_x, max_y]))
             else:
-                merged_lines = self.__merge_all_lines_not_intersecting_segment(line_group, all_affected_segments)
-                extended_to_bounds_lines = self.__extend_vertical_lines(merged_lines, all_affected_segments)
-                extended_lines = self.__extend_lines_to_segment_borders(extended_to_bounds_lines, all_affected_segments)
-                fixed_lines = self.__merge_similar_lines(extended_lines)
+                # merged_lines = self.__merge_all_lines_not_intersecting_segment(line_group, all_affected_segments)
+                # extended_to_bounds_lines = self.__extend_vertical_lines(merged_lines, all_affected_segments)
+                # extended_lines = self.__extend_lines_to_segment_borders(extended_to_bounds_lines, all_affected_segments)
+                fixed_lines = self.__merge_similar_lines(line_group)
 
                 for line in fixed_lines:
                     final_lines.append(line)
@@ -161,7 +175,7 @@ class SegmentLines:
                 return True
 
     def __find_similar_lines(self, vertical_lines, merge_margin):
-        lines_to_be_merged = [[]]
+        lines_to_be_merged = []
 
         for line in vertical_lines:
             if self.__is_line_in_groups(lines_to_be_merged, line):
@@ -207,6 +221,12 @@ class SegmentLines:
 
     @staticmethod
     def __find_affected_segments(segments, x_cord):
+        """
+        Finds all encountered segments on an x-cord
+        @param segments: A list of segments
+        @param x_cord: An x coordinate
+        @return: All the encountered segments
+        """
         affected_segments = []
 
         for segment in segments:
@@ -217,6 +237,14 @@ class SegmentLines:
 
     @staticmethod
     def __find_affected_segments_between_lines(segments, min_y, max_y, x_cord):
+        """
+        Finds all encountered segments on an x-cord between two y-values
+        @param segments: A list of segments
+        @param min_y: The low y-value
+        @param max_y: The high y-value
+        @param x_cord: An x coordinate
+        @return: All the encountered segments between the two y-values
+        """
         affected_segments = []
 
         for segment in segments:
@@ -229,6 +257,12 @@ class SegmentLines:
 
     @staticmethod
     def __find_segments_above_line(line, segments):
+        """
+        Finds the segments above a specific line
+        @param line: A line
+        @param segments: A list of segments
+        @return: The segments above a line
+        """
         segments_above_line = []
 
         for segment in segments:
@@ -239,6 +273,12 @@ class SegmentLines:
 
     @staticmethod
     def __find_segments_below_line(line, segments):
+        """
+        Finds the segments below a specific line
+        @param line: A line
+        @param segments: A list of segments
+        @return: The segments above a line
+        """
         segments_below_line = []
 
         for segment in segments:
@@ -249,9 +289,21 @@ class SegmentLines:
 
     @staticmethod
     def __merge_two_lines(line1, line2):
+        """
+        Merges two lines
+        @param line1: First line
+        @param line2: Second line
+        @return: A merged line
+        """
         return Line([line1.x1, line1.y1, line2.x2, line2.y2])
 
     def __merge_all_lines_not_intersecting_segment(self, lines, segments):
+        """
+        Handles the merging of all lines that are not intersecting segments.
+        @param lines: A list of lines
+        @param segments: A list of segments
+        @return: A list of the non-merged and merged lines
+        """
         if len(lines) <= 1:
             return lines
 
@@ -269,6 +321,13 @@ class SegmentLines:
         return merged_lines
 
     def __merge_lines(self, lines, segments):
+        """
+        Merges all lines that are not intersecting segments. The output of this method is not guaranteed to be merged
+        as much as possible, and therefore recommended to be called multiple times
+        @param lines: A list of lines
+        @param segments: A list of segments
+        @return: A list of the non-merged and merged lines
+        """
         if len(lines) <= 1:
             return lines
         i = 0
@@ -290,6 +349,14 @@ class SegmentLines:
         return merged_lines
 
     def __is_any_segment_intersected(self, segments, min_y, max_y):
+        """
+        Checks if any segment in a list of segments is intersected/lays between the two y-values, corresponding
+        to a line.
+        @param segments: A list of segments
+        @param min_y: The lowest y-value
+        @param max_y: The highest y-value
+        @return: True, if any segment was intersected and False otherwise
+        """
         for segment in segments:
             if self.__is_segment_intersected(segment, min_y, max_y):
                 return True
@@ -297,6 +364,13 @@ class SegmentLines:
 
     @staticmethod
     def __is_segment_intersected(segment, min_y, max_y):
+        """
+        Checks if a single segment is intersected/lays between the two y-values, corresponding to a line.
+        @param segment: A segment
+        @param min_y: The lowest y-value
+        @param max_y: The highest y-value
+        @return: True, if the segment was intersected and False otherwise
+        """
         # Line going through segment
         if min_y < segment.y1 and max_y > segment.y2:
             return True
@@ -309,6 +383,12 @@ class SegmentLines:
             return False
 
     def __extend_vertical_lines(self, lines, segments):
+        """
+        Extends the lines to the page bounds, if possible.
+        @param lines: A list of lines
+        @param segments: A list of segments
+        @return: A list of lines that have been extended to the page bounds where possible
+        """
         extended_lines = []
 
         highest_line = min(lines, key=lambda line: line.y1)
@@ -327,6 +407,12 @@ class SegmentLines:
         return extended_lines
 
     def __extend_lines_to_segment_borders(self, lines, segments):
+        """
+        Extends the lines to the nearest segment borders.
+        @param lines: A list of lines
+        @param segments: A list of segments
+        @return: A list of lines that have been extended to their nearest segment
+        """
         extended_lines = []
 
         for line in lines:
