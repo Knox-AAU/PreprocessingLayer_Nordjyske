@@ -54,9 +54,9 @@ class Crawler:
                                 int(entry.name[limits[4]:limits[5]]))
 
                 if not (
-                        from_date if from_date is not None else datetime.min <=
+                        (from_date if from_date is not None else datetime.min) <=
                         folder.get_datetime() <=
-                        to_date if to_date is not None else datetime.max
+                        (to_date if to_date is not None else datetime.max)
                 ):
                     # only consume if within date
                     continue
