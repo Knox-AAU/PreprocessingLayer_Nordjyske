@@ -7,12 +7,11 @@ from PIL import Image
 from alto_segment_lib.segment import Segment
 from alto_segment_lib.line_extractor.extractor import LineExtractor
 from alto_segment_lib.segment import Line
+
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 
 
 class SegmentOrdering:
-
-
     Paragraph_normal_width: float
 
     def __init__(self, file_path, file_name):
@@ -160,8 +159,7 @@ class SegmentOrdering:
         all_para = []
         for segment in segments:
             all_para.append(segment.x2 - segment.x1)
-        return float(statistics.median(all_para))
-
+        return float(statistics.median(all_para) if len(all_para) > 0 else 0)
 
     def __display_header_pairs(self, headers_with_subheaders: list):
         """ Outputs a picture with headers and subheaders marked

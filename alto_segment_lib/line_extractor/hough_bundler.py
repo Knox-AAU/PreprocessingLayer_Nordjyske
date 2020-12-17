@@ -46,7 +46,6 @@ class HoughBundler:
             lineMagnitude = math.sqrt(math.pow((x2 - x1), 2) + math.pow((y2 - y1), 2))
             return lineMagnitude
 
-        #todo wtf is this next 4 lines?
         line_mag = line.length
         if line_mag < 0.00000001:
             distance_point_line = 9999

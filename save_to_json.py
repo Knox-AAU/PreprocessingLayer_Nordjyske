@@ -14,7 +14,7 @@ def save_to_json(folder, publications):
 
     for pub in publications:
         handler = IOHandler(
-            Generator(app="This app", version=1.0, generated_at=datetime.now().isoformat()),
+            Generator(app="Nordjyske-Preprocessing module", version=1.0, generated_at=datetime.now().isoformat()),
             "http://iptc.org/std/NITF/2006-10-18/")
         filename = os.path.join(
             folder,
@@ -79,8 +79,7 @@ def __add_publication_if_new_or_add_articles_to_already_found_publication(found_
     :return:
     """
     # Ensures that articles with no paragraphs are not added to the publications
-    # todo fix: er der ikke flere end en artikel?
-    if len(input_pub.articles[0].paragraphs) == 0:
+    if len(input_pub.articles) == 0:
         return
 
     # Get reference to the publication that has already been added to the found publications
@@ -96,5 +95,5 @@ def __add_publication_if_new_or_add_articles_to_already_found_publication(found_
     if matching_publication_in_publications_found is None:
         found_publications.append(input_pub)
     else:
-        matching_publication_in_publications_found.add_article(input_pub.articles[0])
+        matching_publication_in_publications_found.articles.extend(input_pub.articles)
         find_amount_of_pages(matching_publication_in_publications_found)

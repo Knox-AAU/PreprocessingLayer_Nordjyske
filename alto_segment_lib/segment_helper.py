@@ -4,6 +4,7 @@ from typing import List
 from alto_segment_lib.segment import Segment, Line, SegmentType
 import configparser
 
+
 class SegmentHelper:
 
     def __init__(self):
@@ -24,7 +25,7 @@ class SegmentHelper:
         """
         paragraphs = []
         headers = []
-        median = statistics.median([line.height() for line in lines])
+        median = statistics.median([line.height() for line in lines]) if len(lines) > 0 else 0
 
         for line in lines:
             height = line.height()
@@ -33,9 +34,10 @@ class SegmentHelper:
             # block_segment rather than the line.
             if line.block_segment is not None and len(line.block_segment.lines) >= \
                     self.min_lines_to_compare_block_height_instead_of_line_height:
-                height = statistics.median([x.height() for x in line.block_segment.lines])
+                height = statistics.median([x.height() for x in line.block_segment.lines]) \
+                    if len(line.block_segment.lines) > 0 else 0
             # Checks if line height indicates that the line is a paragraph
-            if line.height() > height * self.threshold_line_header_to_paragraph or\
+            if line.height() > height * self.threshold_line_header_to_paragraph or \
                     height > median * self.threshold_block_header_to_paragraph:
                 headers.append(line)
             else:
@@ -111,7 +113,8 @@ class SegmentHelper:
         previous_line = None
         temp = []
         column_groups = []
-        median = statistics.median([line.width() for line in text_lines]) * self.group_same_column_margin
+        median = (statistics.median([line.width() for line in text_lines]) if len(
+            text_lines) > 0 else 0) * self.group_same_column_margin
 
         # Sorts the list in an ascending order based on x1
         text_lines = sorted(text_lines, key=lambda sorted_line: sorted_line.x1)
@@ -148,7 +151,9 @@ class SegmentHelper:
 
         for group in column_groups:
             group = sorted(group, key=lambda sorted_group: sorted_group.y1)
-            median = statistics.median([line.height() for line in group]) * (0.2 if ignore_width else 1)
+            median = (statistics.median([line.height() for line in group]) if len(group) > 0 else 0) * (
+                0.2 if ignore_width else 1
+            )
             previous_line = None
 
             for index, text_line in enumerate(group):
@@ -196,10 +201,8 @@ class SegmentHelper:
         return -self.group_same_segment_margin_px < x2_diff < self.group_same_segment_margin_px
 
     @staticmethod
-    def make_box_around_lines(text_lines: list, return_coordinates=False):
+    def make_box_around_lines(text_lines: list):
         """ Finds the coordinates for the segment containing the lines and creates the segment
-        # todo Lau: Kan vi ikke bare kalde .to_array() istedet for at lave metoden til at returnere array?
-        # todo : 16 linjer duplikeret kode længere nede i get_content_bounds()
         @param return_coordinates:
         @param text_lines: list of text lines
         @return: segment
@@ -229,9 +232,6 @@ class SegmentHelper:
             # Find y-coordinate lower right corner
             if line.y2 > y2:
                 y2 = line.y2
-
-        if return_coordinates:
-            return x1, y1, x2, y2
 
         segment = Segment([x1, y1, x2, y2])
         segment.lines = text_lines
