@@ -4,7 +4,7 @@ from alto_segment_lib.segment import SegmentGroup, Segment, SegmentType
 
 class SegmentGroupHandler:
     """
-    todo
+    Used to handle the organization of groups of segments for ordering.
     """
     groups: List[SegmentGroup]
     current_group: Optional[SegmentGroup] = None

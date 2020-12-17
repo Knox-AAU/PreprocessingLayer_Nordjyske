@@ -91,7 +91,7 @@ def test_group_headers_into_segments_single_header_success():
     header_line2.y2 = 45
 
     header_lines = [header_line1, header_line2]
-    header_segments = SegmentHelper.group_headers_into_segments(header_lines)
+    header_segments = SegmentHelper.group_headers_close_in_proximity_into_a_single_segment(header_lines)
 
     assert len(header_segments) == 1
 
@@ -124,7 +124,7 @@ def test_group_headers_into_segments_multiple_header_success():
     header_line4.y2 = 650
 
     header_lines = [header_line1, header_line2, header_line3, header_line4]
-    header_segments = SegmentHelper().group_headers_into_segments(header_lines)
+    header_segments = SegmentHelper().group_headers_close_in_proximity_into_a_single_segment(header_lines)
 
     assert len(header_segments) == 2
 

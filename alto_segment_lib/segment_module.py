@@ -31,7 +31,7 @@ class SegmentModule:
 
         # Grouping
         grouper = SegmentGrouper()
-        grouped_headers = SegmentHelper.group_headers_into_segments(headers)
+        grouped_headers = SegmentHelper.group_headers_close_in_proximity_into_a_single_segment(headers)
         groups = grouper.order_segments(grouped_headers, paragraphs, horizontal_lines)
         ordered_segments = grouper.convert_groups_into_segments(groups)
         return ordered_segments
