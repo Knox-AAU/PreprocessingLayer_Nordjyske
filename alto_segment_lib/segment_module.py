@@ -18,6 +18,10 @@ class SegmentModule:
         """
         headers, paragraphs = SegmentModule.segment_headers_paragraph_from_file(file_path)
 
+        # Returns no segment if there are more than 300 (to avoid adverts and stocks from stock market)
+        if len(headers + paragraphs) > 300:
+            return None
+
         segment_lines = SegmentLines(paragraphs, headers)
         (horizontal_lines, vertical_lines) = segment_lines.find_vertical_and_horizontal_lines()
 
@@ -59,4 +63,5 @@ class SegmentModule:
         paragraphs = segment_helper.remove_segments_within_segments(headers, paragraphs)
         headers = segment_helper.remove_segments_within_segments(paragraphs, headers)
         paragraphs = merge_segments(paragraphs)
+
         return headers, paragraphs

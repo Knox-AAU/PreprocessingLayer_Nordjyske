@@ -30,67 +30,69 @@ class OCRRunner:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         segments = SegmentModule.run_segmentation(file.path)
 
-        tessdata = "dan"
+        if segments is not None:
 
-        file_date = self.__find_year(file.name)
+            tessdata = "dan"
 
-        # 19280517 = 1928-05-17
-        if int(file_date) < 19280517:
-            tessdata = "gothic_fine_tune"
+            file_date = self.__find_year(file.name)
 
-        article = Article()
-        articles = []
-        for segment in segments:
-            # If there is over 300 segments then we can safely say that it contains adverts or stock markets
-            if len(segments) > 300:
-                break
+            # 19280517 = 1928-05-17
+            if int(file_date) < 19280517:
+                tessdata = "gothic_fine_tune"
 
-            if segment.y1 <= segment.y2 and segment.x1 <= segment.x2:
-                # Crops the image based on the segment
-                cropped_image = image[segment.y1:segment.y2+1, segment.x1:segment.x2+1]
-            else:
-                continue
+            article = Article()
+            articles = []
+            for segment in segments:
+                # If there is over 300 segments then we can safely say that it contains adverts or stock markets
+                if len(segments) > 300:
+                    break
 
-            if segment.type == SegmentType.heading:
-                # When there is a headline we know that its the start of a new article
-                # So we save the old article and create a new one
-                articles.append(article)
-                article = Article()
+                if segment.y1 <= segment.y2 and segment.x1 <= segment.x2:
+                    # Crops the image based on the segment
+                    cropped_image = image[segment.y1:segment.y2+1, segment.x1:segment.x2+1]
+                else:
+                    continue
+
+                if segment.type == SegmentType.heading:
+                    # When there is a headline we know that its the start of a new article
+                    # So we save the old article and create a new one
+                    articles.append(article)
+                    article = Article()
+                    article.page = self.__find_page_number(file.path)
+                    headline = TesseractModule.from_file(cropped_image, tessdata).to_paragraphs()
+                    if len(headline) > 0:
+                        article.headline = headline[0].value
+
+                if segment.type == SegmentType.paragraph:
+                    # If the segment is a paragraph we will extract text with tesseract, remove adverts
+                    # and add file path to the article
+                    paragraphs = TesseractModule.from_file(cropped_image, tessdata).to_paragraphs()
+                    paragraphs = self.__remove_advertisement_and_junk(paragraphs)
+                    if len(paragraphs) > 0:
+                        [article.add_paragraph(p) for p in paragraphs]
+                        article.add_extracted_from(file.path)
+
+                if segment.type == "subhead":
+                    # If the segment is a subheader then add it to the subeheader attribute in the article
+                    subhead = TesseractModule.from_file(cropped_image, tessdata).to_paragraphs()
+                    if len(subhead) > 0:
+                        article.subhead = subhead[0].value
+
+                if segment.type == "lead":
+                    # If the segment is a lead then add it to the lead attribute in the article
+                    lead = TesseractModule.from_file(cropped_image, tessdata).to_paragraphs()
+                    if len(lead) > 0:
+                        article.lead = lead[0].value
+            # Finds the page number if not already found
+            if article.page == 0:
                 article.page = self.__find_page_number(file.path)
-                headline = TesseractModule.from_file(cropped_image, tessdata).to_paragraphs()
-                if len(headline) > 0:
-                    article.headline = headline[0].value
 
-            if segment.type == SegmentType.paragraph:
-                # If the segment is a paragraph we will extract text with tesseract, remove adverts
-                # and add file path to the article
-                paragraphs = TesseractModule.from_file(cropped_image, tessdata).to_paragraphs()
-                paragraphs = self.__remove_advertisement_and_junk(paragraphs)
-                if len(paragraphs) > 0:
-                    [article.add_paragraph(p) for p in paragraphs]
-                    article.add_extracted_from(file.path)
+            articles.append(article)
 
-            if segment.type == "subhead":
-                # If the segment is a subheader then add it to the subeheader attribute in the article
-                subhead = TesseractModule.from_file(cropped_image, tessdata).to_paragraphs()
-                if len(subhead) > 0:
-                    article.subhead = subhead[0].value
+            # Takes all articles found and converts them into a single publication
+            publication = self.__convert_articles_into_publication(articles, file)
 
-            if segment.type == "lead":
-                # If the segment is a lead then add it to the lead attribute in the article
-                lead = TesseractModule.from_file(cropped_image, tessdata).to_paragraphs()
-                if len(lead) > 0:
-                    article.lead = lead[0].value
-        # Finds the page number if not already found
-        if article.page == 0:
-            article.page = self.__find_page_number(file.path)
-
-        articles.append(article)
-
-        # Takes all articles found and converts them into a single publication
-        publication = self.__convert_articles_into_publication(articles, file)
-
-        return publication
+            return publication
 
     def __convert_articles_into_publication(self, articles, file):
         """
