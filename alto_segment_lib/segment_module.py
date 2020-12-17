@@ -20,7 +20,7 @@ class SegmentModule:
 
         # Returns no segment if there are more than 300 (to avoid adverts and stocks from stock market)
         if len(headers + paragraphs) > 300:
-            return []
+            return [], []
 
         segment_lines = SegmentLines(paragraphs, headers)
         (horizontal_lines, vertical_lines) = segment_lines.find_vertical_and_horizontal_lines()
