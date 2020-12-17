@@ -21,8 +21,8 @@ if __name__ == '__main__':
     publication = nitf_parser.parse(args.input_file)
 
     if args.output_dest is not None:
-        handler = IOHandler(Generator(app="NITF Parser", version=1.0), "link/to/schema.json")  # ToDo: insert link
-        with codecs.open(args.output_path, 'w', encoding="utf-8") as outfile:
+        handler = IOHandler(Generator(app="NITF Parser", version=1.0), "https://repos.knox.cs.aau.dk/schema/publication.schema.json")
+        with codecs.open(args.output_dest, 'w', encoding="utf-8") as outfile:
             handler.write_json(publication, outfile)
     else:
         print(publication)

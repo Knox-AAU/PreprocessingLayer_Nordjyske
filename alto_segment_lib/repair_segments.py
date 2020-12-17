@@ -30,7 +30,7 @@ class RepairSegments:
         all_para = []
         for segment in self.__segments:
             all_para.append(segment.x2 - segment.x1)
-        self.__median_paragraph_width = statistics.median(all_para)
+        self.__median_paragraph_width = statistics.median(all_para) if len(all_para) > 0 else 0
 
     def repair_rows(self):
         """

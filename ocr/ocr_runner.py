@@ -1,4 +1,5 @@
 import configparser
+import os
 import string
 from datetime import datetime, timezone
 from os import environ
@@ -8,7 +9,6 @@ import re
 from alto_segment_lib.segment import SegmentType
 from crawler.file import File
 from knox_source_data_io.models.publication import Article
-from pytesseract import pytesseract
 from alto_segment_lib.segment_module import SegmentModule
 from ocr.tesseract import TesseractModule
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
@@ -30,6 +30,7 @@ class OCRRunner:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         segments = SegmentModule.run_segmentation(file.path)
 
+
         tessdata = "dan"
 
         file_date = self.__find_year(file.name)
@@ -39,6 +40,7 @@ class OCRRunner:
             tessdata = "gothic_fine_tune"
 
         article = Article()
+        article.add_extracted_from(file.path)
         articles = []
         for segment in segments:
             # If there is over 300 segments then we can safely say that it contains adverts or stock markets
@@ -56,10 +58,9 @@ class OCRRunner:
                 # So we save the old article and create a new one
                 articles.append(article)
                 article = Article()
+                article.add_extracted_from(file.path)
                 article.page = self.__find_page_number(file.path)
-                headline = TesseractModule.from_file(cropped_image, tessdata).to_paragraphs()
-                if len(headline) > 0:
-                    article.headline = headline[0].value
+                article.headline = TesseractModule.from_file(cropped_image, tessdata).to_text()
 
             if segment.type == SegmentType.paragraph:
                 # If the segment is a paragraph we will extract text with tesseract, remove adverts
@@ -68,7 +69,6 @@ class OCRRunner:
                 paragraphs = self.__remove_advertisement_and_junk(paragraphs)
                 if len(paragraphs) > 0:
                     [article.add_paragraph(p) for p in paragraphs]
-                    article.add_extracted_from(file.path)
 
             if segment.type == "subhead":
                 # If the segment is a subheader then add it to the subeheader attribute in the article
@@ -108,7 +108,8 @@ class OCRRunner:
         publication.publication = self.__find_publication(file.name)
         publication.publisher = config['publisher']['name']
         publication.published_at = self.__find_published_at(file.path)
-        publication = self.__remove_empty_paragraphs(publication)
+        self.__remove_empty_paragraphs(publication)
+        publication.articles = [art for art in publication.articles if art.headline != "" or len(art.paragraphs) != 0]
 
         return publication
 
@@ -119,7 +120,6 @@ class OCRRunner:
         @param file_name: name of file
         @return: publisher name
         """
-        # todo bliver ikke sat mellemrum men ved ikke om det er vigtigt
         return file_name.split("-")[0].title()
 
     @staticmethod
@@ -129,7 +129,7 @@ class OCRRunner:
         @param file_path: name of file
         @return: page number
         """
-        page_elements = minidom.parse(file_path.split('.')[0] + ".alto.xml").getElementsByTagName("Page")
+        page_elements = minidom.parse(os.path.splitext(file_path)[0] + ".alto.xml").getElementsByTagName("Page")
 
         return int(page_elements[0].attributes['PHYSICAL_IMG_NR'].value)
 
@@ -141,7 +141,7 @@ class OCRRunner:
         @return: datetime object of when paper was published
         """
         # Opens the corresponding alto.xml file to find the published_at date
-        published_at = minidom.parse(file_path.split('.')[0] + ".alto.xml").\
+        published_at = minidom.parse(os.path.splitext(file_path)[0] + ".alto.xml").\
             getElementsByTagName("fileName")[0].firstChild.data
 
         # Uses regular expression to find the data in the file name
@@ -193,17 +193,8 @@ class OCRRunner:
         @param publication: publication with articles to check
         @return: publication without empty paragraphs
         """
-        correct_paragraphs = []
         for article in publication.articles:
-            paragraphs = article.paragraphs
-
-            for paragraph in paragraphs:
-                if len(paragraph.value) > 0:
-                    correct_paragraphs.append(paragraph)
-
-            article.paragraphs = correct_paragraphs
-
-        return publication
+            article.paragraphs = [p for p in article.paragraphs if len(p.value) > 0]
 
     def __find_year(self, file_name):
         """
