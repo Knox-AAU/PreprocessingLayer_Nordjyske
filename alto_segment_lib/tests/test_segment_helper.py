@@ -157,7 +157,7 @@ def test_distance_between_coordinates_failed():
     assert not distance == 500
 
 
-def test_group_lines_into_paragraphs_headers_one_header_one_paragraph_based_on_height_success():
+def test_group_lines_into_paragraphs_and_headers_one_header_one_paragraph_based_on_height_success():
     # Line that should be classified as a header
     header_line = Line()
     header_line.x1 = 0

@@ -59,7 +59,7 @@ class SegmentModule:
         alto_extractor.dpi = 300
         alto_extractor.margin = 0
         text_lines = alto_extractor.extract_lines()
-        (headers, paragraphs) = segment_helper.group_lines_into_paragraphs_headers(text_lines)
+        (headers, paragraphs) = segment_helper.group_lines_into_paragraphs_and_headers(text_lines)
         # Find lines in image, then split segments that cross those lines.
         lines = LineExtractor().extract_lines_via_path(image_file_path)
         paragraphs = segment_helper.split_segments_by_lines(paragraphs, lines)
