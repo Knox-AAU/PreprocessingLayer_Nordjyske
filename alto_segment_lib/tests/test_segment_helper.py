@@ -174,7 +174,7 @@ def test_group_lines_into_paragraphs_headers_one_header_one_paragraph_based_on_h
 
     lines = [header_line, para_line]
 
-    line_tuple = segment_helper.group_lines_into_paragraphs_headers(lines)
+    line_tuple = segment_helper.group_lines_into_paragraphs_and_headers(lines)
 
     assert line_tuple == ([header_line], [para_line])
 
@@ -189,7 +189,7 @@ def test_group_lines_into_paragraphs_3_paragraphs_based_on_median_success():
     para_line2 = Line([0, 200, 100, 250], block_segment=segment)
     segment.lines = [para_line1, header_line, para_line2]
 
-    line_tuple = segment_helper.group_lines_into_paragraphs_headers(segment.lines)
+    line_tuple = segment_helper.group_lines_into_paragraphs_and_headers(segment.lines)
 
     assert line_tuple == ([header_line], [para_line1, para_line2])
 

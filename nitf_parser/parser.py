@@ -34,10 +34,10 @@ class NitfParser:
 
     def __parse_metadata(self, metadata):
         """
-        Returns needed information from metadata including by-line, page-number and id.
+        Adds the information from the metadata element to the related attributes, including by-line, page-number and id.
 
-        @param metadata:
-        @return: void
+        @param metadata: metadata elements to parse.
+        @return: void.
         """
         config = configparser.ConfigParser()
         config.read('metadata-mapper.ini')
@@ -80,7 +80,7 @@ class NitfParser:
         """
         Splits a string by any whitespace, then joins by normal spaces, to remove double-spaces, tabs, newlines etc.
 
-        @param str: string to sanitize.
+        @param a: string to sanitize.
         @return: the sanitized string.
         """
         if a is None:
@@ -92,7 +92,7 @@ class NitfParser:
         Sets the needed information from docdata including release date.
 
         @param doc_data: the data to retrieve the desired data from.
-        @return: void
+        @return: void.
         """
         temp = doc_data.getElementsByTagName('nitf:date.release')[0].getAttribute('norm')
         if len(temp) != 0:
@@ -100,8 +100,10 @@ class NitfParser:
             self.article.published_at = self.publication.published_at
 
     def __parse_pub_data(self, pub_data):
-        """ Returns needed information from pub_data including publisher
-        :param pub_data:
+        """
+        Returns needed information from pub_data including publisher.
+
+        @param pub_data: the publication data to parse.
         """
         temp = pub_data.getAttribute('name')
         if len(temp) != 0:
@@ -114,9 +116,11 @@ class NitfParser:
             self.article.publication = self.publication.publication
 
     def __parse_body_content(self, content):
-        """ Returns needed information from body including all paragraphs and subheaders
-        :param content:
-        :return:
+        """
+        Adds the information retrieved from the body to the article attribute, including all paragraphs and subheaders.
+
+        @param content: the content to parse.
+        @return: void.
         """
         blocks = content.getElementsByTagName('nitf:block')
         for block in blocks:
@@ -137,6 +141,12 @@ class NitfParser:
 
     @staticmethod
     def __get_text_recursive_xmldom(element) -> str:
+        """
+        Get the text from an element and all its children recursively.
+
+        @param element: the element to extract the text from.
+        @return: the accumulated text as a string.
+        """
         accumulated = ""
         for child in element.childNodes:
             if child.nodeValue is not None:
@@ -147,10 +157,11 @@ class NitfParser:
         return accumulated
 
     def __parse_body_head(self, head):
-        """ Returns needed information from head including title and trompet.
+        """
+        Adds information from head to the article attribute, including title and trompet as paragraphs.
 
-        :param head:
-        :return:
+        @param head: the head element to extract information from.
+        @return: void.
         """
         subheaders = []
         hl1s = head.getElementsByTagName('nitf:hl1')
@@ -169,11 +180,14 @@ class NitfParser:
             self.article.add_paragraph(p)
 
     def __parse_body(self, body_element):
-        """Calls the needed methods to extract information from the body, and merges it into one object
-        :param body_element:
-        :return:
         """
-        # https://www.w3schools.com/xml/dom_element.asp
+        Calls the needed methods to extract information from the body, merges it into one object,
+        and adds it to the relevant attributes.
+        Based on the code at: https://www.w3schools.com/xml/dom_element.asp.
+
+        @param body_element: the body element to extract data from.
+        @return: void.
+        """
 
         # body head contains the header and lead of an article
         self.__parse_body_head(body_element.getElementsByTagName("nitf:body.head")[0])
@@ -181,6 +195,12 @@ class NitfParser:
         self.__parse_body_content(body_element.getElementsByTagName("nitf:body.content")[0])
 
     def parse(self, article_path):
+        """
+        Parses NITF files found at the specified path.
+
+        @param article_path: path to the article (in NITF format) to parse.
+        @return: the generated Publication.
+        """
         self.article = Article()
         self.article.add_extracted_from(article_path)
         xml_doc = minidom.parse(article_path)
@@ -199,4 +219,10 @@ class NitfParser:
         return self.publication
 
     def parse_file(self, file):
+        """
+        Parses a file based on the path of the file.
+
+        @param file: file to parse.
+        @return: the generated Publication.
+        """
         return self.parse(file.path)
