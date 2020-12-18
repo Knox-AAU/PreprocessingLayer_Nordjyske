@@ -6,10 +6,12 @@ from alto_segment_lib.segment import Line
 
 
 class HoughBundler:
-    '''Clasterize and merge each cluster of cv2.HoughLinesP() output
-    a = HoughBundler()
-    foo = a.process_lines(houghP_lines, binary_image)
-    '''
+    """
+    Clusterizes and merges each cluster of cv2.HoughLinesP() output.
+    Based on the code found at: https://stackoverflow.com/a/50389879.
+    """
+    # a = HoughBundler()
+    # foo = a.process_lines(houghP_lines, binary_image)
 
     def __init__(self):
         self.config = configparser.ConfigParser()
@@ -18,8 +20,14 @@ class HoughBundler:
         self.max_angle_to_merge = int(self.config['hough_bundler']['max_angle_to_merge'])
 
     def check_is_line_different(self, line_new, groups):
-        '''Check if line have enough distance and angle to be count as similar
-        '''
+        """
+        Check if line have enough distance and angle to be count as similar.
+
+        @param line_new: the line to compare with other lines.
+        @param groups: list of lists of lines to compare the line with.
+        @return: returns whether the line is totally different from the lines in groups.
+        """
+
         for group in groups:
             # walk through existing line groups
             for line_old in group:
@@ -36,13 +44,18 @@ class HoughBundler:
         return True
 
     def distance_point_to_line(self, point, line):
-        """Get distance between point and line
-        http://local.wasp.uwa.edu.au/~pbourke/geometry/pointline/source.vba
+        """
+        Get distance between point and line.
+        Based of the code in: http://local.wasp.uwa.edu.au/~pbourke/geometry/pointline/source.vba
+
+        @return: the distance between the point and the line.
         """
         px, py = point
 
         def line_magnitude(x1, y1, x2, y2):
-            'Get line (aka vector) length'
+            """
+            Get line (aka vector) length.
+            """
             lineMagnitude = math.sqrt(math.pow((x2 - x1), 2) + math.pow((y2 - y1), 2))
             return lineMagnitude
 
@@ -71,8 +84,10 @@ class HoughBundler:
         return distance_point_line
 
     def get_distance(self, a_line, b_line):
-        """Get all possible distances between each dot of two lines and second line
-        return the shortest
+        """
+        Get all possible distances between each dot of two lines and second line.
+
+        @return: the shortest distance between the two lines.
         """
         dist1 = self.distance_point_to_line([a_line.x1, a_line.y1], b_line)
         dist2 = self.distance_point_to_line([a_line.x2, a_line.y2], b_line)
@@ -82,7 +97,12 @@ class HoughBundler:
         return min(dist1, dist2, dist3, dist4)
 
     def merge_lines_into_groups(self, lines):
-        'Clusterize (group) lines'
+        """
+        Clusterize (group) lines
+
+        @param lines: list of lines to group.
+        @return: list of lists of lines grouped.
+        """
         groups = [[lines[0]]]  # all lines groups are here
         # first line will create new group every time
         # if line is different from existing gropus, create a new group
@@ -93,7 +113,11 @@ class HoughBundler:
         return groups
 
     def merge_group_into_line(self, lines):
-        """Sort lines cluster and return first and last coordinates
+        """
+        Sort clustered lines and return first and last coordinates.
+
+        @param lines: the list of lines to convert into a single line.
+        @return: resulting line.
         """
         orientation = lines[0].get_orientation()
 
@@ -119,11 +143,12 @@ class HoughBundler:
         return Line([points[0][0], points[0][1], points[-1][0], points[-1][1]])
 
     def process_lines(self, lines):
-        '''Main function for lines from cv.HoughLinesP() output merging
-        for OpenCV 3
-        lines -- cv.HoughLinesP() output
-        img -- binary image.jp2
-        '''
+        """
+        Handles the needed processing of the lines and returns a list of the processed lines.
+
+        @param lines: the lines to process.
+        @return: the merged lines.
+        """
         lines_x, lines_y = self.split_lines_into_horizontal_and_vertical(lines)
         merged_lines_all = []
 
@@ -137,6 +162,12 @@ class HoughBundler:
 
 
     def split_lines_into_horizontal_and_vertical(self, lines):
+        """
+        Categorizes the lines into horizontal and vertical lines.
+
+        @param lines: the lines to categorize.
+        @return: tuple of two lists of lines (vertical and horizontal).
+        """
         lines_vertical = []
         lines_horizontal = []
         # for every line of cv2.HoughLinesP()

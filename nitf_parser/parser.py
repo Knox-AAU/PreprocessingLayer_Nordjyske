@@ -4,14 +4,19 @@ from knox_source_data_io.models.publication import Publication, Article, Paragra
 
 
 class NitfParser:
+    """
+    Used to parse NITF files to JSON.
+    """
     def __init__(self):
         self.publication = Publication()
         self.article = Article()
 
     def __parse_header(self, header_element):
-        """ Parses the header, and gathers the needed information from it.
-        :param header_element: The XML-dom element for the header element in the NITF file.
-        :return: A dictionary of the newly gathered information.
+        """
+        Parses the header, and gathers the needed information from it.
+
+        @param header_element: The XML-dom element for the header element in the NITF file.
+        @return: A dictionary of the newly gathered information.
         """
         # https://www.w3schools.com/xml/dom_element.asp
         # We extract all elements from the XML file and call functions to extract the information from the elements
@@ -28,9 +33,11 @@ class NitfParser:
         self.__parse_pub_data(pub_data)
 
     def __parse_metadata(self, metadata):
-        """ Returns needed information from metadata including by-line, page-number and id
-        :param metadata:
-        :return:
+        """
+        Returns needed information from metadata including by-line, page-number and id.
+
+        @param metadata:
+        @return: void
         """
         config = configparser.ConfigParser()
         config.read('metadata-mapper.ini')
@@ -72,15 +79,20 @@ class NitfParser:
     def sanitize_spaces(a: str) -> str:
         """
         Splits a string by any whitespace, then joins by normal spaces, to remove double-spaces, tabs, newlines etc.
+
+        @param str: string to sanitize.
+        @return: the sanitized string.
         """
         if a is None:
             return a
         return " ".join(a.split())
 
     def __parse_doc_data(self, doc_data):
-        """ Returns needed information from docdata including release date
-        :param doc_data:
-        :return:
+        """
+        Sets the needed information from docdata including release date.
+
+        @param doc_data: the data to retrieve the desired data from.
+        @return: void
         """
         temp = doc_data.getElementsByTagName('nitf:date.release')[0].getAttribute('norm')
         if len(temp) != 0:
@@ -135,7 +147,8 @@ class NitfParser:
         return accumulated
 
     def __parse_body_head(self, head):
-        """ Returns needed information from head including title and trompet
+        """ Returns needed information from head including title and trompet.
+
         :param head:
         :return:
         """

@@ -16,15 +16,18 @@ import cv2
 
 
 class OCRRunner:
-
+    """
+    Used to handle the OCR of an image.
+    """
     def run_ocr(self, file: File, language='dan', tesseract_path=None):
         """
         Runs everything that's needed to do OCR. It does the following: segmentation, creating articles, and
-        turning articles into publications
-        @param file: given file to perform OCR on
-        @param language: optional parameter to change the language used by Tesseract
-        @param tesseract_path: optional parameter to specify Tesseract installation if its not found in PATH
-        @return: publication with the articles in the file
+        turning articles into publications.
+
+        @param file: given file to perform OCR on.
+        @param language: optional parameter to change the language used by Tesseract.
+        @param tesseract_path: optional parameter to specify Tesseract installation if its not found in PATH.
+        @return: publication with the articles in the file.
         """
         image = cv2.imread(file.path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -95,10 +98,11 @@ class OCRRunner:
     def __convert_articles_into_publication(self, articles, file):
         """
         Converts articles into publications and finds the following for the publication:
-        publication (name), publisher, published_at, and removes empty paragraphs
-        @param articles: list of articles to turn into publication
-        @param file: file object of the file that has been ran through OCR
-        @return: publication with all articles
+        publication (name), publisher, published_at, and removes empty paragraphs.
+
+        @param articles: list of articles to turn into publication.
+        @param file: file object of the file that has been ran through OCR.
+        @return: publication with all articles.
         """
         # Reads the name of publisher from config file
         config = configparser.ConfigParser()
@@ -116,18 +120,20 @@ class OCRRunner:
     @staticmethod
     def __find_publication(file_name):
         """
-        Finds publisher name from file name
-        @param file_name: name of file
-        @return: publisher name
+        Finds publisher name from file name.
+
+        @param file_name: name of file.
+        @return: publisher name.
         """
         return file_name.split("-")[0].title()
 
     @staticmethod
     def __find_page_number(file_path):
         """
-        Finds page number from alto.xml file
-        @param file_path: name of file
-        @return: page number
+        Finds page number from alto.xml file.
+
+        @param file_path: name of file.
+        @return: page number.
         """
         page_elements = minidom.parse(os.path.splitext(file_path)[0] + ".alto.xml").getElementsByTagName("Page")
 
@@ -136,9 +142,10 @@ class OCRRunner:
     @staticmethod
     def __find_published_at(file_path):
         """
-        Find when the newspaper was published
-        @param file_path: path to the file
-        @return: datetime object of when paper was published
+        Find when the newspaper was published.
+
+        @param file_path: path to the file.
+        @return: datetime object of when paper was published.
         """
         # Opens the corresponding alto.xml file to find the published_at date
         published_at = minidom.parse(os.path.splitext(file_path)[0] + ".alto.xml").\
@@ -158,9 +165,10 @@ class OCRRunner:
     def __remove_advertisement_and_junk(paragraphs):
         """
         Finds articles where the text is either half full with numbers or a quarter full with special characters
-        and removes the article to avoid junk in the output
-        @param paragraphs: paragraphs to search through
-        @return: paragraphs that does not contain junk
+        and removes the article to avoid junk in the output.
+
+        @param paragraphs: paragraphs to search through.
+        @return: paragraphs that does not contain junk.
         """
         # If text contains a lot of numbers it might be a TV guide or "aktier"
         ok_paragraphs = []
@@ -189,18 +197,20 @@ class OCRRunner:
     @staticmethod
     def __remove_empty_paragraphs(publication):
         """
-        Removes all articles in a publication that does not contain text
-        @param publication: publication with articles to check
-        @return: publication without empty paragraphs
+        Removes all articles in a publication that does not contain text.
+
+        @param publication: publication with articles to check.
+        @return: publication without empty paragraphs.
         """
         for article in publication.articles:
             article.paragraphs = [p for p in article.paragraphs if len(p.value) > 0]
 
     def __find_year(self, file_name):
         """
-        Finds the year of the file with regular expression
-        @param file_name: name of file
-        @return: file date in format: YYYYMMDD
+        Finds the year of the file with regular expression.
+
+        @param file_name: name of file.
+        @return: file date in format: YYYYMMDD.
         """
         pattern = re.compile("\\d\\d\\d\\d-\\d\\d-\\d\\d")
         result = pattern.search(file_name)

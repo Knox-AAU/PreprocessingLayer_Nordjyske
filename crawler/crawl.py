@@ -11,7 +11,9 @@ from crawler.folder import Folder
 
 
 class Crawler:
-
+    """
+    Used for crawling the file structure for files.
+    """
     def __init__(self):
         config = configparser.ConfigParser()
         config.read('config.ini')
@@ -33,10 +35,11 @@ class Crawler:
         """
         Crawl a directory recursively to find target directories, configured by the config file.
         Will only find files in a defined interval of dates.
-        @param q: The queue to add directories to
-        @param directory: The current folder path to search in
-        @param from_date: The interval from_date
-        @param to_date: The interval to_date
+
+        @param q: The queue to add directories to.
+        @param directory: The current folder path to search in.
+        @param from_date: The interval from_date.
+        @param to_date: The interval to_date.
         """
         for entry in os.scandir(directory):
             if not entry.is_dir():
@@ -71,8 +74,9 @@ class Crawler:
     def crawl_for_files_in_folders(self, folder, directory: str):
         """
         Finds valid files in a folder and adds it to a folder type.
+
         @param folder: The folder to add the found files to.
-        @param directory: The path to search
+        @param directory: The path to search.
         """
         for entry in os.scandir(directory):
             if not entry.is_dir():
@@ -96,8 +100,9 @@ class Crawler:
     def is_file_valid_nitf(xml_path) -> bool:
         """
         Determines if a given file_path is a valid NITF file.
-        @param xml_path:
-        @return: bool
+
+        @param xml_path: the path to the NITF file.
+        @return: bool.
         """
         try:
             xml_doc = minidom.parse(xml_path)
@@ -112,11 +117,12 @@ class Crawler:
 
     @staticmethod
     def is_string_in_list(string, checklist):
-        """ Checks if the string contains any words in the list (useful for black- and whitelisting)
+        """
+        Checks if the string contains any words in the list (useful for black- and whitelisting).
 
-        :param string: String to be checked
-        :param checklist: White- or blacklist from config file
-        :return: True or False, depending on whether the string appears in the list
+        @param string: String to be checked.
+        @param checklist: White- or blacklist from config file.
+        @return: True or False, depending on whether the string appears in the list.
         """
         for listed_item in checklist:
             if listed_item in string:

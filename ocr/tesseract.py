@@ -5,7 +5,9 @@ from knox_source_data_io.models.publication import Publication, Article, Paragra
 
 
 class TesseractModule:
-
+    """
+    Used to handle all Tesseract related tasks.
+    """
     def __init__(self, image, language='dan', tesseract_path=None):
         if tesseract_path is not None:
             pytesseract.pytesseract.tesseract_cmd = tesseract_path

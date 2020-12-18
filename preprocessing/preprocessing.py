@@ -6,7 +6,9 @@ from PIL import Image
 
 
 class Preprocessing:
-
+    """
+    Used to handle the pre-processing of images.
+    """
     def __init__(self):
         pass
 

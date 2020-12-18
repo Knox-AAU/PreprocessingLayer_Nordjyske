@@ -2,6 +2,9 @@ from datetime import datetime, timezone
 
 
 class Folder:
+    """
+    Representation of a folder within the Crawler.
+    """
     def __init__(self, path, year, month, day):
         self.path = path
         self.year = year
