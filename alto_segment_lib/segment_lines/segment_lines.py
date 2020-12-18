@@ -233,37 +233,37 @@ class SegmentLines:
         return min_y, max_y, average_x
 
     @staticmethod
-    def __find_affected_segments(segments, x_cord):
+    def __find_affected_segments(segments, x_coord):
         """
         Finds all encountered segments on an x-cord.
 
         @param segments: A list of segments.
-        @param x_cord: An x coordinate.
+        @param x_coord: An x coordinate.
         @return: All the encountered segments.
         """
         affected_segments = []
 
         for segment in segments:
-            if segment.x1 < x_cord < segment.x2:
+            if segment.x1 < x_coord < segment.x2:
                 affected_segments.append(segment)
 
         return affected_segments
 
     @staticmethod
-    def __find_affected_segments_between_lines(segments, min_y, max_y, x_cord):
+    def __find_affected_segments_between_lines(segments, min_y, max_y, x_coord):
         """
         Finds all encountered segments on an x-cord between two y-values.
 
         @param segments: A list of segments.
         @param min_y: The low y-value.
         @param max_y: The high y-value.
-        @param x_cord: An x coordinate.
+        @param x_coord: An x coordinate.
         @return: All the encountered segments between the two y-values.
         """
         affected_segments = []
 
         for segment in segments:
-            if segment.x1 < x_cord < segment.x2 \
+            if segment.x1 < x_coord < segment.x2 \
                     and segment.y1 > min_y \
                     and segment.y2 < max_y:
                 affected_segments.append(segment)
