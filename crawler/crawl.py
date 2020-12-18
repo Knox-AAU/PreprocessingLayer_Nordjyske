@@ -2,7 +2,7 @@ import configparser
 import os
 import re
 import xml
-from datetime import datetime
+from datetime import datetime, timezone
 from queue import Queue
 from xml.dom import minidom
 from crawler.file import File
@@ -57,9 +57,9 @@ class Crawler:
                                 int(entry.name[limits[4]:limits[5]]))
 
                 if not (
-                        (from_date if from_date is not None else datetime.min) <=
+                        (from_date if from_date is not None else datetime.min.replace(tzinfo=timezone.utc)) <=
                         folder.get_datetime() <=
-                        (to_date if to_date is not None else datetime.max)
+                        (to_date if to_date is not None else datetime.max.replace(tzinfo=timezone.utc))
                 ):
                     # only consume if within date
                     continue
