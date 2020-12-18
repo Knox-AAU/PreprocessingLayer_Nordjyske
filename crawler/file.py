@@ -2,6 +2,9 @@ from crawler.file_types import FileType
 
 
 class File:
+    """
+    Representation of a file within the Crawler.
+    """
     def __init__(self, path: str, filetype: FileType, name: str = None):
         self.path = path
         self.name = name

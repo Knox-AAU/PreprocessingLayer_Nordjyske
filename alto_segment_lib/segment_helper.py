@@ -6,7 +6,9 @@ import configparser
 
 
 class SegmentHelper:
-
+    """
+    Used to handle some of the calculations rooted in the Segment class.
+    """
     def __init__(self):
         config = configparser.ConfigParser()
         config.read('config.ini')
@@ -18,8 +20,10 @@ class SegmentHelper:
         self.group_same_segment_margin_px = float(config['page_segmentation']['group_same_segment_margin_px'])
         self.min_cluster_size = int(config['page_segmentation']['min_cluster_size'])
 
-    def group_lines_into_paragraphs_headers(self, lines: List):
-        """ Groups headers together in one list and paragraphs in another list
+    def group_lines_into_paragraphs_and_headers(self, lines: List):
+        """
+        Groups headers together in one list and paragraphs in another list
+
         @param lines: a list of text lines
         @return: headers, paragraphs: a tuple including a list of headers and a list of paragraphs
         """
@@ -50,11 +54,12 @@ class SegmentHelper:
 
     @staticmethod
     def remove_segments_within_segments(outer_segs, inner_segs):
-        """ Removes paragraphs that are completely within a header or headers within paragraphs
+        """
+        Removes paragraphs that are completely within a header or headers within paragraphs.
 
-        @param outer_segs: a list of segments
-        @param inner_segs: a list of segments
-        @return: updated_paragraphs: a list of paragraphs
+        @param outer_segs: a list of segments.
+        @param inner_segs: a list of segments.
+        @return: updated_paragraphs: a list of paragraphs.
         """
         updated_segs = inner_segs.copy()
         for outer_seg in outer_segs:
@@ -69,10 +74,11 @@ class SegmentHelper:
         return updated_segs
 
     def __repair_header_clusters(self, headers):
-        """ Finds headers that are clustered together and turns them into paragraphs
+        """
+        Finds headers that are clustered together and turns them into paragraphs.
 
-        @param headers: list of headers
-        @return: new_headers, new_paragraphs: a tuple including a list of headers and a list of paragraphs
+        @param headers: list of headers.
+        @return: new_headers, new_paragraphs: a tuple including a list of headers and a list of paragraphs.
         """
         header_column_groups = self.__group_same_column(headers)
         header_segment_groups = self.__group_same_segment(header_column_groups, True)
@@ -88,10 +94,11 @@ class SegmentHelper:
         return new_headers, new_paragraphs
 
     def combine_lines_into_segments(self, text_lines: list):
-        """ Groups text lines into segments
+        """
+        Groups text lines into segments.
 
-        @param text_lines: list of text lines
-        @return: segments: list of segments
+        @param text_lines: list of text lines.
+        @return: segments: list of segments.
         """
         segments = []
         column_groups = self.__group_same_column(text_lines)
@@ -105,10 +112,11 @@ class SegmentHelper:
         return segments
 
     def __group_same_column(self, text_lines):
-        """ Groups text lines into columns
+        """
+        Groups text lines into columns.
 
-        @param text_lines: list of text lines
-        @return: column_groups: list of lists containing lines
+        @param text_lines: list of text lines.
+        @return: column_groups: list of lists containing lines.
         """
         previous_line = None
         temp = []
@@ -140,11 +148,12 @@ class SegmentHelper:
         return column_groups
 
     def __group_same_segment(self, column_groups, ignore_width):
-        """ Groups text lines within columns into segments
+        """
+        Groups text lines within columns into segments.
 
-        @param column_groups: list of lists containing lines
-        @param ignore_width: boolean indicating whether width should be checked
-        @return: segments: list of lists containing segments
+        @param column_groups: list of lists containing lines.
+        @param ignore_width: boolean indicating whether width should be checked.
+        @return: segments: list of lists containing segments.
         """
         temp = []
         segment_groups = []
@@ -202,10 +211,11 @@ class SegmentHelper:
 
     @staticmethod
     def make_box_around_lines(text_lines: list):
-        """ Finds the coordinates for the segment containing the lines and creates the segment
-        @param return_coordinates:
-        @param text_lines: list of text lines
-        @return: segment
+        """
+        Finds the coordinates for the segment containing the lines and creates the segment.
+
+        @param text_lines: list of text lines.
+        @return: segment.
         """
         if len(text_lines) == 0:
             return None
@@ -216,22 +226,7 @@ class SegmentHelper:
         y2 = text_lines[0].y2
 
         # Finds width and height line and change box height and width accordingly
-        for line in text_lines:
-            # Find x-coordinate upper left corner
-            if line.x1 < x1:
-                x1 = line.x1
-
-            # Find x-coordinate lower right corner
-            if line.x2 > x2:
-                x2 = line.x2
-
-            # Find y-coordinate upper left corner
-            if line.y1 < y1:
-                y1 = line.y1
-
-            # Find y-coordinate lower right corner
-            if line.y2 > y2:
-                y2 = line.y2
+        x1, x2, y1, y2 = SegmentHelper.get_coordinates_that_cover_all_elements(text_lines, x1, x2, y1, y2)
 
         segment = Segment([x1, y1, x2, y2])
         segment.lines = text_lines
@@ -239,11 +234,12 @@ class SegmentHelper:
         return segment
 
     def split_segments_by_lines(self, text_lines: list, lines: list):
-        """ Splits text lines spanning over several columns into smaller lines
+        """
+        Splits text lines spanning over several columns into smaller lines.
 
-        @param text_lines: list of text lines
-        @param lines: list of lines
-        @return: new_lines: a list of text lines spanning only one column
+        @param text_lines: list of text lines.
+        @param lines: list of lines.
+        @return: new_lines: a list of text lines spanning only one column.
         """
         new_text_lines = []
         for text_line in text_lines:
@@ -268,11 +264,12 @@ class SegmentHelper:
 
     @staticmethod
     def __does_line_intersect_text_line(text_line, lines: list):
-        """ Checks whether a vertical line intersects the text_line
+        """
+        Checks whether a vertical line intersects the text_line.
 
-        @param text_line: list of text lines
-        @param lines: list of lines
-        @return: new_lines: returns a tuple with a boolean which is false if no lines found, as well as the lines found
+        @param text_line: list of text lines.
+        @param lines: list of lines.
+        @return: new_lines: returns a tuple with a boolean which is false if no lines found, as well as the lines found.
         """
         new_lines = []
 
@@ -294,7 +291,8 @@ class SegmentHelper:
     @staticmethod
     def get_content_bounds(segments: list):
         """
-        todo
+        Get the bounds of the content of the
+
         @param segments:
         @return:
         """
@@ -302,32 +300,48 @@ class SegmentHelper:
         x1 = y1 = 10000
         x2 = y2 = 0
 
-        for segment in segments:
-            # Find x-coordinate upper left corner
-            if segment.x1 < x1:
-                x1 = segment.x1
-
-            # Find x-coordinate lower right corner
-            if segment.x2 > x2:
-                x2 = segment.x2
-
-            # Find y-coordinate upper left corner
-            if segment.y1 < y1:
-                y1 = segment.y1
-
-            # Find y-coordinate lower right corner
-            if segment.y2 > y2:
-                y2 = segment.y2
+        x1, x2, y1, y2 = SegmentHelper.get_coordinates_that_cover_all_elements(segments, x1, x2, y1, y2)
 
         return x1, y1, x2, y2
 
     @staticmethod
-    def __find_split_x_coord(text_line, line):
-        """ Finds the x-coordinate where the line intersects with text line
+    def get_coordinates_that_cover_all_elements(elements, x1, x2, y1, y2):
+        """
+        Returns a tuple of four coordinates that cover all the elements and the provided coordinates.
 
-        @param text_line: the text line that should be split
-        @param line: the line intersecting the text line
-        @return: split_x_coord: the x-coordinate for where the text line should be split
+        @param elements: the list of elements to be covered by the coordinates (must have x1, x2, y1, and y2 properties).
+        @param x1: maximum value for x1.
+        @param x2: minimum value for x2.
+        @param y1: maximum value for y1.
+        @param y2: minimum value for y2.
+        @return: a tuple of the four coordinates that can cover all elements.
+        """
+        for element in elements:
+            # Find x-coordinate upper left corner
+            if element.x1 < x1:
+                x1 = element.x1
+
+            # Find x-coordinate lower right corner
+            if element.x2 > x2:
+                x2 = element.x2
+
+            # Find y-coordinate upper left corner
+            if element.y1 < y1:
+                y1 = element.y1
+
+            # Find y-coordinate lower right corner
+            if element.y2 > y2:
+                y2 = element.y2
+        return x1, x2, y1, y2
+
+    @staticmethod
+    def __find_split_x_coord(text_line, line):
+        """
+        Finds the x-coordinate where the line intersects with text line.
+
+        @param text_line: the text line that should be split.
+        @param line: the line intersecting the text line.
+        @return: split_x_coord: the x-coordinate for where the text line should be split.
         """
         # Calculates coordinates for B based on angle A, C and line b, where C is 90
         # Calculate A
@@ -346,20 +360,22 @@ class SegmentHelper:
         return split_x_coord
 
     @staticmethod
-    def group_headers_into_segments(header_lines):
+    def group_headers_close_in_proximity_into_a_single_segment(header_lines):
         """
-        todo
-        @param header_lines:
-        @return:
+        Groups headers that are close to each based on different checks into a single segment.
+        This is done all the lines in the given list of header lines, possibly resulting in multiple segments.
+
+        @param header_lines: list of header lines.
+        @return: the resulting segments from the grouping.
         """
         header_segments = []
         segment = Segment()
 
         x1 = x2 = y1 = y2 = 0
-        threshold = 300  # ToDo: make smart
+        threshold = 300  # ToDo: Make use of some logic to calculate this (we discovered that 300 gave the best result)
 
         for line in header_lines:
-            if SegmentHelper.distance_between_coordinates(x1, y2, line.x1, line.y1) <= threshold:
+            if SegmentHelper.distance_between_points(x1, y2, line.x1, line.y1) <= threshold:
                 # The line is within the circle of the header
                 segment.add_line(line)
             elif x1 != x2 != y1 != y2 != 0 and abs(line.x1 - x2) < threshold and abs(line.y1 - y1) < threshold:
@@ -387,12 +403,29 @@ class SegmentHelper:
 
     @staticmethod
     def inside_box(box_coords: list, x: int, y: int):
+        """
+        Checks if the specified point, given by x and y, is within the box.
+
+        @param box_coords: list of coordinates of the box order as [x1, y1, x2, y2].
+        @param x: the x coordinate of the point.
+        @param y: the y coordinate of the point.
+        @return: true if the point is inside the box, else false.
+        """
         if len(box_coords) == 4:
             return box_coords[0] <= x <= box_coords[2] and box_coords[1] <= y <= box_coords[3]
         return False
 
     @staticmethod
-    def distance_between_coordinates(x1, y1, x2, y2):
+    def distance_between_points(x1, y1, x2, y2):
+        """
+        Calculates the distance between the two points.
+
+        @param x1: x of the first point.
+        @param y1: y of the first point.
+        @param x2: x of the second point.
+        @param y2: y of the second point.
+        @return: the distance between the points.
+        """
         dx = x1 - x2
         dy = y1 - y2
         return math.sqrt(dx ** 2 + dy ** 2)

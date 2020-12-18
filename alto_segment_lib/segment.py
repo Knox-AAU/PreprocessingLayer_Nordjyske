@@ -4,7 +4,9 @@ from alto_segment_lib.line import Line
 
 
 class SegmentType(Enum):
-    """The types a segment can be."""
+    """
+    The types a segment can be.
+    """
     paragraph = 1
     heading = 2
     line = 3
@@ -25,7 +27,7 @@ class Segment(Line):
 
     def add_line(self, line: object):
         """
-        Adds the line to the lines of the segment
+        Adds the line to the lines of the segment.
 
         @param line: The line to add
         @return: void
@@ -34,7 +36,7 @@ class Segment(Line):
 
     def update_coordinates_based_on_lines(self):
         """
-        Updates the coordinates of the segment based on the coordinates of its internal lines
+        Updates the coordinates of the segment based on the coordinates of its internal lines.
 
         @return: void
         """
@@ -67,7 +69,7 @@ class Segment(Line):
     @classmethod
     def from_line(cls, line: Line, segment_type: SegmentType):
         """
-        Converts the line to a segment
+        Converts the line to a segment.
 
         @param segment_type: The type of the resulting segment
         @return: The line as a segment
@@ -77,7 +79,7 @@ class Segment(Line):
 
 class SegmentGroup:
     """
-    todo
+    A group of segments consisting of a list of headers and paragraphs.
     """
     headers: List[Segment]
     paragraphs: List[Segment]

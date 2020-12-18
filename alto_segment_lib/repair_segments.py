@@ -9,8 +9,11 @@ import statistics
 
 class RepairSegments:
     """
-    todo documentation and possibly rework
+    Used for reparation of the segments. This includes fixing segments that extends beyond a single column,
+    merging smaller segments, modifying segments that overlap other segments,
+    and removing segments that are completely within another segment.
     """
+
     def __init__(self, segments, threshold: int = None):
         config = configparser.ConfigParser()
         config.read('config.ini')
@@ -34,13 +37,14 @@ class RepairSegments:
 
     def repair_rows(self):
         """
-        todo this needs documentation and possibly rework
-        @return:
+        Compares each segment with every other segment to fix overlaps and segments completely within other segments.
+
+        @return: the list of segments with everything fixed.
         """
         return_segments = self.__segments.copy()
         thresh_within = 5
 
-        # Iterates through all segments and all other segments
+        # Iterates over all segments for each segment to make sure evey segment is compared with every other segment
         for segment in self.__segments:
             for subsegment in self.__segments:
                 if not segment == subsegment:
@@ -70,16 +74,9 @@ class RepairSegments:
         return return_segments
 
 
-def add_segment(segments: list, coordinates: list, lines, seg_type: str):
-    segment = Segment(coordinates)
-    segment.lines = lines
-    segment.type = seg_type
-    segments.append(segment)
-
-
 def merge_segments(segments: List[Segment]) -> List[Segment]:
     """
-    Merges segments into bigger chunks based on distance
+    Merges segments into bigger chunks based on distance.
 
     @type segments: List of segments
     @return list[Segment]
@@ -99,7 +96,8 @@ def merge_segments(segments: List[Segment]) -> List[Segment]:
 
         for merged_segment in merged_segments:
             # Adding one since some segments are starting at exactly same y as parent
-            if SegmentHelper.inside_box([merged_segment.x1, merged_segment.y1, merged_segment.x2, merged_segment.y2], segment.x1, segment.y1+1):
+            if SegmentHelper.inside_box([merged_segment.x1, merged_segment.y1, merged_segment.x2, merged_segment.y2],
+                                        segment.x1, segment.y1 + 1):
                 skip_segment = True
                 break
 
@@ -115,7 +113,8 @@ def merge_segments(segments: List[Segment]) -> List[Segment]:
             merged = False
 
             # Check from current segments lower left corner if any segments are within threshold distance.
-            if SegmentHelper.distance_between_coordinates(segment.x1, segment.y2, sub_segment.x1, sub_segment.y1) <= merge_distance_threshold:
+            if SegmentHelper.distance_between_points(segment.x1, segment.y2, sub_segment.x1,
+                                                     sub_segment.y1) <= merge_distance_threshold:
 
                 # Generate coordinates equal to the empty space on the right or left, to check if
                 # we will overlap existing elements by merging

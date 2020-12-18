@@ -12,13 +12,17 @@ from matplotlib.patches import Rectangle
 
 
 class SegmentModule:
+    """
+    Module for handling segmentation of images.
+    """
 
     @staticmethod
     def run_segmentation(file_path):
         """
         Runs segmentation on a given .jp2 file.
-        @param file_path: Path to jp2 file
-        @return: ordered segments. Sorted by article
+
+        @param file_path: Path to jp2 file.
+        @return: ordered segments. Sorted by article.
         """
         headers, paragraphs = SegmentModule.segment_headers_paragraph_from_file(file_path)
 
@@ -31,7 +35,7 @@ class SegmentModule:
 
         # Grouping
         grouper = SegmentGrouper()
-        grouped_headers = SegmentHelper.group_headers_into_segments(headers)
+        grouped_headers = SegmentHelper.group_headers_close_in_proximity_into_a_single_segment(headers)
         groups = grouper.order_segments(grouped_headers, paragraphs, horizontal_lines)
         ordered_segments = grouper.convert_groups_into_segments(groups)
         return ordered_segments
@@ -40,6 +44,7 @@ class SegmentModule:
     def segment_headers_paragraph_from_file(file_path):
         """
         Gets headers and paragraphs from a .jp2 file.
+
         @param file_path: The path to a jp2 file.
         @return: headers and paragraphs from the jp2 file.
         """
@@ -54,7 +59,7 @@ class SegmentModule:
         alto_extractor.dpi = 300
         alto_extractor.margin = 0
         text_lines = alto_extractor.extract_lines()
-        (headers, paragraphs) = segment_helper.group_lines_into_paragraphs_headers(text_lines)
+        (headers, paragraphs) = segment_helper.group_lines_into_paragraphs_and_headers(text_lines)
         # Find lines in image, then split segments that cross those lines.
         lines = LineExtractor().extract_lines_via_path(image_file_path)
         paragraphs = segment_helper.split_segments_by_lines(paragraphs, lines)
@@ -71,6 +76,15 @@ class SegmentModule:
 
     @staticmethod
     def display_segments(segments_for_display, file_path, name, color='r'):
+        """
+        Draws the segments on the given file and saves it as a PNG.
+
+        @param segments_for_display: the Segments to draw on the image.
+        @param file_path: path to the image (will be the first part of the file name).
+        @param name: the second part of the file name, concatenated on to the first with a '-'.
+        @param color: the desired color of the segments (default = red).
+        @return: void.
+        """
         plt.imshow(Image.open(file_path))
         plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
 

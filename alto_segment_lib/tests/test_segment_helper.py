@@ -91,7 +91,7 @@ def test_group_headers_into_segments_single_header_success():
     header_line2.y2 = 45
 
     header_lines = [header_line1, header_line2]
-    header_segments = SegmentHelper.group_headers_into_segments(header_lines)
+    header_segments = SegmentHelper.group_headers_close_in_proximity_into_a_single_segment(header_lines)
 
     assert len(header_segments) == 1
 
@@ -124,7 +124,7 @@ def test_group_headers_into_segments_multiple_header_success():
     header_line4.y2 = 650
 
     header_lines = [header_line1, header_line2, header_line3, header_line4]
-    header_segments = SegmentHelper().group_headers_into_segments(header_lines)
+    header_segments = SegmentHelper().group_headers_close_in_proximity_into_a_single_segment(header_lines)
 
     assert len(header_segments) == 2
 
@@ -144,7 +144,7 @@ def test_distance_between_coordinates_success():
     dot2_x = 100
     dot1_y = dot2_y = 0
 
-    distance = segment_helper.distance_between_coordinates(dot1_x, dot1_y, dot2_x, dot2_y)
+    distance = segment_helper.distance_between_points(dot1_x, dot1_y, dot2_x, dot2_y)
     assert distance == 100
 
 
@@ -153,11 +153,11 @@ def test_distance_between_coordinates_failed():
     dot2_x = 400
     dot1_y = dot2_y = 0
 
-    distance = segment_helper.distance_between_coordinates(dot1_x, dot1_y, dot2_x, dot2_y)
+    distance = segment_helper.distance_between_points(dot1_x, dot1_y, dot2_x, dot2_y)
     assert not distance == 500
 
 
-def test_group_lines_into_paragraphs_headers_one_header_one_paragraph_based_on_height_success():
+def test_group_lines_into_paragraphs_and_headers_one_header_one_paragraph_based_on_height_success():
     # Line that should be classified as a header
     header_line = Line()
     header_line.x1 = 0
@@ -174,7 +174,7 @@ def test_group_lines_into_paragraphs_headers_one_header_one_paragraph_based_on_h
 
     lines = [header_line, para_line]
 
-    line_tuple = segment_helper.group_lines_into_paragraphs_headers(lines)
+    line_tuple = segment_helper.group_lines_into_paragraphs_and_headers(lines)
 
     assert line_tuple == ([header_line], [para_line])
 
@@ -189,7 +189,7 @@ def test_group_lines_into_paragraphs_3_paragraphs_based_on_median_success():
     para_line2 = Line([0, 200, 100, 250], block_segment=segment)
     segment.lines = [para_line1, header_line, para_line2]
 
-    line_tuple = segment_helper.group_lines_into_paragraphs_headers(segment.lines)
+    line_tuple = segment_helper.group_lines_into_paragraphs_and_headers(segment.lines)
 
     assert line_tuple == ([header_line], [para_line1, para_line2])
 

@@ -91,7 +91,7 @@ def run_file(file_path):
     alto_extractor.margin = 0
     text_lines = alto_extractor.extract_lines()
 
-    (headers, paragraphs) = segment_helper.group_lines_into_paragraphs_headers(text_lines)
+    (headers, paragraphs) = segment_helper.group_lines_into_paragraphs_and_headers(text_lines)
 
     # Find lines in image, then split segments that cross those lines.
     lines = LineExtractor().extract_lines_via_path(image_file_path)
@@ -114,7 +114,7 @@ def run_file(file_path):
     print("After:  " + str(len(paragraphs)))
     display_segments(paragraphs, file_path, "paragraphs-after")
 
-    our_headers = segment_helper.group_headers_into_segments(headers)
+    our_headers = segment_helper.group_headers_close_in_proximity_into_a_single_segment(headers)
     segment_lines = SegmentLines(paragraphs, our_headers)
     # (horizontal_lines, vertical_lines) = segment_lines.find_vertical_and_horizontal_lines()
     horizontal_lines = []
@@ -129,7 +129,7 @@ def run_file(file_path):
 
 
     grouper = SegmentGrouper()
-    grouped_headers = SegmentHelper.group_headers_into_segments(headers)
+    grouped_headers = SegmentHelper.group_headers_close_in_proximity_into_a_single_segment(headers)
 
     print("Headers after : " + str(len(grouped_headers)))
 

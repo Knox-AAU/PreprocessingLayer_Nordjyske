@@ -8,16 +8,17 @@ environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 
 class SegmentGrouper:
     """
-    todo
+    Used to order the segments based on the reading order of articles.
     """
 
     def order_segments(self, headers_in: List[Segment], paragraphs_in: List[Segment], lines_in: List[Line]):
         """
-        todo
-        @param headers_in:
-        @param paragraphs_in:
-        @param lines_in:
-        @return:
+        Handles the ordering of the segments, to ensure correct order based on the reading order.
+
+        @param headers_in: list of header Segments.
+        @param paragraphs_in: list of paragraph Segments.
+        @param lines_in: list of Lines
+        @return: ordered list of SegmentGroups
         """
         segments = paragraphs_in.copy()
         segments.extend(headers_in)
@@ -116,7 +117,13 @@ class SegmentGrouper:
         return segment
 
     def order_segments_by_x1_y1(self, segments: List[Segment]):
-        # Group segments by x1, if segment.x1 is within range of the first element of an existing group, else create new group
+        """
+        Groups segments by x1 and then y1, ignoring small variations.
+
+        @param segments: the list of segments to be ordered.
+        @return: the ordered list of segments
+        """
+        #
         # Run through each group and sort by y1
         # Merge groups into collective list
         segments_grouped = []
@@ -147,6 +154,12 @@ class SegmentGrouper:
         return [segment for group in segments_grouped for segment in group]
 
     def convert_groups_into_segments(self, groups: list):
+        """
+        Converts the list of SegmentGroups to a list of segments
+
+        @param groups: list of SegmentGroups
+        @return: List[Segment]
+        """
         segments = []
         for group in groups:
             [segments.append(head) for head in group.headers]
