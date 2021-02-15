@@ -97,7 +97,7 @@ The development team behind this project will change once a year and for this re
 limited. However, if you have any questions or stumble upon something that has not clearly been
 described, please contact one of the developers at: <nvisti18@student.aau.dk>
 
-However, make sure to have researched the issue before reaching out and to document the issue of
+However, make sure to have researched the issue before reaching out and to document the issue in
 question elaborately.
 
 ## Contributing
