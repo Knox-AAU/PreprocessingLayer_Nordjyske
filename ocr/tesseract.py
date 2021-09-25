@@ -9,22 +9,25 @@ class TesseractModule:
     Used to handle all Tesseract related tasks.
     """
 
-    def __init__(self, image, language='dan', tesseract_path=None):
+                                              # CHANGE THIS (PATH) BELOW
+    def __init__(self, image, language='dan', tesseract_path='C:\Program Files\Tesseract-OCR\\tesseract.exe'):
         """
         Instantiates an instance of the class and extracts the text from the provided image using Tesseract.
 
         @param image: the image to extract the text from.
         @param language: the language model to use for the text extraction.
-        @param tesseract_path: path to Tesseract (only necessary in cas of incorrect setup).
+        @param tesseract_path: path to Tesseract (only necessary in case of incorrect setup).
         """
+
         if tesseract_path is not None:
             pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
         try:
             self.data = pytesseract.image_to_data(image, lang=language, output_type='dict', config="--psm 4")
-        except:
-            print("[ERROR] Tesseract has run into a problem.")
+        except Exception as e:
+            print("[ERROR] Tesseract has run into a problem: " + str(e))
             # ToDo: handle the exception
+
 
     @classmethod
     def from_file(cls, image, tessdata: str):

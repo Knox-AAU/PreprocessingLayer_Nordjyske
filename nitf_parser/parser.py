@@ -2,6 +2,7 @@ from xml.dom import minidom
 import configparser
 from knox_source_data_io.models.publication import Publication, Article, Paragraph
 
+from pathlib import Path
 
 class NitfParser:
     """
@@ -39,8 +40,14 @@ class NitfParser:
         @param metadata: metadata elements to parse.
         @return: void.
         """
+
+        # The config file had some problem when running on windows
+        # Below is a workaround, that works on both Linux and Windows
+        HERE = Path(__file__).parent.resolve()
+        CONFIG_PATH = HERE / '../metadata-mapper.ini'
+
         config = configparser.ConfigParser()
-        config.read('metadata-mapper.ini')
+        config.read(CONFIG_PATH)
 
         # get name attribute
         byline = {'name': None, 'email': None}
