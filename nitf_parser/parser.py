@@ -1,7 +1,7 @@
 from xml.dom import minidom
 import configparser
 from knox_source_data_io.models.publication import Publication, Article, Paragraph
-
+from find_pdf_filename import find_pdf_filename
 
 class NitfParser:
     """
@@ -202,7 +202,7 @@ class NitfParser:
         @return: the generated Publication.
         """
         self.article = Article()
-        self.article.add_extracted_from(article_path)
+        self.article.add_extracted_from(find_pdf_filename(article_path))
         xml_doc = minidom.parse(article_path)
         item_list = xml_doc.getElementsByTagName('nitf:nitf')
 
