@@ -11,13 +11,14 @@ def find_pdf_filename(xml_name):
     base_path = __get_file_path(xml_name)
     regex_string = __str_to_regex_pattern(name)
     regex = re.compile(regex_string)
-    result = []
+    
     # Check all files in parent directory of XML file
     for filename in os.listdir(base_path):
         # if pdf matches regex based on the xml filename 
         if regex.match(filename):
-            result.append(filename)
-    return base_path+result[0]
+            return filename
+    
+    return "No pdf file available"
 
 def __str_to_regex_pattern(str):
     """
