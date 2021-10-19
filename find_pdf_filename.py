@@ -1,5 +1,8 @@
+
 import os
 import re
+import sys
+from pathlib import Path
 
 def find_pdf_filename(xml_name):
     """
@@ -16,7 +19,7 @@ def find_pdf_filename(xml_name):
     for filename in os.listdir(base_path):
         # if pdf matches regex based on the xml filename 
         if regex.match(filename):
-            return filename
+            return base_path.__str__()+"/"+filename.__str__() 
     
     return "No pdf file available"
 
@@ -43,10 +46,8 @@ def __get_file_path(str):
     '''
     Find path to file, by removing filename from str
     '''
-    path = str.split("/")
-    path.pop()
-    path.pop()
-    path = "/".join(path)+"/"
+    filename = os.path.basename(str)
+    path = Path(str.replace(filename, "")).parent.absolute()
     return path
     
 def __test():
@@ -63,8 +64,14 @@ def __test():
             xml_files.append(path+"/"+filename)
     for x in xml_files:
         pdf_files.append(find_pdf_filename(x))
-    print(f"Found pdf files for all xml files: {len(xml_files)==len(pdf_files)}")
-    # for x, y in zip(xml_files, pdf_files):
-    #     print(os.path.basename(x))
-    #     print(y)
+    #print(f"Found pdf files for all xml files: {len(xml_files)==len(pdf_files)}")
+    for x, y in zip(xml_files, pdf_files):
+        print(os.path.basename(x))
+        print(y)
 
+if __name__ == "__main__":
+    if sys.argv[1] == "test":
+        __test()
+    else:
+        print(find_pdf_filename(sys.argv[1]))
+    
