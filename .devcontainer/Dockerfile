@@ -37,7 +37,7 @@ RUN apt-get update -qq
 RUN sudo apt-get update 
 #RUN wget https://github.com/tesseract-ocr/tessdata/raw/4.00/dan.traineddata -P /usr/share/tesseract-ocr/4.00/tessdata
 
-COPY /workspaces/nordjyske-preprocessing/ocr/training_files. /usr/share/tesseract-ocr/4.00/tessdata
+COPY ocr/training_files/. /usr/share/tesseract-ocr/4.00/tessdata
 #RUN apt-get install tesseract-ocr
 #RUN docker cp /workspaces/nordjyske-preprocessing/testdata musing_ellis:/usr/share/tesseract-ocr/4.00/tessdata 
 
