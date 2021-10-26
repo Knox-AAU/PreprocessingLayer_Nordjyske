@@ -26,7 +26,9 @@ jobs:
         python3.9 -m pip install pip
     - name: Run Python env
       run: |
+        cd /home/runner/work/nordjyske-preprocessing/nordjyske-preprocessing/
         python3.9 -m venv venv
+        cd /home/runner/work/nordjyske-preprocessing/nordjyske-preprocessing/
         source venv/bin/activate
         pip3.9 install wheel
     - name: Install dependencies
