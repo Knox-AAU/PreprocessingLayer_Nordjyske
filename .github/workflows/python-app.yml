@@ -51,6 +51,7 @@ jobs:
         sudo python -m pip install --upgrade pip
         sudo pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        wget https://github.com/tesseract-ocr/tessdata/raw/4.00/dan.traineddata -P /usr/share/tesseract-ocr/4.00/tessdata
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
