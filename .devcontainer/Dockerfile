@@ -39,7 +39,7 @@ RUN sudo apt-get update
 #RUN wget https://github.com/tesseract-ocr/tessdata/raw/4.00/dan.traineddata -P /usr/share/tesseract-ocr/4.00/tessdata
 
 # Project code
-ADD ../ nordjyske-preprocessing
+# ADD ../ nordjyske-preprocessing
 
 #RUN apt-get install tesseract-ocr
 
