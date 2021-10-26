@@ -50,8 +50,6 @@ jobs:
         sudo apt-get update
         sudo python -m pip install --upgrade pip
         sudo pip install flake8 pytest
-        sudo pip install -r requirements.txt
-        sudo pip install -e .
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         sudo wget https://github.com/tesseract-ocr/tessdata/raw/4.00/dan.traineddata -P /usr/share/tesseract-ocr/4.00/tessdata
         sudo apt-get update
