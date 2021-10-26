@@ -21,7 +21,7 @@ def find_pdf_filename(xml_name):
         if regex.match(filename):
             return base_path.__str__()+"/"+filename.__str__() 
     
-    return "No pdf file available"
+    return ""
 
 def __str_to_regex_pattern(str):
     """
