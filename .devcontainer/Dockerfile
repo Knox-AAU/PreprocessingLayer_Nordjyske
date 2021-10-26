@@ -8,12 +8,15 @@ FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT}
 ARG NODE_VERSION="none"
 RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi
 
-
 # Project requirements
 RUN apt-get update
 RUN python3.9 -m pip install pip
+
+#Install the dependencies located in the requirements.txt
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
+
+# Ensures that tesseract works, as well as a few other libraries
 RUN apt-get install ffmpeg libsm6 libxext6  -y
 RUN apt-get update \
     && apt-get install -y \
@@ -36,22 +39,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 RUN apt-get update -qq
 RUN sudo apt-get update
-#RUN wget https://github.com/tesseract-ocr/tessdata/raw/4.00/dan.traineddata -P /usr/share/tesseract-ocr/4.00/tessdata
 
-# Project code
-# ADD ../ nordjyske-preprocessing
+# Sets the current work directory to the projectfolder
+WORKDIR /nordjyske-preprocessing
 
-#RUN apt-get install tesseract-ocr
-
-
-# [Optional] If your pip requirements rarely change, uncomment this section to add them to the image.
-# COPY requirements.txt /tmp/pip-tmp/
-# RUN pip3 --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
-#    && rm -rf /tmp/pip-tmp
-
-# [Optional] Uncomment this section to install additional OS packages.
-# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-#     && apt-get -y install --no-install-recommends <your-package-list-here>
-
-# [Optional] Uncomment this line to install global node packages.
-# RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g <your-package-here>" 2>&1
