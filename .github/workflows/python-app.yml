@@ -20,17 +20,6 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.9
-    - name: install pip
-      run: |
-        sudo apt-get update
-        python3.9 -m pip install pip
-    - name: Run Python env
-      run: |
-        cd /home/runner/work/nordjyske-preprocessing/nordjyske-preprocessing/
-        python3.9 -m venv venv
-        cd /home/runner/work/nordjyske-preprocessing/nordjyske-preprocessing/
-        source venv/bin/activate
-        pip3.9 install wheel
     - name: Install dependencies
       run: |
         sudo apt-get update
