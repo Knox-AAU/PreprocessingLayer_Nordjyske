@@ -10,3 +10,4 @@ pytest
 pytest-mock
 pylint
 coverage==5.3
+PyMongo==3.12.1
