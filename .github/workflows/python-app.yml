@@ -22,25 +22,12 @@ jobs:
         python-version: 3.9
     - name: Install dependencies
       run: |
-        sudo apt-get update
-        sudo apt-get install ffmpeg libsm6 libxext6  -y
         sudo apt-get update \
         && sudo apt-get install -y \
         build-essential \
         cmake \
         git \
         wget \
-        unzip \
-        yasm \
-        pkg-config \
-        libswscale-dev \
-        libtbb2 \
-        libtbb-dev \
-        libjpeg-dev \
-        libpng-dev \
-        libtiff-dev \
-        libavformat-dev \
-        libpq-dev \
         tesseract-ocr \
         &&
         sudo apt-get update -qq
