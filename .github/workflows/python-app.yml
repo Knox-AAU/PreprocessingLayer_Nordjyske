@@ -31,7 +31,7 @@ jobs:
         tesseract-ocr \
         &&
         sudo pip install flake8 pytest
-        sudo pip install -r requirements.txt; fi
+        sudo pip install -r requirements.txt
         sudo wget https://github.com/tesseract-ocr/tessdata/raw/4.00/dan.traineddata -P /usr/share/tesseract-ocr/4.00/tessdata
         sudo apt-get update
     - name: Lint with flake8
