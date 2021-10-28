@@ -17,29 +17,20 @@ COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 # Ensures that tesseract works, as well as a few other libraries
-RUN apt-get install ffmpeg libsm6 libxext6  -y
 RUN apt-get update \
-    && apt-get install -y \
-        build-essential \
+        && sudo apt-get install -y \
+        ffmpeg libsm6 libxext6  -y \
+        build-essential libssl-dev \
         cmake \
         git \
         wget \
-        unzip \
-        yasm \
-        pkg-config \
-        libswscale-dev \
-        libtbb2 \
-        libtbb-dev \
-        libjpeg-dev \
-        libpng-dev \
-        libtiff-dev \
-        libavformat-dev \
-        libpq-dev \
-        tesseract-ocr \
-    && rm -rf /var/lib/apt/lists/*
-RUN apt-get update -qq
-RUN sudo apt-get update
+        tesseract-ocr
 
 # Sets the current work directory to the projectfolder
 WORKDIR /nordjyske-preprocessing
+
+# Copies the
+COPY ocr/trained_data_files /usr/share/tesseract-ocr/4.00/tessdata
+
+
 
