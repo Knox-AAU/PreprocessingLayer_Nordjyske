@@ -50,7 +50,7 @@ class OCRRunner:
             if len(segments) > 300:
                 break
 
-            if segment.y1 <= segment.y2 and segment.x1 <= segment.x2:
+            if hasattr(segment, 'y1') and segment.y1 <= segment.y2 and segment.x1 <= segment.x2:
                 # Crops the image based on the segment
                 cropped_image = image[segment.y1:segment.y2+1, segment.x1:segment.x2+1]
             else:
