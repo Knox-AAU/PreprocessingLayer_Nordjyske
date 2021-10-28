@@ -8,7 +8,7 @@ def save_to_json(folder, publications):
 
     :param folder: The destination folder
     :param publications: A list of publications that should be saved
-    :return:
+    :return: The json object that was written
     """
     publications = __merge(publications)
 
@@ -22,7 +22,8 @@ def save_to_json(folder, publications):
             f'_{__sanitize(pub.publication)}.json')
 
         with open(filename, 'w', encoding="utf-8") as outfile:
-            handler.write_json(pub, outfile)
+            json = handler.write_json(pub, outfile)
+            return json
 
 
 def __sanitize(string):

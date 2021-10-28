@@ -6,7 +6,8 @@ from crawler.file_types import FileType
 from ocr.ocr_runner import OCRRunner
 from save_to_json import save_to_json
 from nitf_parser.parser import NitfParser
-
+from knox_source_data_io.io_handler import IOHandler
+import traceback
 
 class MotherRunner:
     def __init__(self, root, from_date, to_date, output_dest):
@@ -36,16 +37,19 @@ class MotherRunner:
                 print("Finished all items, exiting.")
                 return
 
-            print(f'[Consumer Thread] consuming item {item.__dict__}...')
+            #print(f'[Consumer Thread] consuming item {item.__dict__}...')
 
             num_jobs = int((multiprocessing.cpu_count()/2))
             publications = Parallel(n_jobs=num_jobs, prefer="threads")(
                 delayed(self.__process_file)(file)
                 for file in item.files)
-            save_to_json(self.output_dest, publications)
-
-            print(f'[Consumer Thread] done with item {item.__dict__}...')
-
+            json = save_to_json(self.output_dest, publications)
+            try:
+                IOHandler.post_json(json, "http://192.38.49.148:5050/uploadJsonDoc")
+            except Exception as e:
+                traceback.print_exc(e)
+            #print(f'[Consumer Thread] done with item {item.__dict__}...')
+            
     def __producer(self):
         Crawler().crawl_folders(self.q, self.root, self.from_date, self.to_date)
 
