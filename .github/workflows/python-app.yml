@@ -24,6 +24,7 @@ jobs:
       run: |
         sudo apt-get update \
         && sudo apt-get install -y \
+        ffmpeg libsm6 libxext6 -y \
         build-essential libssl-dev \
         cmake \
         git \
