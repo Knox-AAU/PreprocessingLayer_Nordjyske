@@ -1,6 +1,4 @@
-from os import stat
 import pymongo  
-import json
 
 class DB:
 
