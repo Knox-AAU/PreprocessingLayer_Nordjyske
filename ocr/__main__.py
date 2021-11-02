@@ -31,6 +31,6 @@ if __name__ == '__main__':
     if args.output_path is None:
         print(publication.to_json())
     else:
-        handler = IOHandler(Generator(app="OCR", version=1.0), "https://repos.knox.cs.aau.dk/schema/publication.schema.json")
+        handler = IOHandler(Generator(app="OCR", version="1.0"), "https://repos.knox.cs.aau.dk/schema/publication.schema.json")
         with codecs.open(args.output_path, 'w', encoding="utf-8") as outfile:
             handler.write_json(publication, outfile)

@@ -14,7 +14,7 @@ def save_to_json(folder, publications):
 
     for pub in publications:
         handler = IOHandler(
-            Generator(app="Nordjyske-Preprocessing module", version=1.0, generated_at=datetime.now().isoformat()),
+            Generator(app="Nordjyske-Preprocessing module", version="1.0", generated_at=datetime.now().isoformat()),
             "http://iptc.org/std/NITF/2006-10-18/")
         filename = os.path.join(
             folder,

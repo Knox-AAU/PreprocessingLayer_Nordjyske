@@ -8,6 +8,8 @@ from save_to_json import save_to_json
 from nitf_parser.parser import NitfParser
 from knox_source_data_io.io_handler import IOHandler
 import traceback
+import requests
+import json 
 
 class MotherRunner:
     def __init__(self, root, from_date, to_date, output_dest):
@@ -43,12 +45,16 @@ class MotherRunner:
             publications = Parallel(n_jobs=num_jobs, prefer="threads")(
                 delayed(self.__process_file)(file)
                 for file in item.files)
-            json = save_to_json(self.output_dest, publications)
+            json_str = save_to_json(self.output_dest, publications)
             try:
-                IOHandler.post_json(json, "http://192.38.49.148:5050/uploadJsonDoc")
+                json_obj = json.loads(json_str)
+                IOHandler.validate_json(json_obj, "publication.schema.json")
+                x = requests.post("http://130.225.57.27/uploadjsonapi/uploadJsonDoc", json = json_obj)
+                if (x.status_code != 200):
+                    raise x.raise_for_status() # better defined
             except Exception as e:
                 traceback.print_exc(e)
-            #print(f'[Consumer Thread] done with item {item.__dict__}...')
+            print(f'[Consumer Thread] done with item {item.__dict__}...')
             
     def __producer(self):
         Crawler().crawl_folders(self.q, self.root, self.from_date, self.to_date)
