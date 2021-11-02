@@ -4,6 +4,7 @@ from insert_json_db import DB
 from bson.json_util import dumps
 import json 
 from knox_source_data_io.io_handler import IOHandler
+import traceback
 
 app = Flask(__name__)
 
@@ -27,9 +28,13 @@ def post_json():
     if j_str is None:
         return abort(Response("missing json"))
     try:
-        IOHandler.validate_json()
+        IOHandler.validate_json(j_str, "../publication.schema.json")
     except Exception as e:
-        abort(Response("fucky"))
+        traceback.print_exc(e)
+        return abort(Response("bad json"))
+    col = request.args.get("col", default = None, type = str)
+    print(col)
+    DB().insert_json(col, j_str)
     return Response(status=200)
     
     
