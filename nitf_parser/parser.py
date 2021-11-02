@@ -71,9 +71,12 @@ class NitfParser:
                 data.getAttribute("name") == config['metadata']['nmid']]
         if len(data) != 0:
             if data[0].getAttribute('content') != "noid":
-                self.article.id = data[0].getAttribute('content')
+                try:
+                    self.article.id = int(data[0].getAttribute('content'))
+                except:
+                    self.article.id = 0
             else:
-                self.article.id = None
+                self.article.id = 0
 
     @staticmethod
     def sanitize_spaces(a: str) -> str:
