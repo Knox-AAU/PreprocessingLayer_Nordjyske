@@ -19,8 +19,8 @@ class DB:
         #print(x.inserted_id)
         #print(myclient.list_database_names())
 
-    def get_json(self, col_name, params):
-        col = self.db[col_name]
+    def get_json(self, col, params):
+        col = self.db[col]
         x = col.find(params)
         return x
 
