@@ -51,7 +51,7 @@ class MotherRunner:
                 IOHandler.validate_json(json_obj, "publication.schema.json")
                 x = requests.post("http://130.225.57.27/uploadjsonapi/uploadJsonDoc", json = json_obj)
                 if (x.status_code != 200):
-                    raise Exception("POST error") # better defined
+                    raise x.raise_for_status() # better defined
             except Exception as e:
                 traceback.print_exc(e)
             print(f'[Consumer Thread] done with item {item.__dict__}...')
