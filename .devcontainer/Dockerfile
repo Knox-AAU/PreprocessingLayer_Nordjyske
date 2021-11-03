@@ -5,7 +5,7 @@ RUN apt-get update
 FROM python:3.9-slim-buster
 RUN apt-get update
 
-#Install the dependencies located in the requirements.txt
+#Installs the dependencies located in the requirements.txt
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
@@ -17,7 +17,8 @@ RUN apt-get update \
         cmake \
         git \
         wget \
-        tesseract-ocr
+        tesseract-ocr \
+    && apt-get update
 
 # Sets the current work directory to the projectfolder
 WORKDIR /nordjyske-preprocessing
