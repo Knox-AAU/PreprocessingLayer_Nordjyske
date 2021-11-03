@@ -5,7 +5,7 @@ RUN apt-get update
 FROM python:3.9-slim-buster
 RUN apt-get update
 
-#Installs the dependencies located in the requirements.txt
+# Installs the dependencies located in the requirements.txt
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
