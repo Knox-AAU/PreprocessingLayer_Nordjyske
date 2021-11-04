@@ -221,6 +221,16 @@ class NitfParser:
 
         return self.publication
 
+    def isNonArticle(self, article_path):
+        xml_doc = minidom.parse(article_path)
+        item_list = xml_doc.getElementsByTagName('nitf:nitf')
+        body_elements = item_list[0].getElementsByTagName('nitf:body')
+        header_element = body_elements[0].getElementsByTagName("nitf:body.head")[0]
+        hl1s = header_element.getElementsByTagName('nitf:hl1')
+        header_val = NitfParser.sanitize_spaces(hl1s[0].firstChild.nodeValue)
+        print(header_val)
+
+
     def parse_file(self, file):
         """
         Parses a file based on the path of the file.
