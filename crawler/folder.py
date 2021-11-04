@@ -21,3 +21,6 @@ class Folder:
 
     def sort(self):
         self.files.sort(key=lambda x: x.name)
+
+    def folder_name(self):
+        return f"{self.year}-{self.month}-{self.day}"

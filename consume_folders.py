@@ -45,16 +45,17 @@ class MotherRunner:
             publications = Parallel(n_jobs=num_jobs, prefer="threads")(
                 delayed(self.__process_file)(file)
                 for file in item.files)
-            json_str = save_to_json(self.output_dest, publications)
+            pubs = save_to_json(self.output_dest, publications)
             try:
-                json_obj = json.loads(json_str)
-                IOHandler.validate_json(json_obj, "publication.schema.json")
-                x = requests.post("http://130.225.57.27/uploadjsonapi/uploadJsonDoc", json = json_obj)
-                if (x.status_code != 200):
-                    raise x.raise_for_status() # better defined
+                for p in pubs:
+                    pub_json = json.loads(p)
+                    IOHandler.validate_json(pub_json, "publication.schema.json")
+                    x = requests.post("http://130.225.57.27/uploadjsonapi/uploadJsonDoc", json = pub_json)
+                    if (x.status_code != 200):
+                        raise x.raise_for_status() 
             except Exception as e:
                 traceback.print_exc(e)
-            print(f'[Consumer Thread] done with item {item.__dict__}...')
+            print(f'[Consumer Thread] done with folder: {item.folder_name()}...')
             
     def __producer(self):
         Crawler().crawl_folders(self.q, self.root, self.from_date, self.to_date)

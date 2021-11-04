@@ -11,6 +11,7 @@ def save_to_json(folder, publications):
     :return: The json object that was written
     """
     publications = __merge(publications)
+    publications_written = []
 
     for pub in publications:
         handler = IOHandler(
@@ -22,8 +23,11 @@ def save_to_json(folder, publications):
             f'_{__sanitize(pub.publication)}.json')
 
         with open(filename, 'w', encoding="utf-8") as outfile:
-            json = handler.write_json(pub, outfile)
-            return json
+            written_json = handler.write_json(pub, outfile)
+            publications_written.append(written_json)
+    
+    return publications_written
+            
 
 
 def __sanitize(string):
