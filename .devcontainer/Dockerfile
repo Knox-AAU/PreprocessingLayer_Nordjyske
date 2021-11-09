@@ -1,7 +1,4 @@
-# Bases our image on nvidia cuda and Python 3.9
-FROM nvidia/cuda
-RUN apt-get update
-
+# Bases our image on Python 3.9
 FROM python:3.9-slim-buster
 RUN apt-get update
 
