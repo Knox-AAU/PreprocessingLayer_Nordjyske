@@ -22,6 +22,3 @@ WORKDIR /nordjyske-preprocessing
 
 # Copies the training data
 COPY ocr/trained_data_files /usr/share/tesseract-ocr/4.00/tessdata
-
-
-
