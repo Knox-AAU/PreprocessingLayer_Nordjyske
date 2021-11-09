@@ -12,13 +12,14 @@ import requests
 import json 
 
 class MotherRunner:
-    def __init__(self, root, from_date, to_date, output_dest):
+    def __init__(self, root, from_date, to_date, output_dest, should_post):
         self.q = Queue()
         self.consumer = Process(target=self._consumer)
         self.root = root
         self.from_date = from_date
         self.to_date = to_date
         self.output_dest = output_dest
+        self.should_post = should_post
 
     @staticmethod
     def __process_file(file):
@@ -39,15 +40,18 @@ class MotherRunner:
                 print("Finished all items, exiting.")
                 return
 
-            #print(f'[Consumer Thread] consuming item {item.__dict__}...')
-
             num_jobs = int((multiprocessing.cpu_count()/2))
             publications = Parallel(n_jobs=num_jobs, prefer="threads")(
                 delayed(self.__process_file)(file)
                 for file in item.files)
             pubs = save_to_json(self.output_dest, publications)
+            self.__post_json(item, pubs)
+            print(f'[Consumer Thread] done with folder: {item.folder_name()}...')
+
+    def __post_json(self, publications):
+        if self.should_post:
             try:
-                for p in pubs:
+                for p in publications:
                     pub_json = json.loads(p)
                     IOHandler.validate_json(pub_json, "publication.schema.json")
                     x = requests.post("http://130.225.57.27/uploadjsonapi/uploadJsonDoc", json = pub_json)
@@ -55,7 +59,6 @@ class MotherRunner:
                         raise x.raise_for_status() 
             except Exception as e:
                 traceback.print_exc(e)
-            print(f'[Consumer Thread] done with folder: {item.folder_name()}...')
             
     def __producer(self):
         Crawler().crawl_folders(self.q, self.root, self.from_date, self.to_date)

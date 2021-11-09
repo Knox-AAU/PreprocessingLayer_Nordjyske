@@ -14,7 +14,6 @@ def parse_date(date):
         msg = f"{date} is not a correctly formatted date"
         raise argparse.ArgumentTypeError(msg)
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         "The main module of data-processing of input files from a dataset.")
@@ -33,7 +32,12 @@ if __name__ == '__main__':
                         default=None,
                         help='defines the end date from the collected data. '
                              'It should be formatted as YYYY-MM-DD. (Default: no)')
+    
+    # defines the optiion to POST the json parsed to the next layer
+    parser.add_argument('-p', '--post', dest="post", action='store_true',
+                        default=False,
+                        help='defines the optiion to POST the json parsed to the next layer. ')
 
     args = parser.parse_args()
 
-    MotherRunner(args.path, args.from_date, args.to_date, args.output_path).start()
+    MotherRunner(args.path, args.from_date, args.to_date, args.output_path, args.post).start()
