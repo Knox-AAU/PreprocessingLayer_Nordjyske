@@ -24,7 +24,9 @@ class SegmentModule:
         @param file_path: Path to jp2 file.
         @return: ordered segments. Sorted by article.
         """
-        headers, paragraphs = SegmentModule.segment_headers_paragraph_from_file(file_path)
+        headers, paragraphs = SegmentModule.segment_headers_paragraph_from_file(
+            file_path
+        )
 
         # Returns no segment if there are more than 300 (to avoid adverts and stocks from stock market)
         if len(headers + paragraphs) > 300:
@@ -35,7 +37,11 @@ class SegmentModule:
 
         # Grouping
         grouper = SegmentGrouper()
-        grouped_headers = SegmentHelper.group_headers_close_in_proximity_into_a_single_segment(headers)
+        grouped_headers = (
+            SegmentHelper.group_headers_close_in_proximity_into_a_single_segment(
+                headers
+            )
+        )
         groups = grouper.order_segments(grouped_headers, paragraphs, horizontal_lines)
         ordered_segments = grouper.convert_groups_into_segments(groups)
         return ordered_segments
@@ -59,7 +65,9 @@ class SegmentModule:
         alto_extractor.dpi = 300
         alto_extractor.margin = 0
         text_lines = alto_extractor.extract_lines()
-        (headers, paragraphs) = segment_helper.group_lines_into_paragraphs_and_headers(text_lines)
+        (headers, paragraphs) = segment_helper.group_lines_into_paragraphs_and_headers(
+            text_lines
+        )
         # Find lines in image, then split segments that cross those lines.
         lines = LineExtractor().extract_lines_via_path(image_file_path)
         paragraphs = segment_helper.split_segments_by_lines(paragraphs, lines)
@@ -75,7 +83,7 @@ class SegmentModule:
         return headers, paragraphs
 
     @staticmethod
-    def display_segments(segments_for_display, file_path, name, color='r'):
+    def display_segments(segments_for_display, file_path, name, color="r"):
         """
         Draws the segments on the given file and saves it as a PNG.
 
@@ -86,7 +94,9 @@ class SegmentModule:
         @return: void.
         """
         plt.imshow(Image.open(file_path))
-        plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
+        plt.rcParams.update(
+            {"font.size": 3, "text.color": "red", "axes.labelcolor": "red"}
+        )
 
         counter = 1
 
@@ -95,11 +105,18 @@ class SegmentModule:
 
         for segment in segments_for_display:
             plt.gca().add_patch(
-                Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.3,
-                          edgecolor=color, facecolor='none'))
+                Rectangle(
+                    (segment.x1, segment.y1),
+                    (segment.x2 - segment.x1),
+                    (segment.y2 - segment.y1),
+                    linewidth=0.3,
+                    edgecolor=color,
+                    facecolor="none",
+                )
+            )
             # plt.text(segment.x1+25, segment.y1+30, "["+str(counter)+"]", horizontalalignment='left', verticalalignment='top')
             # plt.text(seg[0]+45, seg[1] + 200, str((seg[2]-seg[0])), horizontalalignment='left', verticalalignment='top')
             counter += 1
 
-        plt.savefig(file_path + "-" + name + ".png", dpi=600, bbox_inches='tight')
+        plt.savefig(file_path + "-" + name + ".png", dpi=600, bbox_inches="tight")
         plt.gca().clear()

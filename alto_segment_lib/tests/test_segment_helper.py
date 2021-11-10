@@ -20,31 +20,41 @@ def test_make_box_around_lines_success():
     segment = SegmentHelper.make_box_around_lines(lines)
     expected_segment = Segment([0, 0, 15, 30])
 
-    assert segment.x1 == expected_segment.x1 \
-           and segment.x2 == expected_segment.x2 \
-           and segment.y1 == expected_segment.y1 \
-           and segment.y2 == expected_segment.y2
+    assert (
+        segment.x1 == expected_segment.x1
+        and segment.x2 == expected_segment.x2
+        and segment.y1 == expected_segment.y1
+        and segment.y2 == expected_segment.y2
+    )
 
 
 def test_combine_lines_into_segments_success():
     segment_helper = SegmentHelper()
 
-    lines = [Line([0, 0, 10, 10]), Line([0, 10, 10, 20]), Line([0, 20, 10, 30]),
-             Line([500, 0, 510, 10]), Line([500, 10, 510, 20]), Line([500, 20, 510, 30])]
+    lines = [
+        Line([0, 0, 10, 10]),
+        Line([0, 10, 10, 20]),
+        Line([0, 20, 10, 30]),
+        Line([500, 0, 510, 10]),
+        Line([500, 10, 510, 20]),
+        Line([500, 20, 510, 30]),
+    ]
 
     segments = segment_helper.combine_lines_into_segments(lines)
     expected_first = Segment([0, 0, 10, 30])
     expected_second = Segment([500, 0, 510, 30])
 
-    assert len(segments) == 2 \
-           and segments[0].x1 == expected_first.x1 \
-           and segments[0].x2 == expected_first.x2 \
-           and segments[0].y1 == expected_first.y1 \
-           and segments[0].y2 == expected_first.y2 \
-           and segments[1].x1 == expected_second.x1 \
-           and segments[1].x2 == expected_second.x2 \
-           and segments[1].y1 == expected_second.y1 \
-           and segments[1].y2 == expected_second.y2
+    assert (
+        len(segments) == 2
+        and segments[0].x1 == expected_first.x1
+        and segments[0].x2 == expected_first.x2
+        and segments[0].y1 == expected_first.y1
+        and segments[0].y2 == expected_first.y2
+        and segments[1].x1 == expected_second.x1
+        and segments[1].x2 == expected_second.x2
+        and segments[1].y1 == expected_second.y1
+        and segments[1].y2 == expected_second.y2
+    )
 
 
 def test_repair_text_lines_success():
@@ -56,15 +66,17 @@ def test_repair_text_lines_success():
     expected_first = Segment([0, 50, 50, 100])
     expected_second = Segment([50, 50, 100, 100])
 
-    assert len(result) == 2 \
-           and result[0].x1 == expected_first.x1 \
-           and result[0].x2 == expected_first.x2 \
-           and result[0].y1 == expected_first.y1 \
-           and result[0].y2 == expected_first.y2 \
-           and result[1].x1 == expected_second.x1 \
-           and result[1].x2 == expected_second.x2 \
-           and result[1].y1 == expected_second.y1 \
-           and result[1].y2 == expected_second.y2
+    assert (
+        len(result) == 2
+        and result[0].x1 == expected_first.x1
+        and result[0].x2 == expected_first.x2
+        and result[0].y1 == expected_first.y1
+        and result[0].y2 == expected_first.y2
+        and result[1].x1 == expected_second.x1
+        and result[1].x2 == expected_second.x2
+        and result[1].y1 == expected_second.y1
+        and result[1].y2 == expected_second.y2
+    )
 
 
 def test_repair_text_lines_fail():
@@ -91,7 +103,11 @@ def test_group_headers_into_segments_single_header_success():
     header_line2.y2 = 45
 
     header_lines = [header_line1, header_line2]
-    header_segments = SegmentHelper.group_headers_close_in_proximity_into_a_single_segment(header_lines)
+    header_segments = (
+        SegmentHelper.group_headers_close_in_proximity_into_a_single_segment(
+            header_lines
+        )
+    )
 
     assert len(header_segments) == 1
 
@@ -124,7 +140,11 @@ def test_group_headers_into_segments_multiple_header_success():
     header_line4.y2 = 650
 
     header_lines = [header_line1, header_line2, header_line3, header_line4]
-    header_segments = SegmentHelper().group_headers_close_in_proximity_into_a_single_segment(header_lines)
+    header_segments = (
+        SegmentHelper().group_headers_close_in_proximity_into_a_single_segment(
+            header_lines
+        )
+    )
 
     assert len(header_segments) == 2
 
@@ -201,7 +221,9 @@ def test_remove_segments_within_segments_to_delete_success():
     # Outer segment
     segment_outer = [Segment([0, 0, 100, 250])]
 
-    updated_segments = segment_helper.remove_segments_within_segments(segment_outer, segment_inner)
+    updated_segments = segment_helper.remove_segments_within_segments(
+        segment_outer, segment_inner
+    )
 
     assert updated_segments == []
 
@@ -213,7 +235,9 @@ def test_remove_segments_within_segments_not_to_remove_success():
     # Outer segment
     segment_outer = [Segment([25, 0, 100, 100])]
 
-    updated_segments = segment_helper.remove_segments_within_segments(segment_outer, segment_inner)
+    updated_segments = segment_helper.remove_segments_within_segments(
+        segment_outer, segment_inner
+    )
     array_segments = [segment.to_array() for segment in updated_segments]
 
     assert array_segments == [[0, 10, 50, 50]]

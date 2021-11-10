@@ -32,14 +32,14 @@ class AltoSegmentExtractor:
 
     def __init__(self, alto_path: str = "", dpi: int = None, margin: int = None):
         config = configparser.ConfigParser()
-        config.read('config.ini')
+        config.read("config.ini")
 
         if dpi is None:
-            self.dpi = int(config['alto_segment_extractor']['default_dpi'])
+            self.dpi = int(config["alto_segment_extractor"]["default_dpi"])
         else:
             self.dpi = dpi
         if margin is None:
-            self.margin = int(config['alto_segment_extractor']['default_margin'])
+            self.margin = int(config["alto_segment_extractor"]["default_margin"])
         else:
             self.margin = margin
 
@@ -54,13 +54,16 @@ class AltoSegmentExtractor:
         """
         lines = []
 
-        text_blocks = self.__xml_doc.getElementsByTagName('TextBlock')
+        text_blocks = self.__xml_doc.getElementsByTagName("TextBlock")
         for text_block in text_blocks:
             text_block_segment = Segment(self.__extract_coordinates(text_block))
-            text_lines = text_block.getElementsByTagName('TextLine')
+            text_lines = text_block.getElementsByTagName("TextLine")
             text_block_segment.line_count = len(text_lines)
             text_block_segment.lines = [
-                Line(self.__extract_coordinates(text_line), block_segment=text_block_segment)
+                Line(
+                    self.__extract_coordinates(text_line),
+                    block_segment=text_block_segment,
+                )
                 for text_line in text_lines
             ]
             lines.extend(text_block_segment.lines)
@@ -68,10 +71,12 @@ class AltoSegmentExtractor:
 
     def __extract_coordinates(self, element: minidom):
         coordinates = [
-            int(element.attributes['HPOS'].value),
-            int(element.attributes['VPOS'].value),
-            int(element.attributes['WIDTH'].value) + int(element.attributes['HPOS'].value),
-            int(element.attributes['HEIGHT'].value) + int(element.attributes['VPOS'].value)
+            int(element.attributes["HPOS"].value),
+            int(element.attributes["VPOS"].value),
+            int(element.attributes["WIDTH"].value)
+            + int(element.attributes["HPOS"].value),
+            int(element.attributes["HEIGHT"].value)
+            + int(element.attributes["VPOS"].value),
         ]
 
         for index in range(4):

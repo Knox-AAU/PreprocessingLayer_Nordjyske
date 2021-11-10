@@ -3,7 +3,6 @@ from alto_segment_lib.segment import Segment, SegmentType
 
 
 class TestRepairSegments:
-
     def test_repair_rows_segment_within_success(self):
         big_segment = Segment([0, 0, 100, 100])
         small_segment = Segment([10, 10, 50, 50])
@@ -26,7 +25,9 @@ class TestRepairSegments:
         repair_segments = RepairSegments([first_segment, second_segment])
         repaired_segments = repair_segments.repair_rows()
 
-        assert len(repaired_segments) == 2 and repaired_segments[1].y1 == first_segment.y2
+        assert (
+            len(repaired_segments) == 2 and repaired_segments[1].y1 == first_segment.y2
+        )
 
     def test_repair_rows_segment_move_up_success(self):
         first_segment = Segment([0, 100, 100, 300])
@@ -34,7 +35,9 @@ class TestRepairSegments:
         repair_segments = RepairSegments([first_segment, second_segment])
         repaired_segments = repair_segments.repair_rows()
 
-        assert len(repaired_segments) == 2 and repaired_segments[1].y2 == first_segment.y1
+        assert (
+            len(repaired_segments) == 2 and repaired_segments[1].y2 == first_segment.y1
+        )
 
     def test_merge_segments_success(self):
         segment1 = Segment([0, 0, 100, 100], SegmentType.paragraph)

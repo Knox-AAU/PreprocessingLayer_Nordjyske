@@ -3,7 +3,6 @@ from alto_segment_lib.segment import Line
 
 
 class TestSegment:
-
     def test_compare_equal_segments(self):
         segment_one = Segment([200, 400, 400, 600])
         segment_two = Segment([200, 400, 400, 600])
@@ -110,9 +109,7 @@ class TestSegment:
             assert True
 
 
-
 class TestLine:
-
     def test_width_instance_of_int(self):
         line = Line([20, 30, 80, 50])
 
@@ -172,4 +169,9 @@ class TestLine:
 
         segment = Segment.from_line(line, SegmentType.paragraph)
 
-        assert segment.x1 == line.x1 and segment.y1 == line.y1 and segment.x2 == line.x2 and segment.y2 == line.y2
+        assert (
+            segment.x1 == line.x1
+            and segment.y1 == line.y1
+            and segment.x2 == line.x2
+            and segment.y2 == line.y2
+        )

@@ -8,7 +8,7 @@ def test_split_lines_into_horizontal_and_vertical():
         Line([0, 1, 0, 0]),  # vertical
         Line([1, 0, 0, 0]),  # horizontal
         Line([1, 1, 0, 0]),  # 45
-        Line([2031, -3412, 35, -200])  # random ass angle
+        Line([2031, -3412, 35, -200]),  # random ass angle
     ]
 
     # act

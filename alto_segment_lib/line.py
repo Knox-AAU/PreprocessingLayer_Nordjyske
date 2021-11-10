@@ -5,12 +5,13 @@ class Line:
     """
     A line is a combination of two coordinates, with relevant methods.
     """
+
     x1: int
     y1: int
     x2: int
     y2: int
 
-    def __init__(self, coord: list = None, block_segment = None):
+    def __init__(self, coord: list = None, block_segment=None):
         if coord is None:
             coord = []
 
@@ -19,7 +20,9 @@ class Line:
             self.y1 = coord[1]
             self.x2 = coord[2]
             self.y2 = coord[3]
-            self.length = math.sqrt(math.pow((self.x2 - self.x1), 2) + math.pow((self.y2 - self.y1), 2))
+            self.length = math.sqrt(
+                math.pow((self.x2 - self.x1), 2) + math.pow((self.y2 - self.y1), 2)
+            )
             self.orientation = self.get_orientation()
         self.block_segment = block_segment
 
@@ -81,8 +84,12 @@ class Line:
         @param other: Line to be compared with
         @return: Boolean (the equality of the lines)
         """
-        return isinstance(other, Line) and (self.x1 == other.x1 and self.y1 == other.y1
-                                            and self.x2 == other.x2 and self.y2 == other.y2)
+        return isinstance(other, Line) and (
+            self.x1 == other.x1
+            and self.y1 == other.y1
+            and self.x2 == other.x2
+            and self.y2 == other.y2
+        )
 
     def __repr__(self):
         """

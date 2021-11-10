@@ -5,6 +5,7 @@ from math import atan2
 from os import environ
 from alto_segment_lib.line_extractor.hough_bundler import HoughBundler
 from alto_segment_lib.segment import Line
+
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 from cv2 import cv2
 
@@ -13,23 +14,32 @@ class LineExtractor:
     """
     Used to extract lines from images.
     """
+
     def __init__(self):
         self.config = configparser.ConfigParser()
-        self.config.read('config.ini')
+        self.config.read("config.ini")
 
-        self.rho = int(self.config['line_extraction']['rho'])  # distance resolution in pixels of the Hough grid
+        self.rho = int(
+            self.config["line_extraction"]["rho"]
+        )  # distance resolution in pixels of the Hough grid
         self.theta = np.pi / int(
-            self.config['line_extraction']['theta_divisions'])  # angular resolution in radians of the Hough grid
+            self.config["line_extraction"]["theta_divisions"]
+        )  # angular resolution in radians of the Hough grid
         self.threshold = int(
-            self.config['line_extraction']['threshold'])  # minimum number of votes (intersections in Hough grid cell)
+            self.config["line_extraction"]["threshold"]
+        )  # minimum number of votes (intersections in Hough grid cell)
         self.min_line_length = int(
-            self.config['line_extraction']['min_line_length'])  # minimum number of pixels making up a line
+            self.config["line_extraction"]["min_line_length"]
+        )  # minimum number of pixels making up a line
         self.max_line_gap = int(
-            self.config['line_extraction']['max_line_gap'])  # maximum gap in pixels between connectable line segments
-        self.diversion = int(self.config['line_extraction']['diversion'])
-        self.adaptive_threshold = [int(a) for a in self.config['line_enhancement']['threshold'].split(',')]
-        self.vertical_size = int(self.config['line_enhancement']['vertical_size'])
-        self.horizontal_size = int(self.config['line_enhancement']['horizontal_size'])
+            self.config["line_extraction"]["max_line_gap"]
+        )  # maximum gap in pixels between connectable line segments
+        self.diversion = int(self.config["line_extraction"]["diversion"])
+        self.adaptive_threshold = [
+            int(a) for a in self.config["line_enhancement"]["threshold"].split(",")
+        ]
+        self.vertical_size = int(self.config["line_enhancement"]["vertical_size"])
+        self.horizontal_size = int(self.config["line_enhancement"]["horizontal_size"])
 
     def extract_lines_via_path(self, image_path: str):
         """
@@ -69,10 +79,20 @@ class LineExtractor:
         lines_to_remove = []
 
         for line in lines:
-            if 0 < line.x1 < outline_stop and 0 < line.x2 < outline_stop or max_x - outline_stop < line.x1 < max_x and max_x - outline_stop < line.x2 < max_x:
+            if (
+                0 < line.x1 < outline_stop
+                and 0 < line.x2 < outline_stop
+                or max_x - outline_stop < line.x1 < max_x
+                and max_x - outline_stop < line.x2 < max_x
+            ):
                 lines_to_remove.append(line)
 
-            elif 0 < line.y1 < outline_stop and 0 < line.y2 < outline_stop or max_y - outline_stop < line.y1 < max_y and max_y - outline_stop < line.y2 < max_y:
+            elif (
+                0 < line.y1 < outline_stop
+                and 0 < line.y2 < outline_stop
+                or max_y - outline_stop < line.y1 < max_y
+                and max_y - outline_stop < line.y2 < max_y
+            ):
                 lines_to_remove.append(line)
 
         lines_to_remove.reverse()
@@ -91,9 +111,14 @@ class LineExtractor:
         """
 
         # apply mean tresholding to bring out lines
-        image_thresh = cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY,
-                                             self.adaptive_threshold[0],
-                                             self.adaptive_threshold[1])
+        image_thresh = cv2.adaptiveThreshold(
+            image,
+            255,
+            cv2.ADAPTIVE_THRESH_MEAN_C,
+            cv2.THRESH_BINARY,
+            self.adaptive_threshold[0],
+            self.adaptive_threshold[1],
+        )
 
         # saves the thresholding image for later use
         image_horizontal = image_thresh
@@ -105,8 +130,12 @@ class LineExtractor:
         vertical_size = int(vertical_size / self.vertical_size)
 
         # opencv function to find horizontal/vertical lines
-        horizontal_structure = cv2.getStructuringElement(cv2.MORPH_RECT, (horizontal_size, 1))
-        vertical_structure = cv2.getStructuringElement(cv2.MORPH_RECT, (1, vertical_size))
+        horizontal_structure = cv2.getStructuringElement(
+            cv2.MORPH_RECT, (horizontal_size, 1)
+        )
+        vertical_structure = cv2.getStructuringElement(
+            cv2.MORPH_RECT, (1, vertical_size)
+        )
 
         kernel = np.ones((1, 1), np.uint8)
         image_horizontal = cv2.erode(image_horizontal, horizontal_structure, kernel)
@@ -127,8 +156,15 @@ class LineExtractor:
         @param image: The CV2 image form which the lines should be extracted.
         @return: List of extracted lines.
         """
-        lines = cv2.HoughLinesP(image, self.rho, self.theta, self.threshold, np.array([]),
-                                self.min_line_length, self.max_line_gap)
+        lines = cv2.HoughLinesP(
+            image,
+            self.rho,
+            self.theta,
+            self.threshold,
+            np.array([]),
+            self.min_line_length,
+            self.max_line_gap,
+        )
 
         line_objects = [Line.from_array(line[0]) for line in lines]
 
@@ -151,7 +187,10 @@ class LineExtractor:
 
         for line in lines_groups:
             angle = atan2(line.y2 - line.y1, line.x2 - line.x1) * 180.0 / math.pi
-            if min_vertical_angle < angle < max_vertical_angle or min_horizontal_angle < angle < max_horizontal_angle:
+            if (
+                min_vertical_angle < angle < max_vertical_angle
+                or min_horizontal_angle < angle < max_horizontal_angle
+            ):
                 filtered_lines.append(line)
         return filtered_lines
 
@@ -168,7 +207,13 @@ class LineExtractor:
         line_image = np.copy(image) * 0  # creating a blank to draw lines on
         line_image = cv2.cvtColor(line_image, cv2.COLOR_GRAY2RGB)
         for line in lines:
-            cv2.line(line_image, (int(line.x1), line.y1), (int(line.x2), line.y2), (0, 0, 255), 3)
+            cv2.line(
+                line_image,
+                (int(line.x1), line.y1),
+                (int(line.x2), line.y2),
+                (0, 0, 255),
+                3,
+            )
 
         image_in_color = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
 

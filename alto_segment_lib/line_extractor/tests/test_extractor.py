@@ -15,7 +15,9 @@ def test_filter_by_angle_diversion_from_horizontal_and_vertical():
     line_extractor.diversion = 5  # max 5 degrees instead of loading from config
 
     # act
-    result_lines = line_extractor.filter_by_angle_diversion_from_horizontal_and_vertical(lines)
+    result_lines = (
+        line_extractor.filter_by_angle_diversion_from_horizontal_and_vertical(lines)
+    )
 
     # assert
     assert lines[0] in result_lines

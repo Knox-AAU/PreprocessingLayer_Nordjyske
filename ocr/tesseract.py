@@ -9,7 +9,7 @@ class TesseractModule:
     Used to handle all Tesseract related tasks.
     """
 
-    def __init__(self, image, language='dan', tesseract_path=None):
+    def __init__(self, image, language="dan", tesseract_path=None):
         """
         Instantiates an instance of the class and extracts the text from the provided image using Tesseract.
 
@@ -21,7 +21,9 @@ class TesseractModule:
             pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
         try:
-            self.data = pytesseract.image_to_data(image, lang=language, output_type='dict', config="--psm 4")
+            self.data = pytesseract.image_to_data(
+                image, lang=language, output_type="dict", config="--psm 4"
+            )
         except:
             print("[ERROR] Tesseract has run into a problem.")
             # ToDo: handle the exception
@@ -85,7 +87,7 @@ class TesseractModule:
         @return: the resulting string.
         """
         b_str = ""
-        for t in self.data['text']:
+        for t in self.data["text"]:
             b_str += f"{t} "
         return b_str.strip()
 
@@ -95,7 +97,7 @@ class TesseractModule:
 
         @return: the resulting list of paragraphs.
         """
-        text = self.data['text']
+        text = self.data["text"]
 
         paragraphs = []
         b_str = ""
@@ -114,7 +116,7 @@ class TesseractModule:
             paragraphs.append(b_str)
 
         # Remove empty paragraphs
-        paragraphs = [p.strip() for p in paragraphs if p != '']
+        paragraphs = [p.strip() for p in paragraphs if p != ""]
 
         # Remove new lines and hyphens across them.
         paragraphs = [self.remove_hyphens_and_nl_cr(p) for p in paragraphs]
@@ -157,7 +159,11 @@ class TesseractModule:
 
         @return: list of text, confidence tuples.
         """
-        return [[text, conf] for text, conf in zip(self.data['text'], self.data['conf']) if conf != "-1"]
+        return [
+            [text, conf]
+            for text, conf in zip(self.data["text"], self.data["conf"])
+            if conf != "-1"
+        ]
 
     def get_average_conf(self):
         """
@@ -165,7 +171,7 @@ class TesseractModule:
 
         @return: A float with the average confidence score.
         """
-        confidences = [int(x) for x in self.data['conf'] if 0 <= int(x) <= 100]
+        confidences = [int(x) for x in self.data["conf"] if 0 <= int(x) <= 100]
 
         # Avoid divide by zero
         if len(confidences) == 0:

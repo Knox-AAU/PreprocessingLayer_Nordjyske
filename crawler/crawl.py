@@ -14,24 +14,27 @@ class Crawler:
     """
     Used for crawling the file structure for files.
     """
+
     def __init__(self):
         config = configparser.ConfigParser()
-        config.read('config.ini')
-        pattern_strings = config['structure']['final-folder-regex'].split(",")
+        config.read("config.ini")
+        pattern_strings = config["structure"]["final-folder-regex"].split(",")
         pattern_strings = [x.split("|") for x in pattern_strings]
         self.regexs = [
             {
-                'compiled': re.compile(pattern_string[0]),
-                'original': pattern_string[0],
-                'limits': [int(y) for y in pattern_string[1:7]]
+                "compiled": re.compile(pattern_string[0]),
+                "original": pattern_string[0],
+                "limits": [int(y) for y in pattern_string[1:7]]
                 # 6 because there are three sets of base and bounds
             }
+            for pattern_string in pattern_strings
+        ]
+        self.blacklist = config["structure"]["blacklist"].split(",")
+        self.whitelist = config["structure"]["whitelist"].split(",")
 
-            for pattern_string in pattern_strings]
-        self.blacklist = config['structure']['blacklist'].split(",")
-        self.whitelist = config['structure']['whitelist'].split(",")
-
-    def crawl_folders(self, q: Queue, directory: str, from_date: datetime, to_date: datetime):
+    def crawl_folders(
+        self, q: Queue, directory: str, from_date: datetime, to_date: datetime
+    ):
         """
         Crawl a directory recursively to find target directories, configured by the config file.
         Will only find files in a defined interval of dates.
@@ -46,20 +49,34 @@ class Crawler:
                 continue
             # Let's check if the current dir is a target dir by matching to regexs
             matched_regex = next(
-                filter(lambda regex: re.match(regex['compiled'], entry.name), self.regexs), None)
+                filter(
+                    lambda regex: re.match(regex["compiled"], entry.name), self.regexs
+                ),
+                None,
+            )
             if matched_regex is not None:
                 # Current dir IS a target dir, append to list to return later.
 
-                limits = matched_regex['limits']
-                folder = Folder(entry.path,
-                                int(entry.name[limits[0]:limits[1]]),
-                                int(entry.name[limits[2]:limits[3]]),
-                                int(entry.name[limits[4]:limits[5]]))
+                limits = matched_regex["limits"]
+                folder = Folder(
+                    entry.path,
+                    int(entry.name[limits[0] : limits[1]]),
+                    int(entry.name[limits[2] : limits[3]]),
+                    int(entry.name[limits[4] : limits[5]]),
+                )
 
                 if not (
-                        (from_date if from_date is not None else datetime.min.replace(tzinfo=timezone.utc)) <=
-                        folder.get_datetime() <=
-                        (to_date if to_date is not None else datetime.max.replace(tzinfo=timezone.utc))
+                    (
+                        from_date
+                        if from_date is not None
+                        else datetime.min.replace(tzinfo=timezone.utc)
+                    )
+                    <= folder.get_datetime()
+                    <= (
+                        to_date
+                        if to_date is not None
+                        else datetime.max.replace(tzinfo=timezone.utc)
+                    )
                 ):
                     # only consume if within date
                     continue
@@ -81,8 +98,9 @@ class Crawler:
         for entry in os.scandir(directory):
             if not entry.is_dir():
                 # entry is file
-                if self.is_string_in_list(entry.name, self.blacklist) or not \
-                        self.is_string_in_list(entry.name, self.whitelist):
+                if self.is_string_in_list(
+                    entry.name, self.blacklist
+                ) or not self.is_string_in_list(entry.name, self.whitelist):
                     continue
 
                 if ".xml" in entry.name and self.is_file_valid_nitf(entry.path):
@@ -107,7 +125,7 @@ class Crawler:
         try:
             xml_doc = minidom.parse(xml_path)
 
-            if len(xml_doc.getElementsByTagName('nitf:nitf')) != 0:
+            if len(xml_doc.getElementsByTagName("nitf:nitf")) != 0:
                 return True
 
         except xml.parsers.expat.ExpatError:

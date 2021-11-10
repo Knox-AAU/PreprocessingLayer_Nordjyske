@@ -9,16 +9,29 @@ class SegmentHelper:
     """
     Used to handle some of the calculations rooted in the Segment class.
     """
+
     def __init__(self):
         config = configparser.ConfigParser()
-        config.read('config.ini')
+        config.read("config.ini")
 
-        self.threshold_block_header_to_paragraph = float(config['page_segmentation']['threshold_block_header_to_paragraph'])
-        self.threshold_line_header_to_paragraph = float(config['page_segmentation']['threshold_line_header_to_paragraph'])
-        self.min_lines_to_compare_block_height_instead_of_line_height = int(config['page_segmentation']['min_lines_to_compare_block_height_instead_of_line_height'])
-        self.group_same_column_margin = float(config['page_segmentation']['group_same_column_margin'])
-        self.group_same_segment_margin_px = float(config['page_segmentation']['group_same_segment_margin_px'])
-        self.min_cluster_size = int(config['page_segmentation']['min_cluster_size'])
+        self.threshold_block_header_to_paragraph = float(
+            config["page_segmentation"]["threshold_block_header_to_paragraph"]
+        )
+        self.threshold_line_header_to_paragraph = float(
+            config["page_segmentation"]["threshold_line_header_to_paragraph"]
+        )
+        self.min_lines_to_compare_block_height_instead_of_line_height = int(
+            config["page_segmentation"][
+                "min_lines_to_compare_block_height_instead_of_line_height"
+            ]
+        )
+        self.group_same_column_margin = float(
+            config["page_segmentation"]["group_same_column_margin"]
+        )
+        self.group_same_segment_margin_px = float(
+            config["page_segmentation"]["group_same_segment_margin_px"]
+        )
+        self.min_cluster_size = int(config["page_segmentation"]["min_cluster_size"])
 
     def group_lines_into_paragraphs_and_headers(self, lines: List):
         """
@@ -29,20 +42,32 @@ class SegmentHelper:
         """
         paragraphs = []
         headers = []
-        median = statistics.median([line.height() for line in lines]) if len(lines) > 0 else 0
+        median = (
+            statistics.median([line.height() for line in lines])
+            if len(lines) > 0
+            else 0
+        )
 
         for line in lines:
             height = line.height()
             # If line belongs to a block_segment, and that block_segment has more than some
             # minimum amount of lines, we assign the height we compare to the median of the
             # block_segment rather than the line.
-            if line.block_segment is not None and len(line.block_segment.lines) >= \
-                    self.min_lines_to_compare_block_height_instead_of_line_height:
-                height = statistics.median([x.height() for x in line.block_segment.lines]) \
-                    if len(line.block_segment.lines) > 0 else 0
+            if (
+                line.block_segment is not None
+                and len(line.block_segment.lines)
+                >= self.min_lines_to_compare_block_height_instead_of_line_height
+            ):
+                height = (
+                    statistics.median([x.height() for x in line.block_segment.lines])
+                    if len(line.block_segment.lines) > 0
+                    else 0
+                )
             # Checks if line height indicates that the line is a paragraph
-            if line.height() > height * self.threshold_line_header_to_paragraph or \
-                    height > median * self.threshold_block_header_to_paragraph:
+            if (
+                line.height() > height * self.threshold_line_header_to_paragraph
+                or height > median * self.threshold_block_header_to_paragraph
+            ):
                 headers.append(line)
             else:
                 paragraphs.append(line)
@@ -64,11 +89,13 @@ class SegmentHelper:
         updated_segs = inner_segs.copy()
         for outer_seg in outer_segs:
             for inner_seg in inner_segs:
-                if outer_seg.between_y_coordinates(inner_seg.y1) \
-                        and outer_seg.between_y_coordinates(inner_seg.y2) \
-                        and outer_seg.between_x_coordinates(inner_seg.x1) \
-                        and outer_seg.between_x_coordinates(inner_seg.x2) \
-                        and inner_seg in updated_segs:
+                if (
+                    outer_seg.between_y_coordinates(inner_seg.y1)
+                    and outer_seg.between_y_coordinates(inner_seg.y2)
+                    and outer_seg.between_x_coordinates(inner_seg.x1)
+                    and outer_seg.between_x_coordinates(inner_seg.x2)
+                    and inner_seg in updated_segs
+                ):
                     updated_segs.remove(inner_seg)
 
         return updated_segs
@@ -121,8 +148,11 @@ class SegmentHelper:
         previous_line = None
         temp = []
         column_groups = []
-        median = (statistics.median([line.width() for line in text_lines]) if len(
-            text_lines) > 0 else 0) * self.group_same_column_margin
+        median = (
+            statistics.median([line.width() for line in text_lines])
+            if len(text_lines) > 0
+            else 0
+        ) * self.group_same_column_margin
 
         # Sorts the list in an ascending order based on x1
         text_lines = sorted(text_lines, key=lambda sorted_line: sorted_line.x1)
@@ -160,9 +190,11 @@ class SegmentHelper:
 
         for group in column_groups:
             group = sorted(group, key=lambda sorted_group: sorted_group.y1)
-            median = (statistics.median([line.height() for line in group]) if len(group) > 0 else 0) * (
-                0.2 if ignore_width else 1
-            )
+            median = (
+                statistics.median([line.height() for line in group])
+                if len(group) > 0
+                else 0
+            ) * (0.2 if ignore_width else 1)
             previous_line = None
 
             for index, text_line in enumerate(group):
@@ -178,11 +210,15 @@ class SegmentHelper:
                 margin = self.group_same_segment_margin_px
 
                 # Is true if considered same segment, based on previous, current and next line.
-                is_width_ok = (not x1_diff < -margin and ((-margin < x2_diff < margin)
-                                            or not self.__is_next_line_similiar_x2(index, group)))
+                is_width_ok = not x1_diff < -margin and (
+                    (-margin < x2_diff < margin)
+                    or not self.__is_next_line_similiar_x2(index, group)
+                )
 
                 # Checks if the current and previous lines are in the same segment
-                if text_line.y1 - previous_line.y2 < median and (ignore_width or is_width_ok):
+                if text_line.y1 - previous_line.y2 < median and (
+                    ignore_width or is_width_ok
+                ):
                     temp.append(text_line)
                 # Makes a new segment and adds the first text line
                 else:
@@ -207,7 +243,11 @@ class SegmentHelper:
         x2_diff = curr_line.x2 - next_line.x2
 
         # If x2_diff within margin
-        return -self.group_same_segment_margin_px < x2_diff < self.group_same_segment_margin_px
+        return (
+            -self.group_same_segment_margin_px
+            < x2_diff
+            < self.group_same_segment_margin_px
+        )
 
     @staticmethod
     def make_box_around_lines(text_lines: list):
@@ -226,7 +266,9 @@ class SegmentHelper:
         y2 = text_lines[0].y2
 
         # Finds width and height line and change box height and width accordingly
-        x1, x2, y1, y2 = SegmentHelper.get_coordinates_that_cover_all_elements(text_lines, x1, x2, y1, y2)
+        x1, x2, y1, y2 = SegmentHelper.get_coordinates_that_cover_all_elements(
+            text_lines, x1, x2, y1, y2
+        )
 
         segment = Segment([x1, y1, x2, y2])
         segment.lines = text_lines
@@ -245,8 +287,10 @@ class SegmentHelper:
         for text_line in text_lines:
             if text_line.is_box_horizontal():
                 # Gets whether the text line is intersected and which lines intersect it
-                (does_line_intersect, intersecting_lines) = self.__does_line_intersect_text_line(
-                    text_line, lines)
+                (
+                    does_line_intersect,
+                    intersecting_lines,
+                ) = self.__does_line_intersect_text_line(text_line, lines)
                 if does_line_intersect:
                     intersecting_lines.sort(key=lambda line: line.x1)
                     line_rest = Line(text_line.to_array())
@@ -254,7 +298,15 @@ class SegmentHelper:
                         split_x_coord = int(self.__find_split_x_coord(text_line, line))
 
                         new_text_lines.append(
-                            Line([line_rest.x1, line_rest.y1, split_x_coord, line_rest.y2]))
+                            Line(
+                                [
+                                    line_rest.x1,
+                                    line_rest.y1,
+                                    split_x_coord,
+                                    line_rest.y2,
+                                ]
+                            )
+                        )
                         line_rest.x1 = split_x_coord
                     new_text_lines.append(line_rest)
                 else:
@@ -279,9 +331,16 @@ class SegmentHelper:
 
             if not line.is_horizontal():
                 # Checks if the line vertically intersects the text line
-                if text_line.x1 + width_5_percent < line.x1 < text_line.x2 - width_5_percent:
+                if (
+                    text_line.x1 + width_5_percent
+                    < line.x1
+                    < text_line.x2 - width_5_percent
+                ):
                     # Checks if the line horizontally intersects the text line
-                    if line.y1 < text_line.y1 < line.y2 or line.y1 < text_line.y2 < line.y2:
+                    if (
+                        line.y1 < text_line.y1 < line.y2
+                        or line.y1 < text_line.y2 < line.y2
+                    ):
                         new_lines.append(line)
 
         if len(new_lines) != 0:
@@ -300,7 +359,9 @@ class SegmentHelper:
         x1 = y1 = 10000
         x2 = y2 = 0
 
-        x1, x2, y1, y2 = SegmentHelper.get_coordinates_that_cover_all_elements(segments, x1, x2, y1, y2)
+        x1, x2, y1, y2 = SegmentHelper.get_coordinates_that_cover_all_elements(
+            segments, x1, x2, y1, y2
+        )
 
         return x1, y1, x2, y2
 
@@ -353,9 +414,15 @@ class SegmentHelper:
         line_height_from_text = text_line.y1 - line.y1
 
         # Calculate a, which is the distance from the line to the
-        dist_text_to_line = line_height_from_text / math.sin(other_angle) * math.sin(line_degree)
+        dist_text_to_line = (
+            line_height_from_text / math.sin(other_angle) * math.sin(line_degree)
+        )
         # The x-coordinate for B where the line and text_line intersect
-        split_x_coord = (line.x1 + dist_text_to_line) if line.x1 < line.x2 else (line.x1 - dist_text_to_line)
+        split_x_coord = (
+            (line.x1 + dist_text_to_line)
+            if line.x1 < line.x2
+            else (line.x1 - dist_text_to_line)
+        )
 
         return split_x_coord
 
@@ -375,10 +442,17 @@ class SegmentHelper:
         threshold = 300  # ToDo: Make use of some logic to calculate this (we discovered that 300 gave the best result)
 
         for line in header_lines:
-            if SegmentHelper.distance_between_points(x1, y2, line.x1, line.y1) <= threshold:
+            if (
+                SegmentHelper.distance_between_points(x1, y2, line.x1, line.y1)
+                <= threshold
+            ):
                 # The line is within the circle of the header
                 segment.add_line(line)
-            elif x1 != x2 != y1 != y2 != 0 and abs(line.x1 - x2) < threshold and abs(line.y1 - y1) < threshold:
+            elif (
+                x1 != x2 != y1 != y2 != 0
+                and abs(line.x1 - x2) < threshold
+                and abs(line.y1 - y1) < threshold
+            ):
                 # The line is right next to the header
                 segment.add_line(line)
             else:
@@ -412,7 +486,10 @@ class SegmentHelper:
         @return: true if the point is inside the box, else false.
         """
         if len(box_coords) == 4:
-            return box_coords[0] <= x <= box_coords[2] and box_coords[1] <= y <= box_coords[3]
+            return (
+                box_coords[0] <= x <= box_coords[2]
+                and box_coords[1] <= y <= box_coords[3]
+            )
         return False
 
     @staticmethod

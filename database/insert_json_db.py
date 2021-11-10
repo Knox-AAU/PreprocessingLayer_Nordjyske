@@ -1,7 +1,7 @@
-import pymongo  
+import pymongo
+
 
 class DB:
-
     def __init__(self):
         myclient = pymongo.MongoClient("mongodb://localhost:27017/")
         self.db = myclient["processed_json"]
@@ -16,5 +16,3 @@ class DB:
         existing_doc = col.find_one(json)
         if not existing_doc:
             x = col.insert_one(json)
-        
-

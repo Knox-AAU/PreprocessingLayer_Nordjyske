@@ -3,6 +3,7 @@ from typing import List
 from alto_segment_lib.segment import Segment, Line, SegmentType
 from alto_segment_lib.segment_group_handler import SegmentGroupHandler
 from alto_segment_lib.segment_helper import SegmentHelper
+
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 
 
@@ -11,7 +12,12 @@ class SegmentGrouper:
     Used to order the segments based on the reading order of articles.
     """
 
-    def order_segments(self, headers_in: List[Segment], paragraphs_in: List[Segment], lines_in: List[Line]):
+    def order_segments(
+        self,
+        headers_in: List[Segment],
+        paragraphs_in: List[Segment],
+        lines_in: List[Line],
+    ):
         """
         Handles the ordering of the segments, to ensure correct order based on the reading order.
 
@@ -26,11 +32,15 @@ class SegmentGrouper:
         bounds = SegmentHelper.get_content_bounds(segments)
 
         # remove all lines in the first and last 10% of the page height
-        line_bound = (bounds[3] * 0.1)
+        line_bound = bounds[3] * 0.1
 
         # Convert all lines to segments
-        lines = [element for element, element in enumerate(lines_in) if
-                 element.is_horizontal() and line_bound < element.y1 < (bounds[3] - line_bound)]
+        lines = [
+            element
+            for element, element in enumerate(lines_in)
+            if element.is_horizontal()
+            and line_bound < element.y1 < (bounds[3] - line_bound)
+        ]
 
         for line in lines:
             # We shorten all lines by 5% in both ends to prevent column overlap
@@ -59,7 +69,9 @@ class SegmentGrouper:
                 group_handler.start_group()
                 group_handler.add_segment(segment)
             elif segment.type == SegmentType.line:
-                self.__finish_article_based_on_line(group_handler, segment, segments_to_check)
+                self.__finish_article_based_on_line(
+                    group_handler, segment, segments_to_check
+                )
             else:
                 group_handler.add_segment(segment)
 
@@ -72,8 +84,12 @@ class SegmentGrouper:
 
         return group_handler.groups
 
-    def __finish_article_based_on_line(self, group_handler: SegmentGroupHandler, line: Segment,
-                                       segments_to_check: List[Segment]):
+    def __finish_article_based_on_line(
+        self,
+        group_handler: SegmentGroupHandler,
+        line: Segment,
+        segments_to_check: List[Segment],
+    ):
         # The ghost_header is used as a line to only handled articles within the bound of it and the encountered line
         # ghost_header = group_handler.get_header_segment()
 
@@ -90,7 +106,10 @@ class SegmentGrouper:
                 # We encountered another line or the segment is below the line
                 continue
 
-            if splitting_line.x1 > seg.get_center()[0] or seg.get_center()[0] > splitting_line.x2:
+            if (
+                splitting_line.x1 > seg.get_center()[0]
+                or seg.get_center()[0] > splitting_line.x2
+            ):
                 # The segment is to the right of the line
                 break
 
@@ -148,7 +167,9 @@ class SegmentGrouper:
                 segments_grouped.append([segment])
 
         # Order each group by y1
-        segments_grouped = [sorted(group, key=lambda s: s.y1) for group in segments_grouped]
+        segments_grouped = [
+            sorted(group, key=lambda s: s.y1) for group in segments_grouped
+        ]
 
         # Return the segments as a 1-dimensional list
         return [segment for group in segments_grouped for segment in group]

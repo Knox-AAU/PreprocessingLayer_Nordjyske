@@ -11,6 +11,7 @@ from crawler.file import File
 from knox_source_data_io.models.publication import Article
 from alto_segment_lib.segment_module import SegmentModule
 from ocr.tesseract import TesseractModule
+
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 import cv2
 
@@ -19,7 +20,8 @@ class OCRRunner:
     """
     Used to handle the OCR of an image.
     """
-    def run_ocr(self, file: File, language='dan', tesseract_path=None):
+
+    def run_ocr(self, file: File, language="dan", tesseract_path=None):
         """
         Runs everything that's needed to do OCR. It does the following: segmentation, creating articles, and
         turning articles into publications.
@@ -32,7 +34,6 @@ class OCRRunner:
         image = cv2.imread(file.path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         segments = SegmentModule.run_segmentation(file.path)
-
 
         tessdata = "dan"
 
@@ -50,9 +51,15 @@ class OCRRunner:
             if len(segments) > 300:
                 break
 
-            if hasattr(segment, 'y1') and segment.y1 <= segment.y2 and segment.x1 <= segment.x2:
+            if (
+                hasattr(segment, "y1")
+                and segment.y1 <= segment.y2
+                and segment.x1 <= segment.x2
+            ):
                 # Crops the image based on the segment
-                cropped_image = image[segment.y1:segment.y2+1, segment.x1:segment.x2+1]
+                cropped_image = image[
+                    segment.y1 : segment.y2 + 1, segment.x1 : segment.x2 + 1
+                ]
             else:
                 continue
 
@@ -63,25 +70,33 @@ class OCRRunner:
                 article = Article()
                 article.add_extracted_from(file.path)
                 article.page = self.__find_page_number(file.path)
-                article.headline = TesseractModule.from_file(cropped_image, tessdata).to_text()
+                article.headline = TesseractModule.from_file(
+                    cropped_image, tessdata
+                ).to_text()
 
             if segment.type == SegmentType.paragraph:
                 # If the segment is a paragraph we will extract text with tesseract, remove adverts
                 # and add file path to the article
-                paragraphs = TesseractModule.from_file(cropped_image, tessdata).to_paragraphs()
+                paragraphs = TesseractModule.from_file(
+                    cropped_image, tessdata
+                ).to_paragraphs()
                 paragraphs = self.__remove_advertisement_and_junk(paragraphs)
                 if len(paragraphs) > 0:
                     [article.add_paragraph(p) for p in paragraphs]
 
             if segment.type == "subhead":
                 # If the segment is a subheader then add it to the subeheader attribute in the article
-                subhead = TesseractModule.from_file(cropped_image, tessdata).to_paragraphs()
+                subhead = TesseractModule.from_file(
+                    cropped_image, tessdata
+                ).to_paragraphs()
                 if len(subhead) > 0:
                     article.subhead = subhead[0].value
 
             if segment.type == "lead":
                 # If the segment is a lead then add it to the lead attribute in the article
-                lead = TesseractModule.from_file(cropped_image, tessdata).to_paragraphs()
+                lead = TesseractModule.from_file(
+                    cropped_image, tessdata
+                ).to_paragraphs()
                 if len(lead) > 0:
                     article.lead = lead[0].value
         # Finds the page number if not already found
@@ -106,14 +121,18 @@ class OCRRunner:
         """
         # Reads the name of publisher from config file
         config = configparser.ConfigParser()
-        config.read('publication_default.ini')
+        config.read("publication_default.ini")
 
         publication = TesseractModule.from_articles_to_publication(articles)
         publication.publication = self.__find_publication(file.name)
-        publication.publisher = config['publisher']['name']
+        publication.publisher = config["publisher"]["name"]
         publication.published_at = self.__find_published_at(file.path)
         self.__remove_empty_paragraphs(publication)
-        publication.articles = [art for art in publication.articles if art.headline != "" or len(art.paragraphs) != 0]
+        publication.articles = [
+            art
+            for art in publication.articles
+            if art.headline != "" or len(art.paragraphs) != 0
+        ]
 
         return publication
 
@@ -135,9 +154,11 @@ class OCRRunner:
         @param file_path: name of file.
         @return: page number.
         """
-        page_elements = minidom.parse(os.path.splitext(file_path)[0] + ".alto.xml").getElementsByTagName("Page")
+        page_elements = minidom.parse(
+            os.path.splitext(file_path)[0] + ".alto.xml"
+        ).getElementsByTagName("Page")
 
-        return int(page_elements[0].attributes['PHYSICAL_IMG_NR'].value)
+        return int(page_elements[0].attributes["PHYSICAL_IMG_NR"].value)
 
     @staticmethod
     def __find_published_at(file_path):
@@ -148,8 +169,11 @@ class OCRRunner:
         @return: datetime object of when paper was published.
         """
         # Opens the corresponding alto.xml file to find the published_at date
-        published_at = minidom.parse(os.path.splitext(file_path)[0] + ".alto.xml").\
-            getElementsByTagName("fileName")[0].firstChild.data
+        published_at = (
+            minidom.parse(os.path.splitext(file_path)[0] + ".alto.xml")
+            .getElementsByTagName("fileName")[0]
+            .firstChild.data
+        )
 
         # Uses regular expression to find the data in the file name
         pattern = re.compile("\\d\\d\\d\\d-\\d\\d-\\d\\d")
@@ -158,8 +182,12 @@ class OCRRunner:
 
         # Makes datetime object from the date found with RE
         if re.match(pattern, result):
-            return datetime(year=int(result[0:4]), month=int(result[5:7]), day=int(result[8:10]), tzinfo=timezone.utc)\
-                .isoformat()
+            return datetime(
+                year=int(result[0:4]),
+                month=int(result[5:7]),
+                day=int(result[8:10]),
+                tzinfo=timezone.utc,
+            ).isoformat()
 
     @staticmethod
     def __remove_advertisement_and_junk(paragraphs):
@@ -188,8 +216,11 @@ class OCRRunner:
                 num_counter += sum(char.isdigit() for char in word)
                 special_char_counter += sum(char in special_chars for char in word)
 
-            if not (special_char_counter > total_char_count/4 or num_counter > total_char_count/2
-                    or special_char_counter + num_counter > total_char_count/3):
+            if not (
+                special_char_counter > total_char_count / 4
+                or num_counter > total_char_count / 2
+                or special_char_counter + num_counter > total_char_count / 3
+            ):
                 ok_paragraphs.append(paragraph)
 
         return ok_paragraphs
