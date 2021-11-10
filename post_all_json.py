@@ -14,4 +14,5 @@ def post_all_json(json_path):
                     print(data)
                     IOHandler.post_json(data)
 
-post_all_json("/home/aau/Desktop/output")
+if __name__ == "__main__":
+    post_all_json("/home/aau/Desktop/output")
