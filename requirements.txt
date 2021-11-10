@@ -1,7 +1,7 @@
 --extra-index-url https://repos.knox.cs.aau.dk/
-numpy==1.19.3
+numpy==1.21.2
 opencv-python==4.4.0.46
-Pillow==8.0.1
+Pillow==8.3.2
 pytesseract==0.3.6
 knox-source-data-io==0.0.13.1
 matplotlib==3.3.3
