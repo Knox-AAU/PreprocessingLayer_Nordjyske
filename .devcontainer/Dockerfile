@@ -18,7 +18,7 @@ RUN apt-get update \
     && apt-get update
 
 # Sets the current work directory to the projectfolder
-WORKDIR /preprocessinglayer_nordjysle
+WORKDIR /preprocessinglayer_nordjyske
 
 # Copies the training data
 COPY ocr/trained_data_files /usr/share/tesseract-ocr/4.00/tessdata
