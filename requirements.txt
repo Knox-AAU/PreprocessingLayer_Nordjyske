@@ -11,3 +11,5 @@ pytest-mock
 pylint
 coverage==5.3
 pymongo==3.12.1
+requests==2.26.0
+jsonschema==4.2.1

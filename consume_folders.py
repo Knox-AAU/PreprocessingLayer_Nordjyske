@@ -46,24 +46,21 @@ class MotherRunner:
                 delayed(self.__process_file)(file) for file in item.files
             )
             pubs = save_to_json(self.output_dest, publications)
-            self.__post_json(item, pubs)
-            print(f"[Consumer Thread] done with folder: {item.folder_name()}...")
+            if self.should_post:
+                self.__post_json(pubs)
+            print(f'[Consumer Thread] done with folder: {item.folder_name()}...')
 
     def __post_json(self, publications):
-        if self.should_post:
-            try:
-                for p in publications:
-                    pub_json = json.loads(p)
-                    IOHandler.validate_json(pub_json, "publication.schema.json")
-                    x = requests.post(
-                        "http://130.225.57.27/uploadjsonapi/uploadJsonDoc",
-                        json=pub_json,
-                    )
-                    if x.status_code != 200:
-                        raise x.raise_for_status()
-            except Exception as e:
-                traceback.print_exc(e)
-
+        try:
+            for p in publications:
+                pub_json = json.loads(p)
+                IOHandler.validate_json(pub_json, "publication.schema.json")
+                x = requests.post("http://130.225.57.27/uploadjsonapi/uploadJsonDoc", json = pub_json)
+                if (x.status_code != 200):
+                    raise x.raise_for_status() 
+        except Exception as e:
+            traceback.print_exc(e)
+            
     def __producer(self):
         Crawler().crawl_folders(self.q, self.root, self.from_date, self.to_date)
 
