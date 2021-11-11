@@ -7,6 +7,7 @@ class SegmentLines:
     """
     Used to generate lines based on the paragraph and header segments.
     """
+
     def __init__(self, paragraphs, headers):
         """
         Sets some internal properties.
@@ -17,7 +18,7 @@ class SegmentLines:
         self.paragraphs = paragraphs
         self.headers = headers
         self.vertical_lines = []
-        content_bound = SegmentHelper().get_content_bounds(paragraphs+headers)
+        content_bound = SegmentHelper().get_content_bounds(paragraphs + headers)
         self.page_x1 = content_bound[0]
         self.page_y1 = content_bound[1]
         self.page_x2 = content_bound[2]
@@ -55,7 +56,9 @@ class SegmentLines:
         horizontal_lines = []
         margin = 2
         for header in self.headers:
-            horizontal_lines.append(Line([header.x1, header.y1 - margin, header.x2, header.y1 - margin]))
+            horizontal_lines.append(
+                Line([header.x1, header.y1 - margin, header.x2, header.y1 - margin])
+            )
 
         return horizontal_lines
 
@@ -70,8 +73,19 @@ class SegmentLines:
         margin = 2
 
         for horizontal_line in horizontal_lines:
-            left_line, right_line = self.find_nearest_vertical_lines(horizontal_line, self.vertical_lines)
-            extended_horizontal_lines.append(Line([left_line.x1, horizontal_line.y1 + margin, right_line.x1, horizontal_line.y2 + margin]))
+            left_line, right_line = self.find_nearest_vertical_lines(
+                horizontal_line, self.vertical_lines
+            )
+            extended_horizontal_lines.append(
+                Line(
+                    [
+                        left_line.x1,
+                        horizontal_line.y1 + margin,
+                        right_line.x1,
+                        horizontal_line.y2 + margin,
+                    ]
+                )
+            )
 
         return extended_horizontal_lines
 
@@ -90,23 +104,31 @@ class SegmentLines:
 
         for vertical_line in vertical_lines:
             # Line has to be left of the line and intersect it
-            if vertical_line.x1 < horizontal_line.x1\
-                    and vertical_line.y1 < horizontal_line.y1\
-                    and vertical_line.y2 > horizontal_line.y2:
+            if (
+                vertical_line.x1 < horizontal_line.x1
+                and vertical_line.y1 < horizontal_line.y1
+                and vertical_line.y2 > horizontal_line.y2
+            ):
                 left_side_lines.append(vertical_line)
-            elif vertical_line.x1 > horizontal_line.x2 \
-                    and vertical_line.y1 < horizontal_line.y1 \
-                    and vertical_line.y2 > horizontal_line.y2:
+            elif (
+                vertical_line.x1 > horizontal_line.x2
+                and vertical_line.y1 < horizontal_line.y1
+                and vertical_line.y2 > horizontal_line.y2
+            ):
                 right_side_lines.append(vertical_line)
         # If empty then add a line along the pages content bound
         if len(left_side_lines) == 0:
-            left_side_lines.append(Line([self.page_x1, self.page_y1,
-                                         self.page_x1, self.page_y2]))
+            left_side_lines.append(
+                Line([self.page_x1, self.page_y1, self.page_x1, self.page_y2])
+            )
         if len(right_side_lines) == 0:
-            right_side_lines.append(Line([self.page_x2, self.page_y1,
-                                         self.page_x2, self.page_y2]))
+            right_side_lines.append(
+                Line([self.page_x2, self.page_y1, self.page_x2, self.page_y2])
+            )
         # Return the min distance of the left_side and right_side lines
-        return min(left_side_lines, key=lambda line: horizontal_line.x1 - line.x1), min(right_side_lines, key=lambda line: line.x1 - horizontal_line.x1)
+        return min(left_side_lines, key=lambda line: horizontal_line.x1 - line.x1), min(
+            right_side_lines, key=lambda line: line.x1 - horizontal_line.x1
+        )
 
     def find_vertical_lines(self):
         """
@@ -132,8 +154,26 @@ class SegmentLines:
         for segment in segments:
             if segment.type == SegmentType.paragraph:
                 # Make a line that is parallel with the left and right side of the segment
-                lines.append(Line([segment.x1 - margin, segment.y1, segment.x1 - margin, segment.y2]))
-                lines.append(Line([segment.x2 + margin, segment.y1, segment.x2 + margin, segment.y2]))
+                lines.append(
+                    Line(
+                        [
+                            segment.x1 - margin,
+                            segment.y1,
+                            segment.x1 - margin,
+                            segment.y2,
+                        ]
+                    )
+                )
+                lines.append(
+                    Line(
+                        [
+                            segment.x2 + margin,
+                            segment.y1,
+                            segment.x2 + margin,
+                            segment.y2,
+                        ]
+                    )
+                )
         return lines
 
     def __fix_and_extend_vertical_lines(self, vertical_lines, segments):
@@ -157,7 +197,9 @@ class SegmentLines:
             (min_y, max_y, average_x) = self.__get_statistics_for_line_group(line_group)
 
             # Finds affected segments
-            affected_segments = self.__find_affected_segments_between_lines(segments, min_y, max_y, average_x)
+            affected_segments = self.__find_affected_segments_between_lines(
+                segments, min_y, max_y, average_x
+            )
             all_affected_segments = self.__find_affected_segments(segments, average_x)
 
             if len(affected_segments) == 0 or len(line_group) == 1:
@@ -197,7 +239,11 @@ class SegmentLines:
 
             for line_to_be_checked in vertical_lines:
                 # Only checks if x1 is the same (plus margin) for the two lines, since their x1 and x2 are the same
-                if line.x1 - merge_margin < line_to_be_checked.x1 < line.x1 + merge_margin:
+                if (
+                    line.x1 - merge_margin
+                    < line_to_be_checked.x1
+                    < line.x1 + merge_margin
+                ):
                     found_lines.append(line_to_be_checked)
 
             lines_to_be_merged.append(found_lines)
@@ -263,9 +309,11 @@ class SegmentLines:
         affected_segments = []
 
         for segment in segments:
-            if segment.x1 < x_coord < segment.x2 \
-                    and segment.y1 > min_y \
-                    and segment.y2 < max_y:
+            if (
+                segment.x1 < x_coord < segment.x2
+                and segment.y1 > min_y
+                and segment.y2 < max_y
+            ):
                 affected_segments.append(segment)
 
         return affected_segments
@@ -358,7 +406,7 @@ class SegmentLines:
                 i += 1
                 merged_lines.append(line)
                 continue
-            previous_line = lines[i-1]
+            previous_line = lines[i - 1]
 
             if self.__is_any_segment_intersected(segments, previous_line.y2, line.y1):
                 merged_lines.append(line)
@@ -422,10 +470,14 @@ class SegmentLines:
                 extended_lines.append(line)
 
         if not self.__find_segments_above_line(highest_line, segments):
-            extended_lines.append(Line([highest_line.x1, self.page_y1, highest_line.x2, highest_line.y2]))
+            extended_lines.append(
+                Line([highest_line.x1, self.page_y1, highest_line.x2, highest_line.y2])
+            )
 
         if not self.__find_segments_below_line(lowest_line, segments):
-            extended_lines.append(Line([lowest_line.x1, lowest_line.y1, lowest_line.x2, self.page_y2]))
+            extended_lines.append(
+                Line([lowest_line.x1, lowest_line.y1, lowest_line.x2, self.page_y2])
+            )
 
         return extended_lines
 

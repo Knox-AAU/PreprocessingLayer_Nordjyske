@@ -7,6 +7,7 @@ class SegmentType(Enum):
     """
     The types a segment can be.
     """
+
     paragraph = 1
     heading = 2
     line = 3
@@ -17,6 +18,7 @@ class Segment(Line):
     """
     Segment is a set of two coordinates, combined with a SegmentType and optionally a list of coords.
     """
+
     type: SegmentType
     lines: list
 
@@ -74,13 +76,14 @@ class Segment(Line):
         @param segment_type: The type of the resulting segment
         @return: The line as a segment
         """
-        return cls([line.x1,line.y1,line.x2,line.y2], segment_type)
+        return cls([line.x1, line.y1, line.x2, line.y2], segment_type)
 
 
 class SegmentGroup:
     """
     A group of segments consisting of a list of headers and paragraphs.
     """
+
     headers: List[Segment]
     paragraphs: List[Segment]
 

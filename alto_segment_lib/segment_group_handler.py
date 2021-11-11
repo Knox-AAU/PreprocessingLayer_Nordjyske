@@ -6,6 +6,7 @@ class SegmentGroupHandler:
     """
     Used to handle the organization of groups of segments for ordering.
     """
+
     groups: List[SegmentGroup]
     current_group: Optional[SegmentGroup] = None
     unfinished_group: Optional[SegmentGroup] = None
@@ -62,7 +63,10 @@ class SegmentGroupHandler:
         @return: void
         """
         if self.current_group is not None:
-            if len(self.current_group.headers) > 0 or len(self.current_group.paragraphs) > 0:
+            if (
+                len(self.current_group.headers) > 0
+                or len(self.current_group.paragraphs) > 0
+            ):
                 self.groups.append(self.current_group)
             self.current_group = None
 
@@ -77,6 +81,8 @@ class SegmentGroupHandler:
             self.unfinished_group = None
 
         if self.current_group is not None and (
-                len(self.current_group.headers) > 0 or len(self.current_group.paragraphs) > 0):
+            len(self.current_group.headers) > 0
+            or len(self.current_group.paragraphs) > 0
+        ):
             self.groups.append(self.current_group)
             self.current_group = None

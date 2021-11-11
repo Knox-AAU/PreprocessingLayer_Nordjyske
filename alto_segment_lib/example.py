@@ -14,6 +14,7 @@ from alto_segment_lib.line_extractor.extractor import LineExtractor
 from alto_segment_lib.repair_segments import merge_segments
 import matplotlib.patheffects as peffect
 from alto_segment_lib.segment_lines.segment_lines import SegmentLines
+
 os.environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 from cv2 import cv2
 
@@ -23,9 +24,9 @@ filepath: str
 filetype = ".jp2"
 
 
-def display_segments(segments_for_display, file_path, name, color='r'):
+def display_segments(segments_for_display, file_path, name, color="r"):
     plt.imshow(Image.open(file_path + filetype))
-    plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
+    plt.rcParams.update({"font.size": 3, "text.color": "red", "axes.labelcolor": "red"})
 
     counter = 1
 
@@ -34,35 +35,56 @@ def display_segments(segments_for_display, file_path, name, color='r'):
 
     for segment in segments_for_display:
         plt.gca().add_patch(
-            Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.3,
-                      edgecolor=color, facecolor='none'))
+            Rectangle(
+                (segment.x1, segment.y1),
+                (segment.x2 - segment.x1),
+                (segment.y2 - segment.y1),
+                linewidth=0.3,
+                edgecolor=color,
+                facecolor="none",
+            )
+        )
         # plt.text(segment.x1+25, segment.y1+30, "["+str(counter)+"]", horizontalalignment='left', verticalalignment='top')
         # plt.text(seg[0]+45, seg[1] + 200, str((seg[2]-seg[0])), horizontalalignment='left', verticalalignment='top')
         counter += 1
 
-    plt.savefig(file_path + "-" + name + ".png", dpi=600, bbox_inches='tight')
+    plt.savefig(file_path + "-" + name + ".png", dpi=600, bbox_inches="tight")
     plt.gca().clear()
 
 
 def display_lines(headers_for_display, paragraphs_for_display, file_path, name):
     plt.imshow(Image.open(file_path + filetype))
-    plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
+    plt.rcParams.update({"font.size": 3, "text.color": "red", "axes.labelcolor": "red"})
 
     counter = 1
 
     for segment in headers_for_display:
         plt.gca().add_patch(
-            Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.3,
-                      edgecolor='b', facecolor='none'))
+            Rectangle(
+                (segment.x1, segment.y1),
+                (segment.x2 - segment.x1),
+                (segment.y2 - segment.y1),
+                linewidth=0.3,
+                edgecolor="b",
+                facecolor="none",
+            )
+        )
         # plt.text(segment.x1+25, segment.y1+30, "["+str(segment.font)+"]", horizontalalignment='left', verticalalignment='top')
 
     for segment in paragraphs_for_display:
         plt.gca().add_patch(
-            Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.3,
-                      edgecolor='r', facecolor='none'))
+            Rectangle(
+                (segment.x1, segment.y1),
+                (segment.x2 - segment.x1),
+                (segment.y2 - segment.y1),
+                linewidth=0.3,
+                edgecolor="r",
+                facecolor="none",
+            )
+        )
         # plt.text(segment.x1+25, segment.y1+30, "["+str(segment.font)+"]", horizontalalignment='left', verticalalignment='top')
 
-    plt.savefig(file_path + "-" + name + ".png", dpi=600, bbox_inches='tight')
+    plt.savefig(file_path + "-" + name + ".png", dpi=600, bbox_inches="tight")
     plt.gca().clear()
 
 
@@ -82,8 +104,8 @@ def run_file(file_path):
 
     segment_helper = SegmentHelper()
 
-    image_file_path = file_path+".jp2"
-    alto_file_path = file_path+".alto.xml"
+    image_file_path = file_path + ".jp2"
+    alto_file_path = file_path + ".alto.xml"
 
     # Find the text-lines from Alto-xml
     alto_extractor = AltoSegmentExtractor(alto_file_path)
@@ -91,7 +113,9 @@ def run_file(file_path):
     alto_extractor.margin = 0
     text_lines = alto_extractor.extract_lines()
 
-    (headers, paragraphs) = segment_helper.group_lines_into_paragraphs_and_headers(text_lines)
+    (headers, paragraphs) = segment_helper.group_lines_into_paragraphs_and_headers(
+        text_lines
+    )
 
     # Find lines in image, then split segments that cross those lines.
     lines = LineExtractor().extract_lines_via_path(image_file_path)
@@ -108,28 +132,32 @@ def run_file(file_path):
 
     print("Headers before: " + str(len(headers)))
 
-    print("Before: "+str(len(paragraphs)))
+    print("Before: " + str(len(paragraphs)))
     display_segments(paragraphs, file_path, "paragraphs-before")
     paragraphs = merge_segments(paragraphs)
     print("After:  " + str(len(paragraphs)))
     display_segments(paragraphs, file_path, "paragraphs-after")
 
-    our_headers = segment_helper.group_headers_close_in_proximity_into_a_single_segment(headers)
+    our_headers = segment_helper.group_headers_close_in_proximity_into_a_single_segment(
+        headers
+    )
     segment_lines = SegmentLines(paragraphs, our_headers)
     # (horizontal_lines, vertical_lines) = segment_lines.find_vertical_and_horizontal_lines()
     horizontal_lines = []
 
     # horizontal_lines.clear()
-    LineExtractor.show_lines_on_image(cv2.imread(file_path + ".jp2", cv2.CV_8UC1), horizontal_lines, "-Wupti")
+    LineExtractor.show_lines_on_image(
+        cv2.imread(file_path + ".jp2", cv2.CV_8UC1), horizontal_lines, "-Wupti"
+    )
 
     display_segments(horizontal_lines, file_path, "paragraphs-before")
 
-
     # Grouping
 
-
     grouper = SegmentGrouper()
-    grouped_headers = SegmentHelper.group_headers_close_in_proximity_into_a_single_segment(headers)
+    grouped_headers = (
+        SegmentHelper.group_headers_close_in_proximity_into_a_single_segment(headers)
+    )
 
     print("Headers after : " + str(len(grouped_headers)))
 
@@ -141,11 +169,11 @@ def run_file(file_path):
     image.putalpha(128)
 
     plt.imshow(image)
-    plt.rcParams.update({'font.size': 3, 'text.color': "red", 'axes.labelcolor': "red"})
+    plt.rcParams.update({"font.size": 3, "text.color": "red", "axes.labelcolor": "red"})
     counter = 1
     color_counter = 0
 
-    colors = ['magenta', 'blue', 'green', 'brown', 'orange', 'yellow', 'purple']
+    colors = ["magenta", "blue", "green", "brown", "orange", "yellow", "purple"]
 
     for group in groups:
         if color_counter >= len(colors):
@@ -155,24 +183,46 @@ def run_file(file_path):
 
         for segment in group.paragraphs:
             plt.gca().add_patch(
-                Rectangle((segment.x1, segment.y1), (segment.x2 - segment.x1), (segment.y2 - segment.y1), linewidth=0.5,
-                          edgecolor=color, facecolor='none'))
+                Rectangle(
+                    (segment.x1, segment.y1),
+                    (segment.x2 - segment.x1),
+                    (segment.y2 - segment.y1),
+                    linewidth=0.5,
+                    edgecolor=color,
+                    facecolor="none",
+                )
+            )
 
         if len(group.headers) > 0:
             header = group.headers[0]
-            circle = plt.Circle((header.x1 + 100, header.y1 + 100), 150, linewidth=0.35, edgecolor="black", facecolor=color)
+            circle = plt.Circle(
+                (header.x1 + 100, header.y1 + 100),
+                150,
+                linewidth=0.35,
+                edgecolor="black",
+                facecolor=color,
+            )
             plt.gca().add_patch(circle)
-            plt.rcParams.update({'font.size': 6, 'text.color': 'white', 'axes.labelcolor': 'white'})
+            plt.rcParams.update(
+                {"font.size": 6, "text.color": "white", "axes.labelcolor": "white"}
+            )
             padding = 51
             if counter > 9:
                 padding -= 50
-            text = plt.text(header.x1+padding, header.y1+45, str(counter), horizontalalignment='left', verticalalignment='top')
-            text.set_path_effects([peffect.Stroke(linewidth=0.7, foreground='black'), peffect.Normal()])
-
+            text = plt.text(
+                header.x1 + padding,
+                header.y1 + 45,
+                str(counter),
+                horizontalalignment="left",
+                verticalalignment="top",
+            )
+            text.set_path_effects(
+                [peffect.Stroke(linewidth=0.7, foreground="black"), peffect.Normal()]
+            )
 
         counter += 1
 
-    plt.savefig(file_path + "-grouped.png", dpi=600, bbox_inches='tight')
+    plt.savefig(file_path + "-grouped.png", dpi=600, bbox_inches="tight")
     plt.gca().clear()
 
     display_segments(lines, file_path, "lines")
@@ -181,10 +231,11 @@ def run_file(file_path):
 
     paragraphs.clear()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('path', help='The path to the image folder')
-    parser.add_argument('filename', help='The name of the file without filetype')
+    parser.add_argument("path", help="The path to the image folder")
+    parser.add_argument("filename", help="The name of the file without filetype")
 
     args = parser.parse_args()
 
@@ -192,5 +243,5 @@ if __name__ == '__main__':
     filename = args.filename
     filepath = base_path + filename
 
-    #run_multiple_files(base_path)
+    # run_multiple_files(base_path)
     run_file(filepath)

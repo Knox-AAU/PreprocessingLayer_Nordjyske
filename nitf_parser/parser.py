@@ -3,10 +3,12 @@ import configparser
 from knox_source_data_io.models.publication import Publication, Article, Paragraph
 from find_pdf_filename import find_pdf_filename
 
+
 class NitfParser:
     """
     Used to parse NITF files to JSON.
     """
+
     def __init__(self):
         self.publication = Publication()
         self.article = Article()
@@ -21,15 +23,15 @@ class NitfParser:
         # https://www.w3schools.com/xml/dom_element.asp
         # We extract all elements from the XML file and call functions to extract the information from the elements
         # Metadata contains type, byline, page number and nmId
-        meta_data_list = header_element.getElementsByTagName('nitf:meta')
+        meta_data_list = header_element.getElementsByTagName("nitf:meta")
         self.__parse_metadata(meta_data_list)
 
         # Docdata contains publishing date
-        doc_data = header_element.getElementsByTagName('nitf:docdata')[0]
+        doc_data = header_element.getElementsByTagName("nitf:docdata")[0]
         self.__parse_doc_data(doc_data)
 
         # Pub_data contains publisher and publication
-        pub_data = header_element.getElementsByTagName('nitf:pubdata')[0]
+        pub_data = header_element.getElementsByTagName("nitf:pubdata")[0]
         self.__parse_pub_data(pub_data)
 
     def __parse_metadata(self, metadata):
@@ -40,39 +42,51 @@ class NitfParser:
         @return: void.
         """
         config = configparser.ConfigParser()
-        config.read('metadata-mapper.ini')
+        config.read("metadata-mapper.ini")
 
         # get name attribute
-        byline = {'name': None, 'email': None}
+        byline = {"name": None, "email": None}
 
-        data = [data for data in metadata if
-                data.getAttribute("name") == config['metadata']['name']]
+        data = [
+            data
+            for data in metadata
+            if data.getAttribute("name") == config["metadata"]["name"]
+        ]
         if len(data) != 0:
-            byline['name'] = data[0].getAttribute('content')
+            byline["name"] = data[0].getAttribute("content")
 
         # get email attribute
-        data = [data for data in metadata if
-                data.getAttribute("name") == config['metadata']['email']]
+        data = [
+            data
+            for data in metadata
+            if data.getAttribute("name") == config["metadata"]["email"]
+        ]
         if len(data) != 0:
-            byline['email'] = data[0].getAttribute('content')
+            byline["email"] = data[0].getAttribute("content")
 
         # add name and email
-        if byline['name'] is not None:
-            self.article.add_byline(byline['name'], byline['email'])
+        if byline["name"] is not None:
+            self.article.add_byline(byline["name"], byline["email"])
 
         # get page attribute
-        data = [data for data in metadata if
-                data.getAttribute("name") == config['metadata']['page']]
+        data = [
+            data
+            for data in metadata
+            if data.getAttribute("name") == config["metadata"]["page"]
+        ]
         if len(data) != 0:
-            self.article.page = int(data[0].getAttribute('content'))
+            self.article.page = int(data[0].getAttribute("content"))
 
         # get nmid attribute
-        data = [data for data in metadata if
-                data.getAttribute("name") == config['metadata']['nmid']]
+        data = [
+            data
+            for data in metadata
+            if data.getAttribute("name") == config["metadata"]["nmid"]
+        ]
         if len(data) != 0:
-            if data[0].getAttribute('content') != "noid":
+            if data[0].getAttribute("content") != "noid":
                 try:
-                    self.article.id = int(data[0].getAttribute('content'))
+                    self.article.id = int(data[0].getAttribute("content"))
                 except:
                     self.article.id = 0
             else:
@@ -97,7 +111,9 @@ class NitfParser:
         @param doc_data: the data to retrieve the desired data from.
         @return: void.
         """
-        temp = doc_data.getElementsByTagName('nitf:date.release')[0].getAttribute('norm')
+        temp = doc_data.getElementsByTagName("nitf:date.release")[0].getAttribute(
+            "norm"
+        )
         if len(temp) != 0:
             self.publication.published_at = temp
             self.article.published_at = self.publication.published_at
@@ -108,7 +124,7 @@ class NitfParser:
 
         @param pub_data: the publication data to parse.
         """
-        temp = pub_data.getAttribute('name')
+        temp = pub_data.getAttribute("name")
         if len(temp) != 0:
             self.publication.publisher = temp
             self.article.publisher = temp
@@ -125,20 +141,21 @@ class NitfParser:
         @param content: the content to parse.
         @return: void.
         """
-        blocks = content.getElementsByTagName('nitf:block')
+        blocks = content.getElementsByTagName("nitf:block")
         for block in blocks:
-            paragraphs = block.getElementsByTagName('nitf:p')
+            paragraphs = block.getElementsByTagName("nitf:p")
             for paragraph in paragraphs:
                 if len(paragraph.childNodes) == 0:
                     continue
                 p = Paragraph()
                 p.kind = "paragraph"
-                paragraph_kind = paragraph.getAttribute('class')
+                paragraph_kind = paragraph.getAttribute("class")
                 if paragraph_kind != "":
                     p.kind = paragraph_kind
 
                 p.value = NitfParser.sanitize_spaces(
-                    NitfParser.__get_text_recursive_xmldom(paragraph).strip())
+                    NitfParser.__get_text_recursive_xmldom(paragraph).strip()
+                )
 
                 self.article.add_paragraph(p)
 
@@ -167,11 +184,13 @@ class NitfParser:
         @return: void.
         """
         subheaders = []
-        hl1s = head.getElementsByTagName('nitf:hl1')
+        hl1s = head.getElementsByTagName("nitf:hl1")
         if len(hl1s) > 0:
-            self.article.headline = NitfParser.sanitize_spaces(hl1s[0].firstChild.nodeValue)
+            self.article.headline = NitfParser.sanitize_spaces(
+                hl1s[0].firstChild.nodeValue
+            )
             subheaders.extend(hl1s[1:])
-        hl2s = head.getElementsByTagName('nitf:hl2')
+        hl2s = head.getElementsByTagName("nitf:hl2")
         subheaders.extend(hl2s)
 
         for subheader in subheaders:
@@ -195,7 +214,9 @@ class NitfParser:
         # body head contains the header and lead of an article
         self.__parse_body_head(body_element.getElementsByTagName("nitf:body.head")[0])
         # body content contains the paragraphs and subheaders
-        self.__parse_body_content(body_element.getElementsByTagName("nitf:body.content")[0])
+        self.__parse_body_content(
+            body_element.getElementsByTagName("nitf:body.content")[0]
+        )
 
     def parse(self, article_path):
         """
@@ -207,13 +228,13 @@ class NitfParser:
         self.article = Article()
         self.article.add_extracted_from(find_pdf_filename(article_path))
         xml_doc = minidom.parse(article_path)
-        item_list = xml_doc.getElementsByTagName('nitf:nitf')
+        item_list = xml_doc.getElementsByTagName("nitf:nitf")
 
-        header_element = item_list[0].getElementsByTagName('nitf:head')[0]
+        header_element = item_list[0].getElementsByTagName("nitf:head")[0]
 
         self.__parse_header(header_element)
 
-        body_elements = item_list[0].getElementsByTagName('nitf:body')
+        body_elements = item_list[0].getElementsByTagName("nitf:body")
 
         if len(body_elements) != 0:
             self.__parse_body(body_elements[0])

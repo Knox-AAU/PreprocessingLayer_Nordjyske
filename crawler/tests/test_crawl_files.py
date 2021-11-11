@@ -9,12 +9,19 @@ from crawler.tests.test_crawl_folders import PseudoDirEntry
 
 @mock.patch("os.scandir")
 @mock.patch.object(Crawler, "is_file_valid_nitf")
-def test_crawl_files_nitf(mock_valid_nitf, mock_scandir, ):
+def test_crawl_files_nitf(
+    mock_valid_nitf,
+    mock_scandir,
+):
     mock_valid_nitf.side_effect = [True, False]
 
     mock_scandir.side_effect = [
         [PseudoDirEntry("SomeNitfFile.xml", "SomeNitfFile.xmlPath", False, None)],
-        [PseudoDirEntry("SomeInvalidNitfFile.xml", "SomeInvalidNitfFile.xmlPath", False, None)],
+        [
+            PseudoDirEntry(
+                "SomeInvalidNitfFile.xml", "SomeInvalidNitfFile.xmlPath", False, None
+            )
+        ],
     ]
     q = Queue()
     directory = ""
@@ -27,12 +34,19 @@ def test_crawl_files_nitf(mock_valid_nitf, mock_scandir, ):
     assert folder.files[0].name == "SomeNitfFile.xml"
     assert folder.files[0].type == FileType.NITF
 
+
 @mock.patch("os.scandir")
-def test_crawl_files_jp2(mock_scandir, ):
+def test_crawl_files_jp2(
+    mock_scandir,
+):
 
     mock_scandir.side_effect = [
         [PseudoDirEntry("SomeImageFile.jp2", "SomeNitfFile.xmlPath", False, None)],
-        [PseudoDirEntry("SomeNotJp2File.txt", "SomeInvalidNitfFile.xmlPath", False, None)],
+        [
+            PseudoDirEntry(
+                "SomeNotJp2File.txt", "SomeInvalidNitfFile.xmlPath", False, None
+            )
+        ],
     ]
 
     crawler = Crawler()
@@ -42,6 +56,7 @@ def test_crawl_files_jp2(mock_scandir, ):
     assert len(folder.files) == 1
     assert folder.files[0].name == "SomeImageFile.jp2"
     assert folder.files[0].type == FileType.JP2
+
 
 @mock.patch("os.scandir")
 def test_crawl_files_recursive(mock_scandir):
@@ -58,6 +73,7 @@ def test_crawl_files_recursive(mock_scandir):
     assert len(folder.files) == 1
     assert folder.files[0].name == "SomeImageFile.jp2"
 
+
 @mock.patch("os.scandir")
 def test_crawl_files_whitelist(mock_scandir):
 
@@ -69,13 +85,18 @@ def test_crawl_files_whitelist(mock_scandir):
 
     crawler = Crawler()
 
-    crawler.whitelist = ["File","Test"]
+    crawler.whitelist = ["File", "Test"]
     crawler.blacklist = []
 
     folder = Folder("", 1, 1, 1)
     crawler.crawl_for_files_in_folders(folder, "")
 
     assert len(folder.files) == 2
-    assert next(filter(lambda file: file.name == "SomeTest.jp2", folder.files), None) is not None
-    assert next(filter(lambda file: file.name == "SomeFile.jp2", folder.files), None) is not None
-
+    assert (
+        next(filter(lambda file: file.name == "SomeTest.jp2", folder.files), None)
+        is not None
+    )
+    assert (
+        next(filter(lambda file: file.name == "SomeFile.jp2", folder.files), None)
+        is not None
+    )
