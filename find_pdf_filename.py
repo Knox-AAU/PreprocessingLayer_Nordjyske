@@ -1,27 +1,28 @@
-
 import os
 import re
 import sys
 from pathlib import Path
 
+
 def find_pdf_filename(xml_name):
     """
     Finds the pdf name corresponding to a given xml filepath
-    @param xml_name: path to a the xml file 
+    @param xml_name: path to a the xml file
     """
-    #removes path from string, only keeping filename
+    # removes path from string, only keeping filename
     name = os.path.basename(xml_name)
     base_path = __get_file_path(xml_name)
     regex_string = __str_to_regex_pattern(name)
     regex = re.compile(regex_string)
-    
+
     # Check all files in parent directory of XML file
     for filename in os.listdir(base_path):
-        # if pdf matches regex based on the xml filename 
+        # if pdf matches regex based on the xml filename
         if regex.match(filename):
-            return base_path.__str__()+"/"+filename.__str__() 
-    
+            return base_path.__str__() + "/" + filename.__str__()
+
     return None
+
 
 def __str_to_regex_pattern(str):
     """
@@ -29,49 +30,51 @@ def __str_to_regex_pattern(str):
     """
     str = str.replace("-", "_")
 
-    #sometimes "forside" is misspelled as "forsidea", "forsidet"...
-    #removes the last letter after forside to fix
+    # sometimes "forside" is misspelled as "forsidea", "forsidet"...
+    # removes the last letter after forside to fix
     fix_forside_substr = re.compile("forside[a-zA-Z]")
     if len(re.findall(fix_forside_substr, str)):
         bad = re.findall(fix_forside_substr, str)
         str = str.replace(bad[0], "forside")
-    
+
     filename_arr = str.split("_")
     filename_arr.pop()
     regex_str = "[-_]*".join(filename_arr)
     regex_str = regex_str + "\.pdf"
     return regex_str
 
+
 def __get_file_path(str):
-    '''
+    """
     Find path to file, by removing filename from str
-    '''
+    """
     filename = os.path.basename(str)
     path = Path(str.replace(filename, "")).parent.absolute()
     return path
-    
+
+
 def __test():
-    '''
+    """
     function to see if all xml files get a corresponding pdf file
     not propper test
-    '''
+    """
     xml_files = []
     pdf_files = []
     path = "/home/aau/Desktop/test_findpdfname/2020-12-24/TabletXML"
     xml_re = re.compile(".*\.xml")
     for filename in os.listdir(path):
         if xml_re.match(filename):
-            xml_files.append(path+"/"+filename)
+            xml_files.append(path + "/" + filename)
     for x in xml_files:
         pdf_files.append(find_pdf_filename(x))
-    #print(f"Found pdf files for all xml files: {len(xml_files)==len(pdf_files)}")
+    # print(f"Found pdf files for all xml files: {len(xml_files)==len(pdf_files)}")
     for x, y in zip(xml_files, pdf_files):
         print(os.path.basename(x))
         print(y)
+
 
 if __name__ == "__main__":
     if sys.argv[1] == "test":
         __test()
     else:
         print(find_pdf_filename(sys.argv[1]))
-    

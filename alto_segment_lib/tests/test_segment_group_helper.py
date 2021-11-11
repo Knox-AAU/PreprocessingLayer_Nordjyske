@@ -3,7 +3,6 @@ from alto_segment_lib.segment_group_handler import *
 
 
 class TestSegmentGroupHelper:
-
     def test_start_group_sets_unfinished_group_to_current_group(self):
         segment_group_handler = SegmentGroupHandler()
         paragraph = Segment()
@@ -16,7 +15,9 @@ class TestSegmentGroupHelper:
 
         assert segment_group_handler.unfinished_group.paragraphs.__contains__(paragraph)
 
-    def test_start_group_adds_unfinished_group_to_groups_when_new_group_is_started(self):
+    def test_start_group_adds_unfinished_group_to_groups_when_new_group_is_started(
+        self,
+    ):
         segment_group_handler = SegmentGroupHandler()
         paragraph = Segment()
         paragraph.type = SegmentType.paragraph
@@ -38,7 +39,10 @@ class TestSegmentGroupHelper:
 
         segment_group_handler.start_group()
 
-        assert segment_group_handler.current_group.paragraphs.__len__() == 0 and segment_group_handler.current_group.headers.__len__() == 0
+        assert (
+            segment_group_handler.current_group.paragraphs.__len__() == 0
+            and segment_group_handler.current_group.headers.__len__() == 0
+        )
 
     def test_add_segment_adds_paragraph_to_paragraphs_not_headers(self):
         segment_group_handler = SegmentGroupHandler()
@@ -48,7 +52,10 @@ class TestSegmentGroupHelper:
         segment_group_handler.start_group()
         segment_group_handler.add_segment(paragraph)
 
-        assert segment_group_handler.current_group.paragraphs.__len__() == 1 and segment_group_handler.current_group.headers.__len__() == 0
+        assert (
+            segment_group_handler.current_group.paragraphs.__len__() == 1
+            and segment_group_handler.current_group.headers.__len__() == 0
+        )
 
     def test_add_segment_adds_heading_to_headers_not_paragraphs(self):
         segment_group_handler = SegmentGroupHandler()
@@ -59,9 +66,14 @@ class TestSegmentGroupHelper:
         segment_group_handler.start_group()
         segment_group_handler.add_segment(header)
 
-        assert segment_group_handler.current_group.paragraphs.__len__() == 0 and segment_group_handler.current_group.headers.__len__() == 1
+        assert (
+            segment_group_handler.current_group.paragraphs.__len__() == 0
+            and segment_group_handler.current_group.headers.__len__() == 1
+        )
 
-    def test_add_segment_adds_paragraph_to_unfinished_group_paragraphs_when_current_group_is_none(self):
+    def test_add_segment_adds_paragraph_to_unfinished_group_paragraphs_when_current_group_is_none(
+        self,
+    ):
         segment_group_handler = SegmentGroupHandler()
         paragraph = Segment()
         paragraph.type = SegmentType.paragraph
@@ -79,7 +91,9 @@ class TestSegmentGroupHelper:
 
         assert segment_group_handler.unfinished_group.paragraphs.__len__() == 2
 
-    def test_add_segment_adds_header_to_unfinished_group_headers_when_current_group_is_none(self):
+    def test_add_segment_adds_header_to_unfinished_group_headers_when_current_group_is_none(
+        self,
+    ):
         segment_group_handler = SegmentGroupHandler()
         paragraph = Segment()
         paragraph.type = SegmentType.paragraph
@@ -145,7 +159,9 @@ class TestSegmentGroupHelper:
 
         assert segment_group_handler.groups.__len__() == 1
 
-    def test_finalize_appends_non_empty_unfinished_group_to_groups_but_not_empty_current_group(self):
+    def test_finalize_appends_non_empty_unfinished_group_to_groups_but_not_empty_current_group(
+        self,
+    ):
         segment_group_handler = SegmentGroupHandler()
         paragraph = Segment()
         paragraph.type = SegmentType.paragraph
@@ -184,4 +200,7 @@ class TestSegmentGroupHelper:
         segment_group_handler.add_segment(paragraph)
         segment_group_handler.finalize()
 
-        assert segment_group_handler.current_group is None and segment_group_handler.current_group is None
+        assert (
+            segment_group_handler.current_group is None
+            and segment_group_handler.current_group is None
+        )

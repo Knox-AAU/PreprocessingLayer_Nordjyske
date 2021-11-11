@@ -16,7 +16,7 @@ def test_find_vertical_lines():
     vertical_line = segment_lines.find_vertical_lines()
 
     # Assert
-    #assert vertical_line[0] == Line([10 - margin, 0, 10 - margin, 30])
+    # assert vertical_line[0] == Line([10 - margin, 0, 10 - margin, 30])
 
 
 def test_find_vertical_lines_not_aligned():
@@ -51,7 +51,7 @@ def test_find_vertical_lines_far_apart():
     vertical_line = segment_lines.find_vertical_lines()
 
     # Assert
-    #assert vertical_line[0] == Line([10 - margin, 0, 10 - margin, 1000])
+    # assert vertical_line[0] == Line([10 - margin, 0, 10 - margin, 1000])
 
 
 def test_find_vertical_lines_merge_lines_within_margin():
@@ -69,7 +69,7 @@ def test_find_vertical_lines_merge_lines_within_margin():
     vertical_line = segment_lines.find_vertical_lines()
 
     # Assert
-    #assert vertical_line[0] == Line([average_x, 0, average_x, 100])
+    # assert vertical_line[0] == Line([average_x, 0, average_x, 100])
 
 
 def test_find_vertical_lines_intersects_segment():
@@ -87,8 +87,9 @@ def test_find_vertical_lines_intersects_segment():
     vertical_line = segment_lines.find_vertical_lines()
 
     # Assert
-    #assert vertical_line[0] == Line([40 - margin, 15, 40 - margin, 200])
-    #assert vertical_line[1] == Line([40 - margin, 300, 40 - margin, 500])
+    # assert vertical_line[0] == Line([40 - margin, 15, 40 - margin, 200])
+    # assert vertical_line[1] == Line([40 - margin, 300, 40 - margin, 500])
+
 
 def test_find_vertical_lines_merge_lines():
     # Arrange
@@ -104,7 +105,7 @@ def test_find_vertical_lines_merge_lines():
     vertical_line = segment_lines.find_vertical_lines()
 
     # Assert
-    #assert vertical_line[0] == Line([40 - margin, 15, 1000 - margin, 100])
+    # assert vertical_line[0] == Line([40 - margin, 15, 1000 - margin, 100])
 
 
 def test_find_horizontal_lines_extend_horizontal_lines_to_vertical_lines():
@@ -125,6 +126,7 @@ def test_find_horizontal_lines_extend_horizontal_lines_to_vertical_lines():
     # Assert
     assert horizontal_lines[0] == Line([100 + margin, 100, 400 - margin, 100])
 
+
 def test_find_horizontal_lines_extend_horizontal_lines_to_page_bound():
     # Arrange
     headers = []
@@ -140,6 +142,3 @@ def test_find_horizontal_lines_extend_horizontal_lines_to_page_bound():
 
     # Assert
     assert horizontal_lines[0] == Line([0, 100, 1000, 100])
-
-
-

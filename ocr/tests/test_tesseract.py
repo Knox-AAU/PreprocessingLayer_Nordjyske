@@ -5,18 +5,12 @@ from ocr.tesseract import TesseractModule
 
 @mock.patch("pytesseract.image_to_data")
 def test_tesseract_constructor(mock_pytesseract):
-    mock_pytesseract.return_value = {
-        'text': [],
-        'conf': []
-    }
+    mock_pytesseract.return_value = {"text": [], "conf": []}
 
 
 @mock.patch("pytesseract.image_to_data")
 def test_tesseract_conf_matches(mock_pytesseract):
-    mock_pytesseract.return_value = {
-        'text': ["hej", "dav"],
-        'conf': [1, 0.5]
-    }
+    mock_pytesseract.return_value = {"text": ["hej", "dav"], "conf": [1, 0.5]}
 
     tm = TesseractModule(None)
 
@@ -29,9 +23,7 @@ def test_tesseract_conf_matches(mock_pytesseract):
 
 @mock.patch("pytesseract.image_to_data")
 def test_tesseract_average_conf(mock_pytesseract):
-    mock_pytesseract.return_value = {
-        'conf': [100, 50, 0, 33, 65, 120, -1]
-    }
+    mock_pytesseract.return_value = {"conf": [100, 50, 0, 33, 65, 120, -1]}
 
     tm = TesseractModule(None)
 
@@ -39,11 +31,10 @@ def test_tesseract_average_conf(mock_pytesseract):
 
     assert average_conf == 49.6
 
+
 @mock.patch("pytesseract.image_to_data")
 def test_tesseract_average_conf_no(mock_pytesseract):
-    mock_pytesseract.return_value = {
-        'conf': []
-    }
+    mock_pytesseract.return_value = {"conf": []}
 
     tm = TesseractModule(None)
 
@@ -51,10 +42,11 @@ def test_tesseract_average_conf_no(mock_pytesseract):
 
     assert average_conf == 0
 
+
 @mock.patch("pytesseract.image_to_data")
 def test_tesseract_text(mock_pytesseract):
     mock_pytesseract.return_value = {
-        'text': ["hej", "dav", "du"],
+        "text": ["hej", "dav", "du"],
     }
 
     tm = TesseractModule(None)
@@ -64,14 +56,15 @@ def test_tesseract_text(mock_pytesseract):
     assert len(paragraphs) == 1
     assert paragraphs[0].value == "hej dav du"
 
+
 @mock.patch("pytesseract.image_to_data")
 def test_tesseract_paragraphs_split(mock_pytesseract):
     mock_pytesseract.return_value = {
-        'text': ["hej", "", "", "dav", "du"],
+        "text": ["hej", "", "", "dav", "du"],
     }
 
     tm = TesseractModule(None)
-    tm.data['text'] = ["", "", "", "", "hej", "", "", "dav", "du"]
+    tm.data["text"] = ["", "", "", "", "hej", "", "", "dav", "du"]
 
     paragraphs = tm.to_paragraphs()
 

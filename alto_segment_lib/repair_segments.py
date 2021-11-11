@@ -16,10 +16,12 @@ class RepairSegments:
 
     def __init__(self, segments, threshold: int = None):
         config = configparser.ConfigParser()
-        config.read('config.ini')
+        config.read("config.ini")
 
         if threshold is None:
-            self.__threshold = int(config['page_segmentation']['repair_segments_threshold'])
+            self.__threshold = int(
+                config["page_segmentation"]["repair_segments_threshold"]
+            )
         else:
             self.__threshold = threshold
 
@@ -33,7 +35,9 @@ class RepairSegments:
         all_para = []
         for segment in self.__segments:
             all_para.append(segment.x2 - segment.x1)
-        self.__median_paragraph_width = statistics.median(all_para) if len(all_para) > 0 else 0
+        self.__median_paragraph_width = (
+            statistics.median(all_para) if len(all_para) > 0 else 0
+        )
 
     def repair_rows(self):
         """
@@ -54,14 +58,19 @@ class RepairSegments:
                     else:
                         continue
                     # Checks if the subsegment is entirely within the segment
-                    if segment.between_y_coordinates(subsegment.y1 + thresh_within) \
-                            and segment.between_y_coordinates(subsegment.y2 - thresh_within) \
-                            and segment.between_x_coordinates(subsegment.x1 + thresh_within) \
-                            and segment.between_x_coordinates(subsegment.x2 - thresh_within):
+                    if (
+                        segment.between_y_coordinates(subsegment.y1 + thresh_within)
+                        and segment.between_y_coordinates(subsegment.y2 - thresh_within)
+                        and segment.between_x_coordinates(subsegment.x1 + thresh_within)
+                        and segment.between_x_coordinates(subsegment.x2 - thresh_within)
+                    ):
                         return_segments.remove(subsegment)
                     # Checks if subsegment's x-coords are close to segment
-                    elif segment.between_x_coordinates(subsegment.x1 + thresh_close_to) \
-                            and segment.between_x_coordinates(subsegment.x2 - thresh_close_to):
+                    elif segment.between_x_coordinates(
+                        subsegment.x1 + thresh_close_to
+                    ) and segment.between_x_coordinates(
+                        subsegment.x2 - thresh_close_to
+                    ):
                         # Checks if the upper y-coordinate for subsegment is withing segment
                         if segment.between_y_coordinates(subsegment.y1):
                             # Move y-coordinate to be beside segment
@@ -96,8 +105,16 @@ def merge_segments(segments: List[Segment]) -> List[Segment]:
 
         for merged_segment in merged_segments:
             # Adding one since some segments are starting at exactly same y as parent
-            if SegmentHelper.inside_box([merged_segment.x1, merged_segment.y1, merged_segment.x2, merged_segment.y2],
-                                        segment.x1, segment.y1 + 1):
+            if SegmentHelper.inside_box(
+                [
+                    merged_segment.x1,
+                    merged_segment.y1,
+                    merged_segment.x2,
+                    merged_segment.y2,
+                ],
+                segment.x1,
+                segment.y1 + 1,
+            ):
                 skip_segment = True
                 break
 
@@ -113,13 +130,22 @@ def merge_segments(segments: List[Segment]) -> List[Segment]:
             merged = False
 
             # Check from current segments lower left corner if any segments are within threshold distance.
-            if SegmentHelper.distance_between_points(segment.x1, segment.y2, sub_segment.x1,
-                                                     sub_segment.y1) <= merge_distance_threshold:
+            if (
+                SegmentHelper.distance_between_points(
+                    segment.x1, segment.y2, sub_segment.x1, sub_segment.y1
+                )
+                <= merge_distance_threshold
+            ):
 
                 # Generate coordinates equal to the empty space on the right or left, to check if
                 # we will overlap existing elements by merging
                 if segment_width > sub_segment_width:
-                    ghost_box = [sub_segment.x2, sub_segment.y1, segment.x2, sub_segment.y2]
+                    ghost_box = [
+                        sub_segment.x2,
+                        sub_segment.y1,
+                        segment.x2,
+                        sub_segment.y2,
+                    ]
                 elif segment_width < sub_segment_width:
                     ghost_box = [segment.x2, segment.y1, sub_segment.x2, segment.y2]
                 else:
@@ -132,7 +158,9 @@ def merge_segments(segments: List[Segment]) -> List[Segment]:
                 # Check for intersecting segments
                 if ghost_box is not None:
                     for other_segment in segments:
-                        if SegmentHelper.inside_box(ghost_box, other_segment.x1, other_segment.y1):
+                        if SegmentHelper.inside_box(
+                            ghost_box, other_segment.x1, other_segment.y1
+                        ):
                             conflicting_segments = True
                             break
 

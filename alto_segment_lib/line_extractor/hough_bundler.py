@@ -10,14 +10,19 @@ class HoughBundler:
     Clusterizes and merges each cluster of cv2.HoughLinesP() output.
     Based on the code found at: https://stackoverflow.com/a/50389879.
     """
+
     # a = HoughBundler()
     # foo = a.process_lines(houghP_lines, binary_image)
 
     def __init__(self):
         self.config = configparser.ConfigParser()
-        self.config.read('config.ini')
-        self.max_distance_to_merge = int(self.config['hough_bundler']['max_distance_to_merge'])
-        self.max_angle_to_merge = int(self.config['hough_bundler']['max_angle_to_merge'])
+        self.config.read("config.ini")
+        self.max_distance_to_merge = int(
+            self.config["hough_bundler"]["max_distance_to_merge"]
+        )
+        self.max_angle_to_merge = int(
+            self.config["hough_bundler"]["max_angle_to_merge"]
+        )
 
     def check_is_line_different(self, line_new, groups):
         """
@@ -37,7 +42,10 @@ class HoughBundler:
                     orientation_new = line_new.get_orientation()
                     orientation_old = line_old.get_orientation()
                     # if all is ok -- line is similar to others in group
-                    if abs(orientation_new - orientation_old) <= self.max_angle_to_merge:
+                    if (
+                        abs(orientation_new - orientation_old)
+                        <= self.max_angle_to_merge
+                    ):
                         group.append(line_new)
                         return False
         # if it is totally different line
@@ -64,7 +72,9 @@ class HoughBundler:
             distance_point_line = 9999
             return distance_point_line
 
-        u1 = (((px - line.x1) * (line.x2 - line.x1)) + ((py - line.y1) * (line.y2 - line.y1)))
+        u1 = ((px - line.x1) * (line.x2 - line.x1)) + (
+            (py - line.y1) * (line.y2 - line.y1)
+        )
         u = u1 / (line_mag * line_mag)
 
         if (u < 0.00001) or (u > 1):
@@ -156,10 +166,13 @@ class HoughBundler:
         for i in [lines_x, lines_y]:
             if len(i) > 0:
                 merged_lines_all.extend(
-                    [self.merge_group_into_line(group) for group in self.merge_lines_into_groups(i)])
+                    [
+                        self.merge_group_into_line(group)
+                        for group in self.merge_lines_into_groups(i)
+                    ]
+                )
 
         return merged_lines_all
-
 
     def split_lines_into_horizontal_and_vertical(self, lines):
         """

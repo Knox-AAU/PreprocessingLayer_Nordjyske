@@ -1,4 +1,5 @@
 from os import environ as environ
+
 environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 import cv2
 import numpy as np
@@ -9,6 +10,7 @@ class Preprocessing:
     """
     Used to handle the pre-processing of images.
     """
+
     def __init__(self):
         pass
 
@@ -24,17 +26,15 @@ class Preprocessing:
         image = self.__thresholding(image)
 
         image = self.__deskew(image)
-        #image = self.__opening(image)
-        #image = self.__dilate(image)
-        #image = self.__erode(image)
-        #window = "image"
-        #cv2.imshow(window, image)
-        #cv2.waitKey(0)
+        # image = self.__opening(image)
+        # image = self.__dilate(image)
+        # image = self.__erode(image)
+        # window = "image"
+        # cv2.imshow(window, image)
+        # cv2.waitKey(0)
         image = self.__convert_to_pil(image)
 
         return image
-
-
 
     @staticmethod
     def __get_grayscale(image):
@@ -47,9 +47,11 @@ class Preprocessing:
     # thresholding
     @staticmethod
     def __thresholding(image):
-        #return cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
-        return  cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-        #return cv2.threshold(image, 185, 255, cv2.THRESH_BINARY)[1]
+        # return cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
+        return cv2.adaptiveThreshold(
+            image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2
+        )
+        # return cv2.threshold(image, 185, 255, cv2.THRESH_BINARY)[1]
 
     # dilation
     @staticmethod
@@ -87,22 +89,22 @@ class Preprocessing:
         (h, w) = image.shape[:2]
         center = (w // 2, h // 2)
         M = cv2.getRotationMatrix2D(center, angle, 1.0)
-        rotated = cv2.warpAffine(image, M, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+        rotated = cv2.warpAffine(
+            image, M, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE
+        )
 
         return rotated
 
     @staticmethod
     def __load_file(path):
-        """ Loads a .jp2 file from a given path
+        """Loads a .jp2 file from a given path
         :param path: The path of the file
         :return: The file in RGB format
         """
-        #image = Image.open("1988.jp2").convert("L")
+        # image = Image.open("1988.jp2").convert("L")
         image_cv2 = cv2.imread(path)
         return image_cv2
 
     @staticmethod
     def __convert_to_pil(image):
         return Image.fromarray(image)
-
-
