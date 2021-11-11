@@ -1,12 +1,14 @@
 from flask import Flask, jsonify, request, abort
 from flask.wrappers import Response
-from insert_json_db import DB
+from mongoDB import DB
 from bson.json_util import dumps
 import json 
+from bson.objectid import ObjectId
 from knox_source_data_io.io_handler import IOHandler
 import traceback
 
 app = Flask(__name__)
+db = DB()
 
 @app.route('/')
 def hello():
@@ -18,9 +20,11 @@ def get_json():
     field = request.args.get('field', default = None, type = str)
     val = request.args.get('val', default = None, type = str)
     if col is None or field is None or val is None:
-        return abort(Response("missing col, field or val arg"))
-    list_res = list(DB().get_json(col, {field: val}))
-    return dumps(list_res)
+        return abort(Response(reponse="request url must include: col, field or val args"), status=400)
+    res = list(db.get_json(col, {field: val}))
+    for o in res:
+        o["_id"] = str(o["_id"])
+    return Response(response=dumps(res), status=200, mimetype="application/json")
 
 @app.route("/insert_json", methods=["POST"])
 def post_json():
@@ -33,10 +37,10 @@ def post_json():
         traceback.print_exc(e)
         return abort(Response("bad json"))
     col = request.args.get("col", default = None, type = str)
-    print(col)
-    DB().insert_json(col, j_str)
-    return Response(status=200)
-    
-    
-
-app.run()
+    res = (str)(DB().insert_json(col, j_str))
+    print(res)
+    return Response(response=json.dumps({"message": "json inserted", "id": res}), status=200, mimetype="application/json")
+        
+        
+if __name__ == "__main__":
+    app.run(port=5000, debug=True)
