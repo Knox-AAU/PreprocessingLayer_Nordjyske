@@ -1,11 +1,11 @@
 import os
 from datetime import datetime
 from knox_source_data_io.io_handler import IOHandler, Generator
-
+import json
 
 def save_to_json(folder, publications):
     """ Saves the publications as JSON files in the given folder
-
+    
     :param folder: The destination folder
     :param publications: A list of publications that should be saved
     :return: The json object that was written
@@ -13,10 +13,14 @@ def save_to_json(folder, publications):
     publications = __merge(publications)
     publications_written = []
 
+    with open("parser_versions.json") as f:
+        parser_json = json.load(f)
+    parser_version = parser_json["Nitf_parser"]
+
     for pub in publications:
         handler = IOHandler(
-            Generator(app="Nordjyske-Preprocessing module", version="1.0", generated_at=datetime.now().isoformat()),
-            "http://iptc.org/std/NITF/2006-10-18/")
+            Generator(app="Nitf_parser", version=parser_version, generated_at=datetime.now().isoformat()),
+            "https://github.com/Knox-AAU/SourceDataIO/blob/master/schemas/publication.schema.json")
         filename = os.path.join(
             folder,
             f'{datetime.strptime(pub.published_at, "%Y-%m-%dT%H:%M:%S%z").strftime("%Y-%m-%d")}'
