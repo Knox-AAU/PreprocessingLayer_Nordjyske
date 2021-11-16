@@ -11,6 +11,7 @@ on:
 
 jobs:
   build:
+    name: python_lint_and_test
 
     runs-on: ubuntu-latest
 
