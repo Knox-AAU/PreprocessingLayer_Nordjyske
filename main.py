@@ -2,7 +2,7 @@ import argparse
 import os
 import re
 from datetime import datetime, timezone
-from consume_folders import MotherRunner
+from MotherRunner import MotherRunner
 os.environ["OPENCV_IO_ENABLE_JASPER"] = "true"
 
 

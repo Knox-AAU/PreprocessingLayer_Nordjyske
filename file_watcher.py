@@ -1,6 +1,6 @@
 from builtins import max
 from datetime import datetime, timezone
-from consume_folders import MotherRunner
+from MotherRunner import MotherRunner
 from os import path
 
 def parse_new_publications(input_path, output_path):

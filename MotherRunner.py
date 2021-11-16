@@ -23,7 +23,7 @@ class MotherRunner:
     @staticmethod
     def __process_file(file):
         if file.type == FileType.JP2:
-            # run OCR
+            # run OCR 
             return OCRRunner().run_ocr(file)
         if file.type == FileType.NITF:
             # run NITF parser
@@ -42,10 +42,11 @@ class MotherRunner:
             #print(f'[Consumer Thread] consuming item {item.__dict__}...')
 
             num_jobs = int((multiprocessing.cpu_count()/2))
-            publications = Parallel(n_jobs=num_jobs, prefer="threads")(
+            publications_with_parsername = Parallel(n_jobs=num_jobs, prefer="threads")(
                 delayed(self.__process_file)(file)
                 for file in item.files)
-            pubs = save_to_json(self.output_dest, publications)
+
+            pubs = save_to_json(self.output_dest, publications_with_parsername)
             try:
                 for p in pubs:
                     pub_json = json.loads(p)
