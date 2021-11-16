@@ -13,13 +13,9 @@ def save_to_json(folder, publications):
     publications = __merge(publications)
     publications_written = []
 
-    with open("parser_versions.json") as f:
-        parser_json = json.load(f)
-    parser_version = parser_json["Nitf_parser"]
-
     for pub in publications:
         handler = IOHandler(
-            Generator(app="Nitf_parser", version=parser_version, generated_at=datetime.now().isoformat()),
+            Generator(app="PreprocessingLayer_Nordjyske", version=1.0, generated_at=datetime.now().isoformat()),
             "https://github.com/Knox-AAU/SourceDataIO/blob/master/schemas/publication.schema.json")
         filename = os.path.join(
             folder,
