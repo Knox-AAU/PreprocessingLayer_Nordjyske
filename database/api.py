@@ -16,7 +16,7 @@ def get_json():
     field = request.args.get("field", default=None, type=str)
     val = request.args.get("val", default=None, type=str)
     check_missing_args("col, field and val", col, field, val)
-    res = db.get_json(col, {field: val})
+    res = db.get_json(col, {field: {"$regex": val}})
     return Response(response=dumps(res), status=200, mimetype="application/json")
 
 
@@ -65,7 +65,7 @@ def check_missing_args(must_include, *args):
         if arg is None or arg == "":
             return abort(
                 Response(
-                    response=f"request url must include: {must_include}", status=400
+                    response=f"Bad request. url must include: {must_include}", status=400
                 )
             )
 
