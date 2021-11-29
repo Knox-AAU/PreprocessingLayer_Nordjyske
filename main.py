@@ -58,11 +58,21 @@ if __name__ == "__main__":
         dest="post",
         action="store_true",
         default=False,
-        help="defines the optiion to POST the json parsed to the next layer. ",
+        help="defines the option to POST the json parsed to the next layer. ",
+    )
+
+        # defines the optiion to POST the json parsed to the next layer
+    parser.add_argument(
+        "-db",
+        "--database",
+        dest="db",
+        action="store_true",
+        default=False,
+        help="defines the option to POST the json parsed to the MongoJsonAPI. ",
     )
 
     args = parser.parse_args()
 
     MotherRunner(
-        args.path, args.from_date, args.to_date, args.output_path, args.post
+        args.path, args.from_date, args.to_date, args.output_path, args.post, args.db
     ).start()
