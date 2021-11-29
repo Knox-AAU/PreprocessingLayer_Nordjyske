@@ -2,7 +2,7 @@ from builtins import max
 from datetime import datetime, timezone
 from consume_folders import MotherRunner
 from os import path
-
+import time
 
 def parse_new_publications(input_path, output_path):
     """
@@ -47,8 +47,10 @@ def parse_new_publications(input_path, output_path):
     from_date = min(dates_to_parse)
     to_date = max(dates_to_parse)
 
-    MotherRunner(input_path, from_date, to_date, output_path).start()
+    MotherRunner(input_path, from_date, to_date, output_path, True, True).start()
 
 
 if __name__ == "__main__":
-    parse_new_publications()
+    while True:
+        parse_new_publications("/srv/data/processed/nordjyske")
+        time.sleep(86400) # Run once a day
