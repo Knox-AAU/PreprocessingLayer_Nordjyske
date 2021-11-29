@@ -46,18 +46,21 @@ class MotherRunner:
                 delayed(self.__process_file)(file) for file in item.files
             )
             pubs = save_to_json(self.output_dest, publications)
+
+            # Post to next layer 
             if self.should_post:
-                self.__post_json(pubs)
+                self.__post_json(pubs, "http://130.225.57.27/uploadjsonapi/uploadJsonDoc")
+            
+            # Post to MongoDB API
+            self.__post_json(pubs, "http://130.225.57.27/MongoJsonApi/insert_json")
             print(f"[Consumer Thread] done with folder: {item.folder_name()}...")
 
-    def __post_json(self, publications):
+    def __post_json(self, publications, url):
         try:
             for p in publications:
                 pub_json = json.loads(p)
                 IOHandler.validate_json(pub_json, "publication.schema.json")
-                x = requests.post(
-                    "http://130.225.57.27/uploadjsonapi/uploadJsonDoc", json=pub_json
-                )
+                x = requests.post(url, json=pub_json)
                 if x.status_code != 200:
                     raise x.raise_for_status()
         except Exception as e:
