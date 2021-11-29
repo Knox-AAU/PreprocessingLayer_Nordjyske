@@ -13,14 +13,15 @@ import json
 
 
 class MotherRunner:
-    def __init__(self, root, from_date, to_date, output_dest, should_post):
+    def __init__(self, root, from_date, to_date, output_dest, post_to_next_layer, post_to_db):
         self.q = Queue()
         self.consumer = Process(target=self._consumer)
         self.root = root
         self.from_date = from_date
         self.to_date = to_date
         self.output_dest = output_dest
-        self.should_post = should_post
+        self.post_to_next_layer = post_to_next_layer
+        self.post_to_db = post_to_db
 
     @staticmethod
     def __process_file(file):
@@ -48,11 +49,12 @@ class MotherRunner:
             pubs = save_to_json(self.output_dest, publications)
 
             # Post to next layer 
-            if self.should_post:
+            if self.post_to_next_layer:
                 self.__post_json(pubs, "http://130.225.57.27/uploadjsonapi/uploadJsonDoc")
             
             # Post to MongoDB API
-            self.__post_json(pubs, "http://130.225.57.27/MongoJsonApi/insert_json")
+            if self.post_to_db:
+                self.__post_json(pubs, "http://130.225.57.27/MongoJsonApi/insert_json")
             print(f"[Consumer Thread] done with folder: {item.folder_name()}...")
 
     def __post_json(self, publications, url):
