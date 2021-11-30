@@ -1,0 +1,9 @@
+version: '2'
+services:
+  api:
+    build: 
+      context: ../
+      dockerfile: /home/NordjyskeExtractionService/PreprocessingLayer_Nordjyske/file_watcher/Dockerfile
+    command: python3 file_watcher.py
+    volumes:
+      - .:/PreprocessingLayer_Nordjyske
