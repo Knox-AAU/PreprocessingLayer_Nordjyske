@@ -1,7 +1,4 @@
-import sys
-sys.path.append("/preprocessinglayer_nordjyske_filewatcher")
 from consume_folders import MotherRunner
-
 from builtins import max
 from datetime import datetime, timezone
 from os import path
@@ -46,6 +43,10 @@ def parse_new_publications(input_path, output_path):
                 date_str = date.strftime("%m/%d/%Y %H:%M:%S")
                 f.write(f"{date_str}\n")
 
+    # return if nothing to parse
+    if len(dates_to_parse)==0:
+        return
+        
     # find from and to date params, by taking min and max of dates_to_be_parsed
     from_date = min(dates_to_parse)
     to_date = max(dates_to_parse)
