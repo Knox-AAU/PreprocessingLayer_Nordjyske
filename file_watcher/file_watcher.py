@@ -1,5 +1,5 @@
 import sys
-sys.path.append("/home/aau/Desktop/PreprocessingLayer_Nordjyske")
+sys.path.append("/preprocessinglayer_nordjyske_filewatcher")
 from consume_folders import MotherRunner
 
 from builtins import max
@@ -55,5 +55,5 @@ def parse_new_publications(input_path, output_path):
 
 if __name__ == "__main__":
     while True:
-        parse_new_publications("/srv/data/processed/nordjyske", "/srv/data/processed/nordjyske")
+        parse_new_publications("/input", "/output")
         time.sleep(86400) # Run once a day
