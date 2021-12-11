@@ -1,4 +1,4 @@
-# SW517e20
+# Preprocessing Nordjyske
 
 This project is part of the Knox pipeline. It resides in the first layer and is centered around
 processing the data set of newspaper articles.
@@ -11,12 +11,12 @@ The project is divided into five packages:
 - **OCR** (for extract the text from the image files)
 - **Parsing of NITF Files** (to convert .nitf files to the desired output)
 
-In addition to these packages, the repository _Knox/source-data-io_ containing functionality related
-to the output of the system has been developed. This repository can be
-found [here](https://git.its.aau.dk/Knox/source-data-io).
+In addition to these packages, the following repositories are also used:
+https://github.com/Knox-AAU/PreprocessingLayer_Source_Data_IO
+https://github.com/Knox-AAU/PreprocessingLayer_MongoDB_API
+https://github.com/Knox-AAU/PreprocessingLayer_Alto_Segment_Lib
 
-One of the future features that could enhance the output of the system is post-processing. This
-should be added as a sixth package when developed.
+Development of new features, such as pre- or post-processing should be added as a new package to this project.
 
 ## Installation
 
@@ -229,6 +229,12 @@ ffmpeg -i input.jp2 output.tiff
 ## Authors and achknowledgement
 
 The development teams who have been part of the development can be seen below:
+- Cs-21-sw-5-15 (Fall 2021)
+    - Kristian Morsing Pedersen
+    - Alex Farup Christensen
+    - Cecilie Welling Fog
+    - Jonas Noermark
+    - Alexander Hansen
 
 - SW517e20 (Fall 2020)
     - Alex Immerkær Kristensen
@@ -250,13 +256,10 @@ The project is not done and is currently a work in progress.
 
 The functionality still missing from the system includes:
 
+- Pre-processing
 - Post-processing
 - Enhanced extraction of text written in a Gothic font
 - Segmentation and text extraction across multiple pages
 
 ## Known issues
-
-### 1. MotherRunner does not work on windows
-
-As of currently, the MotherRunner will encounter a garbage-collection error when the main process is
-done crawling, and the consumer process is not done processing.
+None :-)
