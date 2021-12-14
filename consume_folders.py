@@ -54,7 +54,7 @@ class MotherRunner:
             
             # Post to MongoDB API
             if self.post_to_db:
-                self.__post_json(pubs, "http://130.225.57.27/MongoJsonApi/insert_json")
+                self.__post_json(pubs, "http://130.225.57.27/MongoJsonAPI/insert_json")
             print(f"[Consumer Thread] done with folder: {item.folder_name()}...")
 
     def __post_json(self, publications, url):
