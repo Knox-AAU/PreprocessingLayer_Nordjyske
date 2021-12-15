@@ -33,13 +33,13 @@ described, you can contact one of the developers below, according to what issues
 **HOWEVER**, please be sure you have researched the issue *extensively*, and documented the issues along with the question elaborately.
 
 Questions about the MongoDB + API and file watcher, please contact <br />
-<ahha19@student.aau.dk> <\t> (Fall 2021) <br />
+<ahha19@student.aau.dk>     (Fall 2021) <br />
 
 Questions about using and training Tesseract, please contact: <br />
-<kpede19@student.aau.dk> <\t> (Fall 2021) <br/>
+<kpede19@student.aau.dk>    (Fall 2021) <br/>
 
 Generel questions for the project as a whole (alongside with all modules), please contact: <br />
-<nvisti18@student.aau.dk> <\t> (Fall 2020)
+<nvisti18@student.aau.dk>   (Fall 2020)
 
 ## Contributing
 
