@@ -16,94 +16,38 @@ https://github.com/Knox-AAU/PreprocessingLayer_Source_Data_IO
 https://github.com/Knox-AAU/PreprocessingLayer_MongoDB_API
 https://github.com/Knox-AAU/PreprocessingLayer_Alto_Segment_Lib
 
-Development of new features, such as pre- or post-processing should be added as a new package to this project.
+Along with the shared UI-repository:
+https://github.com/Knox-AAU/UI_React
 
-## Installation
+Development of new features, such as pre- or post-processing should be added as new packages to this project.
 
-To install the project, the following dependencies must also be installed:
-
-```
-// Install latest python (replace version)
-sudo apt install build-essential libssl-dev
-sudo apt install python3.9 python3.9-dev python3.9-distutils python3.9-venv
-
-// Install pip
-python3.9 -m pip install pip
-
-// Generate virtual environment
-cd /project/folder
-python3.9 -m venv venv
-
-// Activate virtual environment
-cd /project/folder
-source venv/bin/activate
-pip3.9 install wheel
-```
-
-After this, the final step of installation is to install the packages in the *requirements.txt* file
-by running:
-
-```
-pip install -r requirements.txt
-```
-
-> :warning: The virtual environment can be disabled by running the command: ``deactivate``
-
-## Usage
-
-Each package contains a *\_\_main\_\_.py* file that can be execute. Each package can be executed
-individually by running the associate *\_\_main\_\_.py* file, possibly with parameters.
-
-### Crawling
-
-The crawling module should only be used within other modules, which is the reason behind its empty *
-\_\_main\_\_.py* file.
-
-### Segmentation
-
-The segmentation module is executed with two parameters.
-
-- *path* : the relative path to the folder containing the *.jp2* file and associated *.alto.xml*
-  file
-- *filename* : name of the *.jp2* to be segmented
-
-This outputs a *.png* file with the input file and an overlay of paragraph and header boxes.
-
-### OCR
-
-The OCR module is executed with four parameters:
-
-- *path* : the relative path to the file on which OCR should be performed
-- *output\_dest* : the relative path at which the output should be saved
-- *tesseract\_path* : the relative path to Tesseract (this is only necessary if the installation of
-  tesseract is not performed in a way that allows the system to find it by it self)
-- *language* : the language that should be used for the OCR (a full list can be found
-  at [https://github.com/tesseract-ocr/langdata](https://github.com/tesseract-ocr/langdata))
-
-This outputs a *.json* file following the I/O modules schema and contains the extracted text.
-
-### Parsing of NITF Files
-
-The OCR module is executed with two parameters:
-
-- *input\_file* : the relative path to the *.xml* file that should parsed (must be in NITF format)
-- *output\_dest* : the relative path at which the output should be saved
-
-This outputs a *.json* file following the I/O modules schema and contains the parsed publication.
+## Installation and documentation
+Please refer to the [wiki](https://wiki.knox.cs.aau.dk/Preprocessing/NordjyskeMedier) for installation and usage guides.
 
 ## Support
 
 The development team behind this project will change once a year and for this reason support will be
 limited. However, if you have any questions or stumble upon something that has not clearly been
-described, please contact one of the developers at: <nvisti18@student.aau.dk>
+described, you can contact one of the developers below, according to what issues your are experiencing.
 
-However, make sure to have researched the issue before reaching out and to document the issue in
-question elaborately.
+**HOWEVER**, please be sure you have researched the issue *extensively*, and documented the issues along with the question elaborately.
+
+Questions about the MongoDB + API and file watcher, please contact:
+<ahha19@student.aau.dk>     (Fall 2021)
+
+Questions about using and training Tesseract, please contact:
+<kpede19@student.aau.dk>    (Fall 2021)
+
+Generel questions for the project as a whole (alongside with all modules), please contact:
+<nvisti18@student.aau.dk>   (Fall 2020)
 
 ## Contributing
 
 A general walkthrough of how the codebase is structure and what standards are followed can be seen
 below. Please ensure that you follow these conventions when contributing to the project.
+
+Please also red the [agreements](https://wiki.knox.cs.aau.dk/en/Agreements) on the wiki page.
+We have used [pep8](https://www.python.org/dev/peps/pep-0008/) standard, along with [Black](https://pypi.org/project/black/) to refactor the code (this is also run as the cont. integration when pushing to the repository)
 
 ### Naming conventions
 
@@ -115,14 +59,6 @@ down [here](https://visualgit.readthedocs.io/en/latest/pages/naming_convention.h
 
 The unit tests for the project are structured according to the _pytest_ documentation
 found [here](https://docs.pytest.org/en/stable/contents.html#toc).
-
-#### Setup
-
-To set up _pytest_ in you virtual environment, you should add _pytest==6.1.1_ to the _
-requirements.txt_ for the module, if not already present, and then set the testing framework to _
-pytest_. In PyCharm, this is done under _settings > Tools > Python Integrated Tools_.
-
-The folder structure of the tests is _{module\_folder} > tests > {test\_ClassToBeTested}_.
 
 #### Defining tests
 
@@ -170,37 +106,6 @@ the [unittest.mock library](https://docs.python.org/3/library/unittest.mock.html
 It is also possible to set up test suites as well, allowing us to set the execution order for the
 tests and add conditions for what test to be executed.
 
-### Virtual environment
-
-The virtual environment should just be set up for each module, as it should never be necessary to
-duplicate in other modules with other dependencies. However, the requirements for the virtual
-environment should be exported to the _requirements.txt_ file and this file should then be loaded
-when ever the given module is being set up.
-
-To generate a new virtual environment, run ``python -m venv venv``.
-
-Be sure to set the virtual environment as you python interpreter. If you are working in PyCharm,
-then you have to add a new interpreter under ``File > Settings > Project > Python Interpreter`` and
-point the path to the generated virtual environment.
-
-> :warning: Remember to activate your virtual environment by running `source venv/bin/activate`.
-
-#### Handling requirements.txt
-
-The _requirements.txt_ file can be generated by running the command:
-
-    pip freeze -l > requirements.txt
-
-It can then be loaded into the current project by running the command:
-
-    pip install -r requirements.txt
-
-If _conda_ is used, it is necessary to install _pip_ in the virtual environment to use these
-commands. This is, from our research during the project, the easiest way to handle requirements in _
-conda_.
-
-> :warning: _pip_ might be switched out for _pip3_ on your system
-
 #### Generate packages
 
 If additional packages are desired to improve the structure of additions to the project, the
@@ -227,8 +132,8 @@ ffmpeg -i input.jp2 output.tiff
 ```
 
 ## Authors and achknowledgement
-
 The development teams who have been part of the development can be seen below:
+
 - Cs-21-sw-5-15 (Fall 2021)
     - Kristian Morsing Pedersen
     - Alex Farup Christensen
@@ -251,14 +156,13 @@ project:
 - Theis Erik Jendal
 
 ## Status of project
-
 The project is not done and is currently a work in progress.
 
 The functionality still missing from the system includes:
 
 - Pre-processing
 - Post-processing
-- Enhanced extraction of text written in a Gothic font
+- Enhanced extraction of text written in a Gothic font (improved in the fall of 2021)
 - Segmentation and text extraction across multiple pages
 
 ## Known issues
