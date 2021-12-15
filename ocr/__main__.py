@@ -35,12 +35,12 @@ if __name__ == "__main__":
         "-lan",
         "--language",
         dest="language",
-        default="dan",
+        default="gothic_fine_tune",
         help='If other language than "dan" is to be used, define here.',
     )
 
     args = parser.parse_args()
-    tm = TesseractModule.from_file(File(args.path, FileType.JP2), "dan")
+    tm = TesseractModule.from_file(File(args.path, FileType.JP2), "gothic_fine_tune")
     publication = tm.to_publication()
     if args.output_path is None:
         print(publication.to_json())

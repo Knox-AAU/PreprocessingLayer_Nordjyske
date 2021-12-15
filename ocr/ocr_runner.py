@@ -21,7 +21,7 @@ class OCRRunner:
     Used to handle the OCR of an image.
     """
 
-    def run_ocr(self, file: File, language="dan", tesseract_path=None):
+    def run_ocr(self, file: File, language="gothic_fine_tune", tesseract_path=None):
         """
         Runs everything that's needed to do OCR. It does the following: segmentation, creating articles, and
         turning articles into publications.
@@ -35,7 +35,7 @@ class OCRRunner:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         segments = SegmentModule.run_segmentation(file.path)
 
-        tessdata = "dan"
+        tessdata = "gothic_fine_tune"
 
         file_date = self.__find_year(file.name)
 

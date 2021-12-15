@@ -9,7 +9,7 @@ class TesseractModule:
     Used to handle all Tesseract related tasks.
     """
 
-    def __init__(self, image, language="dan", tesseract_path=None):
+    def __init__(self, image, language="gothic_fine_tune", tesseract_path=None):
         """
         Instantiates an instance of the class and extracts the text from the provided image using Tesseract.
 
