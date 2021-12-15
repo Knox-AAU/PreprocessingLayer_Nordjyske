@@ -11,12 +11,12 @@ The project is divided into five packages:
 - **OCR** (for extract the text from the image files)
 - **Parsing of NITF Files** (to convert .nitf files to the desired output)
 
-In addition to these packages, the following repositories are also used:
-https://github.com/Knox-AAU/PreprocessingLayer_Source_Data_IO
-https://github.com/Knox-AAU/PreprocessingLayer_MongoDB_API
-https://github.com/Knox-AAU/PreprocessingLayer_Alto_Segment_Lib
+In addition to these packages, the following repositories are also used: <br />
+https://github.com/Knox-AAU/PreprocessingLayer_Source_Data_IO <br />
+https://github.com/Knox-AAU/PreprocessingLayer_MongoDB_API <br />
+https://github.com/Knox-AAU/PreprocessingLayer_Alto_Segment_Lib <br />
 
-Along with the shared UI-repository:
+Along with the shared UI-repository: <br />
 https://github.com/Knox-AAU/UI_React
 
 Development of new features, such as pre- or post-processing should be added as new packages to this project.
@@ -32,14 +32,14 @@ described, you can contact one of the developers below, according to what issues
 
 **HOWEVER**, please be sure you have researched the issue *extensively*, and documented the issues along with the question elaborately.
 
-Questions about the MongoDB + API and file watcher, please contact:
-<ahha19@student.aau.dk>     (Fall 2021)
+Questions about the MongoDB + API and file watcher, please contact <br />
+<ahha19@student.aau.dk> <\t> (Fall 2021) <br />
 
-Questions about using and training Tesseract, please contact:
-<kpede19@student.aau.dk>    (Fall 2021)
+Questions about using and training Tesseract, please contact: <br />
+<kpede19@student.aau.dk> <\t> (Fall 2021) <br/>
 
-Generel questions for the project as a whole (alongside with all modules), please contact:
-<nvisti18@student.aau.dk>   (Fall 2020)
+Generel questions for the project as a whole (alongside with all modules), please contact: <br />
+<nvisti18@student.aau.dk> <\t> (Fall 2020)
 
 ## Contributing
 
